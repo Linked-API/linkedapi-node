@@ -1,0 +1,18 @@
+{
+  "editor.tabSize": 2,
+  "editor.formatOnType": true,
+  "editor.formatOnPaste": true,
+  "editor.formatOnSave": true,
+  "files.autoSave": "afterDelay",
+  "editor.inlineSuggest.enabled": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.rulers": [100],
+  "editor.wordWrapColumn": 100,
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "javascript.updateImportsOnFileMove.enabled": "never",
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifier": "non-relative",
+  "material-icon-theme.activeIconPack": "nest",
+  "typescript.tsserver.maxTsServerMemory": 8192,
+  "typescript.tsdk": "node_modules/typescript/lib"
+}

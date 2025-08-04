@@ -1,0 +1,34 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Development files
+.eslintrc.js
+jest.config.js
+rollup.config.js
+tsconfig.json
+
+# Tests
+**/*.test.ts
+**/*.spec.ts
+__tests__/
+
+# Development dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+.cursor/
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Coverage
+coverage/
