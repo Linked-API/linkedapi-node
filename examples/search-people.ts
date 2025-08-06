@@ -1,4 +1,4 @@
-import LinkedApi, { TSearchPeopleYearsOfExperience } from 'linkedapi-node';
+import LinkedApi, { TYearsOfExperience } from 'linkedapi-node';
 
 async function searchPeopleExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -60,12 +60,11 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     term: 'product manager',
     limit: 8,
     filter: {
-      firstName: 'Sarah',
       position: 'Product Manager',
       industries: ['Technology', 'Financial Services'],
       currentCompanies: ['Meta', 'Amazon', 'Netflix'],
-      previousCompanies: ['Uber', 'Airbnb'],
-      yearsOfExperience: ['3-5', '6-10'] as TSearchPeopleYearsOfExperience[],
+      previousCompanies: ['Uber', 'Airbnb', 'Microsoft'],
+      yearsOfExperience: ['threeToFive', 'sixToTen'] as TYearsOfExperience[],
     },
   };
 

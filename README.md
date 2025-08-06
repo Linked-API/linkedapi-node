@@ -354,7 +354,7 @@ const nvPeopleSearch = await linkedapi.account.salesNavigatorSearchPeople({
     currentCompanies: ["Tech Solutions", "Innovatech"],
     previousCompanies: ["FutureCorp"],
     schools: ["Harvard University", "MIT"],
-    yearsOfExperience: ["0-1", "1-2", "3-5"],
+    yearsOfExperience: ["lessThanOne", "oneToTwo", "threeToFive"],
   },
 });
 ```
@@ -835,7 +835,7 @@ const peopleSearchWorkflow = await linkedapi.data.searchPeople({
     currentCompanies: ["Tech Solutions", "Innovatech"],
     previousCompanies: ["FutureCorp"],
     schools: ["Harvard University", "MIT"],
-    yearsOfExperience: ["0-1", "1-2", "3-5"],
+    yearsOfExperience: ["lessThanOne", "oneToTwo", "threeToFive"],
   },
 });
 ```
