@@ -371,7 +371,7 @@ Send connection requests to LinkedIn users with optional personalized messages.
 ```typescript
 await linkedapi.account.sendConnectionRequest({
   personUrl: "https://www.linkedin.com/in/john-doe",
-  message: "Hello! I'd love to connect and discuss opportunities.",
+  note: "Hello! I'd love to connect and discuss opportunities.",
 });
 ```
 

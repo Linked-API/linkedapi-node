@@ -865,7 +865,7 @@ export class AccountApi {
    * ```typescript
    * const connectionWorkflow = await linkedapi.account.sendConnectionRequest({
    *   personUrl: "https://www.linkedin.com/in/john-doe",
-   *   message: "Hi John, I'd love to connect and discuss opportunities in tech!"
+   *   note: "Hi John, I'd love to connect and discuss opportunities in tech!"
    * });
    *
    * await connectionWorkflow.result();
