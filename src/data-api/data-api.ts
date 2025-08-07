@@ -313,7 +313,7 @@ export class DataApi {
    *     currentCompanies: ["Google", "Facebook", "Apple"],
    *     industries: ["Technology", "Software"],
    *     schools: ["Stanford University", "MIT"],
-   *     yearsOfExperience: ["3-5", "6-10"]
+   *     yearsOfExperience: ["threeToFive", "sixToTen"]
    *   }
    * });
    *

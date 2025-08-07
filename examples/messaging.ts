@@ -42,7 +42,7 @@ async function sendMessage(linkedapi: LinkedApi, personUrl: string): Promise<voi
     text: 'Hi! I hope you\'re doing well. I came across your profile and was impressed by your work. I\'d love to connect and discuss potential collaboration opportunities.',
   };
 
-  const messageWorkflow = await linkedapi.account.messaging.sendMessage(messageParams);
+  const messageWorkflow = await linkedapi.account.sendMessage(messageParams);
   console.log('💬 Send message workflow started:', messageWorkflow.workflowId);
 
   await messageWorkflow.result();
@@ -58,7 +58,7 @@ async function syncConversation(linkedapi: LinkedApi, personUrl: string): Promis
     personUrl: personUrl,
   };
 
-  const syncWorkflow = await linkedapi.account.messaging.syncConversation(syncParams);
+  const syncWorkflow = await linkedapi.account.syncConversation(syncParams);
   console.log('🔄 Sync conversation workflow started:', syncWorkflow.workflowId);
 
   await syncWorkflow.result();
@@ -76,7 +76,7 @@ async function salesNavigatorSendMessage(linkedapi: LinkedApi, personUrl: string
     subject: 'Let\'s connect!',
   };
 
-  const nvMessageWorkflow = await linkedapi.account.messaging.salesNavigatorSendMessage(nvMessageParams);
+  const nvMessageWorkflow = await linkedapi.account.salesNavigatorSendMessage(nvMessageParams);
   console.log('🎯 Sales Navigator send message workflow started:', nvMessageWorkflow.workflowId);
 
   await nvMessageWorkflow.result();
@@ -92,7 +92,7 @@ async function salesNavigatorSyncConversation(linkedapi: LinkedApi, personUrl: s
     personUrl: personUrl,
   };
 
-  const nvSyncWorkflow = await linkedapi.account.messaging.salesNavigatorSyncConversation(nvSyncParams);
+  const nvSyncWorkflow = await linkedapi.account.salesNavigatorSyncConversation(nvSyncParams);
   console.log('🎯 Sales Navigator sync conversation workflow started:', nvSyncWorkflow.workflowId);
 
   await nvSyncWorkflow.result();
@@ -104,7 +104,7 @@ async function salesNavigatorSyncConversation(linkedapi: LinkedApi, personUrl: s
 async function pollConversations(linkedapi: LinkedApi, standardPersonUrl: string, nvPersonUrl: string): Promise<void> {
   console.log('\n📥 Polling conversations...');
 
-  const pollResponse = await linkedapi.account.messaging.pollConversations([
+  const pollResponse = await linkedapi.account.pollConversations([
     {
       personUrl: standardPersonUrl,
       type: 'st',

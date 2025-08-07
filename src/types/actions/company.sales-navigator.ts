@@ -1,3 +1,4 @@
+import { TYearsOfExperience } from "./person";
 import { TBaseActionParams, TLimitParams } from "../params";
 
 export interface TNvCompany {
@@ -102,13 +103,6 @@ export interface TNvCompanyEmployeeRetrievalConfig extends TLimitParams {
     locations?: string[];
     industries?: string[];
     schools?: string[];
-    yearsOfExperiences?: TNvYearsOfExperience[];
+    yearsOfExperiences?: TYearsOfExperience[];
   };
 }
-
-export type TNvYearsOfExperience =
-  | "lessThanOne"
-  | "oneToTwo"
-  | "threeToFive"
-  | "sixToTen"
-  | "moreThanTen";

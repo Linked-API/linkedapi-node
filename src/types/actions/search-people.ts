@@ -1,3 +1,4 @@
+import { TYearsOfExperience } from "./person";
 import { TBaseActionParams } from "../params";
 
 export interface TSearchPeopleParams extends TBaseActionParams {
@@ -34,16 +35,9 @@ export interface TNvSearchPeopleParams extends TBaseActionParams {
     currentCompanies?: string[];
     previousCompanies?: string[];
     schools?: string[];
-    yearsOfExperience?: TSearchPeopleYearsOfExperience[];
+    yearsOfExperience?: TYearsOfExperience[];
   };
 }
-
-export type TSearchPeopleYearsOfExperience =
-  | "0-1"
-  | "1-2"
-  | "3-5"
-  | "6-10"
-  | "10+";
 
 export interface TNvSearchPeopleResult {
   name: string;

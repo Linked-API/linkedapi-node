@@ -127,3 +127,10 @@ export type TLanguageProficiency =
   | "professionalWorking"
   | "fullProfessional"
   | "nativeOrBilingual";
+
+export type TYearsOfExperience =
+  | "lessThanOne"
+  | "oneToTwo"
+  | "threeToFive"
+  | "sixToTen"
+  | "moreThanTen";

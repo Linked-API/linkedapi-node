@@ -354,7 +354,7 @@ const nvPeopleSearch = await linkedapi.account.salesNavigatorSearchPeople({
     currentCompanies: ["Tech Solutions", "Innovatech"],
     previousCompanies: ["FutureCorp"],
     schools: ["Harvard University", "MIT"],
-    yearsOfExperience: ["0-1", "1-2", "3-5"],
+    yearsOfExperience: ["lessThanOne", "oneToTwo", "threeToFive"],
   },
 });
 ```
@@ -371,7 +371,7 @@ Send connection requests to LinkedIn users with optional personalized messages.
 ```typescript
 await linkedapi.account.sendConnectionRequest({
   personUrl: "https://www.linkedin.com/in/john-doe",
-  message: "Hello! I'd love to connect and discuss opportunities.",
+  note: "Hello! I'd love to connect and discuss opportunities.",
 });
 ```
 
@@ -559,7 +559,7 @@ Send messages to LinkedIn users through standard LinkedIn messaging.
 - **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
 
 ```typescript
-await linkedapi.account.messaging.sendMessage({
+await linkedapi.account.sendMessage({
   personUrl: "https://www.linkedin.com/in/john-doe",
   text: "Hello! I saw your post about AI and wanted to connect.",
 });
@@ -576,7 +576,7 @@ Sync conversation history with a LinkedIn user for message polling.
 - **Related Methods:** Use with `pollConversations()` to retrieve message history
 
 ```typescript
-await linkedapi.account.messaging.syncConversation({
+await linkedapi.account.syncConversation({
   personUrl: "https://www.linkedin.com/in/john-doe",
 });
 ```
@@ -591,7 +591,7 @@ Send messages through Sales Navigator with enhanced messaging capabilities.
 - **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
 
 ```typescript
-await linkedapi.account.messaging.salesNavigatorSendMessage({
+await linkedapi.account.salesNavigatorSendMessage({
   personUrl: "https://www.linkedin.com/sales/people/ABC123",
   subject: "Partnership Opportunity",
   text: "Hi! I'd love to discuss potential collaboration opportunities.",
@@ -608,7 +608,7 @@ Sync Sales Navigator conversation for message polling.
 - **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
 
 ```typescript
-await linkedapi.account.messaging.salesNavigatorSyncConversation({
+await linkedapi.account.salesNavigatorSyncConversation({
   personUrl: "https://www.linkedin.com/sales/people/ABC123",
 });
 ```
@@ -624,7 +624,7 @@ Poll multiple conversations to retrieve message history and new messages.
 - **Prerequisites:** Must call `syncConversation()` or `salesNavigatorSyncConversation()` for each person before polling
 
 ```typescript
-const response = await linkedapi.account.messaging.pollConversations([
+const response = await linkedapi.account.pollConversations([
   { personUrl: "https://www.linkedin.com/in/john-doe", type: "st" },
   {
     personUrl: "https://www.linkedin.com/sales/people/ABC123",
@@ -835,7 +835,7 @@ const peopleSearchWorkflow = await linkedapi.data.searchPeople({
     currentCompanies: ["Tech Solutions", "Innovatech"],
     previousCompanies: ["FutureCorp"],
     schools: ["Harvard University", "MIT"],
-    yearsOfExperience: ["0-1", "1-2", "3-5"],
+    yearsOfExperience: ["lessThanOne", "oneToTwo", "threeToFive"],
   },
 });
 ```
