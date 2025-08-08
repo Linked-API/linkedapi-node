@@ -1,4 +1,4 @@
-import LinkedApi from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
 
 async function fetchCompanyExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -12,10 +12,10 @@ async function fetchCompanyExample(): Promise<void> {
     await salesNavigatorExample(linkedapi);
 
   } catch (error) {
-    if (error instanceof LinkedApi.LinkedApiError) {
+    if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApi.LinkedApiWorkflowError) {
+    } else if (error instanceof LinkedApiWorkflowError) {
       console.error('🚨 Linked API Workflow Error:', error.message);
       console.error('🔍 Reason:', error.reason);
     } else {
@@ -25,7 +25,7 @@ async function fetchCompanyExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const fetchCompanyWorkflow = await linkedapi.account.fetchCompany({
+  const fetchCompanyWorkflow = await linkedapi.fetchCompany({
     companyUrl: 'https://www.linkedin.com/company/linkedin/',
     retrieveEmployees: true,
     retrieveDms: true,
@@ -61,7 +61,7 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
 }
 
 async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
-  const nvCompanyResult = await linkedapi.account.salesNavigatorFetchCompany({
+  const nvCompanyResult = await linkedapi.salesNavigatorFetchCompany({
     companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
     retrieveEmployees: true,
     retrieveDms: true,

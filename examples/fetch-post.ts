@@ -1,4 +1,4 @@
-import LinkedApi from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
 
 async function fetchPostExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -10,10 +10,10 @@ async function fetchPostExample(): Promise<void> {
     console.log('🚀 Linked API fetchPost example starting...');
     await standardExample(linkedapi);
   } catch (error) {
-    if (error instanceof LinkedApi.LinkedApiError) {
+    if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApi.LinkedApiWorkflowError) {
+    } else if (error instanceof LinkedApiWorkflowError) {
       console.error('🚨 Linked API Workflow Error:', error.message);
       console.error('🔍 Reason:', error.reason);
     } else {
@@ -23,7 +23,7 @@ async function fetchPostExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const accountPostWorkflow = await linkedapi.account.fetchPost({
+  const accountPostWorkflow = await linkedapi.fetchPost({
     postUrl: 'https://www.linkedin.com/posts/post-url'
   });
   console.log('🔍 Account API workflow started:', accountPostWorkflow.workflowId);

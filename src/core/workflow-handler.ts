@@ -1,5 +1,5 @@
 import type { TBaseActionParams } from "../types/params";
-import type { BaseMapper } from "./base-mapper.abstract";
+import type { BaseMapper } from "../mappers/base-mapper.abstract";
 import type { TWorkflowResponse } from "../types/workflows";
 import type {
   WaitForCompletionOptions,

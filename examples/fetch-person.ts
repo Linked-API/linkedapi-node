@@ -1,4 +1,4 @@
-import LinkedApi from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
 
 async function fetchPersonExample(): Promise<void> {
 
@@ -13,10 +13,10 @@ async function fetchPersonExample(): Promise<void> {
     await standardExample(linkedapi);
     await salesNavigatorExample(linkedapi);
   } catch (error) {
-    if (error instanceof LinkedApi.LinkedApiError) {
+    if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApi.LinkedApiWorkflowError) {
+    } else if (error instanceof LinkedApiWorkflowError) {
       console.error('🚨 Linked API Workflow Error:', error.message);
       console.error('🔍 Reason:', error.reason);
     } else {
@@ -26,7 +26,7 @@ async function fetchPersonExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const personResult = await linkedapi.account.fetchPerson({
+  const personResult = await linkedapi.fetchPerson({
     personUrl: 'https://www.linkedin.com/in/example-person/',
     retrieveExperience: true,
     retrieveEducation: true,
@@ -62,7 +62,7 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     personHashedUrl: 'https://www.linkedin.com/in/abc123',
   };
 
-  const personResult = await linkedapi.account.salesNavigatorFetchPerson(fetchParams);
+  const personResult = await linkedapi.salesNavigatorFetchPerson(fetchParams);
   console.log('🔍 Workflow started: ', personResult.workflowId);
   const person = await personResult.result();
 

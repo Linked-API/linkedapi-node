@@ -2,7 +2,7 @@ import type {
   TNvOpenPersonPageParams,
   TNvOpenPersonPageResult,
 } from "../types/actions/connection";
-import { ThenWorkflowMapper } from "../core/then-workflow-mapper.abstract";
+import { ThenWorkflowMapper } from "./then-workflow-mapper.abstract";
 
 export class AcNvOpenPersonPageMapper extends ThenWorkflowMapper<
   TNvOpenPersonPageParams,

@@ -1,4 +1,4 @@
-import LinkedApi from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
 
 async function customWorkflowExample(): Promise<void> {
 
@@ -9,7 +9,7 @@ async function customWorkflowExample(): Promise<void> {
 
   try {
     console.log('🚀 Linked API custom workflow example starting...');
-    const customWorkflow = await linkedapi.account.executeCustomWorkflow({
+    const customWorkflow = await linkedapi.executeCustomWorkflow({
       actionType: 'st.searchPeople',
       limit: 5,
       filter: {
@@ -32,10 +32,10 @@ async function customWorkflowExample(): Promise<void> {
     console.log('✅ Custom workflow executed successfully');
     console.log('🔍 Result: ', result.completion);
   } catch (error) {
-    if (error instanceof LinkedApi.LinkedApiError) {
+    if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApi.LinkedApiWorkflowError) {
+    } else if (error instanceof LinkedApiWorkflowError) {
       console.error('🚨 Linked API Workflow Error:', error.message);
       console.error('🔍 Reason:', error.reason);
     } else {

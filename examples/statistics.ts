@@ -1,4 +1,4 @@
-import LinkedApi from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
 
 async function statisticsExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -14,10 +14,10 @@ async function statisticsExample(): Promise<void> {
     await getRecentUsageStats(linkedapi);
 
   } catch (error) {
-    if (error instanceof LinkedApi.LinkedApiError) {
+    if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApi.LinkedApiWorkflowError) {
+    } else if (error instanceof LinkedApiWorkflowError) {
       console.error('🚨 Linked API Workflow Error:', error.message);
       console.error('🔍 Reason:', error.reason);
     } else {
@@ -29,7 +29,7 @@ async function statisticsExample(): Promise<void> {
 async function retrieveSSI(linkedapi: LinkedApi): Promise<void> {
   console.log('\n📊 Retrieving SSI (Social Selling Index)...');
 
-  const ssiWorkflow = await linkedapi.account.retrieveSSI();
+  const ssiWorkflow = await linkedapi.retrieveSSI();
   console.log('📊 Retrieve SSI workflow started:', ssiWorkflow.workflowId);
 
   const ssiResult = await ssiWorkflow.result();
@@ -49,7 +49,7 @@ async function retrieveSSI(linkedapi: LinkedApi): Promise<void> {
 async function retrievePerformance(linkedapi: LinkedApi): Promise<void> {
   console.log('\n📈 Retrieving Performance Statistics...');
 
-  const performanceWorkflow = await linkedapi.account.retrievePerformance();
+  const performanceWorkflow = await linkedapi.retrievePerformance();
   console.log('📈 Retrieve performance workflow started:', performanceWorkflow.workflowId);
 
   const performanceResult = await performanceWorkflow.result();
@@ -67,7 +67,7 @@ async function getRecentUsageStats(linkedapi: LinkedApi): Promise<void> {
   const endDate = new Date();
   const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const statsResponse = await linkedapi.account.getApiUsageStats({
+  const statsResponse = await linkedapi.getApiUsageStats({
     start: startDate.toISOString(),
     end: endDate.toISOString()
   });
