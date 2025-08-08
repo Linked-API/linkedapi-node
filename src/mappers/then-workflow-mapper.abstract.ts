@@ -126,7 +126,7 @@ export abstract class ThenWorkflowMapper<
     config: TActionConfig,
   ): boolean {
     const paramValue = params[config.paramName as keyof TParams];
-    return paramValue !== undefined && paramValue !== null;
+    return paramValue === true;
   }
 
   private buildRequestAction(

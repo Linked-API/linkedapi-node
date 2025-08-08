@@ -2,7 +2,7 @@ import type {
   TSearchCompanyParams,
   TSearchCompanyResult,
 } from "../types/actions/search-company";
-import { ArrayWorkflowMapper } from "../core/array-workflow-mapper.abstract";
+import { ArrayWorkflowMapper } from "./array-workflow-mapper.abstract";
 
 export class AcSearchCompaniesMapper extends ArrayWorkflowMapper<
   TSearchCompanyParams,

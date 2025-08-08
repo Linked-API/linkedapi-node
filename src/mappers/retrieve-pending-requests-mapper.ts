@@ -1,6 +1,6 @@
 import type { TRetrievePendingRequestsResult } from "../types/actions/connection";
-import { ArrayWorkflowMapper } from "../core/array-workflow-mapper.abstract";
-import { TBaseActionParams } from "src/types/params";
+import { ArrayWorkflowMapper } from "./array-workflow-mapper.abstract";
+import { TBaseActionParams } from "../types/params";
 
 export class AcRetrievePendingRequestsMapper extends ArrayWorkflowMapper<
   TBaseActionParams,

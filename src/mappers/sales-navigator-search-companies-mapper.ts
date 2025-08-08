@@ -2,7 +2,7 @@ import type {
   TNvSearchCompanyParams,
   TNvSearchCompanyResult,
 } from "../types/actions/search-company";
-import { ArrayWorkflowMapper } from "../core/array-workflow-mapper.abstract";
+import { ArrayWorkflowMapper } from "./array-workflow-mapper.abstract";
 
 export class AcSalesNavigatorSearchCompaniesMapper extends ArrayWorkflowMapper<
   TNvSearchCompanyParams,

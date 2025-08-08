@@ -5,7 +5,7 @@ import type {
 import {
   ThenWorkflowMapper,
   type TActionConfig,
-} from "../core/then-workflow-mapper.abstract";
+} from "./then-workflow-mapper.abstract";
 
 const FETCH_COMPANY_ACTIONS: TActionConfig[] = [
   {

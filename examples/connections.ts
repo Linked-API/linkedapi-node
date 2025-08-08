@@ -1,11 +1,10 @@
-import LinkedApi from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
 
 async function connectionsExample(): Promise<void> {
 
   const linkedapi = new LinkedApi({
-    accountApiToken: process.env.ACCOUNT_API_TOKEN,
-    identificationToken: process.env.IDENTIFICATION_TOKEN,
-    dataApiToken: process.env.DATA_API_TOKEN,
+    apiToken: process.env.API_TOKEN!,
+    identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
   try {
@@ -22,10 +21,10 @@ async function connectionsExample(): Promise<void> {
     await removeConnection(linkedapi, targetPersonUrl2);
 
   } catch (error) {
-    if (error instanceof LinkedApi.LinkedApiError) {
+    if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApi.LinkedApiWorkflowError) {
+    } else if (error instanceof LinkedApiWorkflowError) {
       console.error('🚨 Linked API Workflow Error:', error.message);
       console.error('🔍 Reason:', error.reason);
     } else {
@@ -41,7 +40,7 @@ async function checkConnectionStatus(linkedapi: LinkedApi, personUrl: string): P
     personUrl: personUrl,
   };
 
-  const statusWorkflow = await linkedapi.account.checkConnectionStatus(statusParams);
+  const statusWorkflow = await linkedapi.checkConnectionStatus(statusParams);
   console.log('🔍 Connection status workflow started:', statusWorkflow.workflowId);
 
   const statusResult = await statusWorkflow.result();
@@ -58,7 +57,7 @@ async function sendConnectionRequest(linkedapi: LinkedApi, personUrl: string): P
     email: 'example@gmail.com',
   };
 
-  const requestWorkflow = await linkedapi.account.sendConnectionRequest(requestParams);
+  const requestWorkflow = await linkedapi.sendConnectionRequest(requestParams);
   console.log('📤 Send connection request workflow started:', requestWorkflow.workflowId);
 
   await requestWorkflow.result();
@@ -69,7 +68,7 @@ async function sendConnectionRequest(linkedapi: LinkedApi, personUrl: string): P
 async function retrievePendingRequests(linkedapi: LinkedApi): Promise<void> {
   console.log('\n📋 Retrieving pending connection requests...');
 
-  const pendingWorkflow = await linkedapi.account.retrievePendingRequests();
+  const pendingWorkflow = await linkedapi.retrievePendingRequests();
   console.log('📋 Retrieve pending requests workflow started:', pendingWorkflow.workflowId);
 
   const pendingResults = await pendingWorkflow.result();
@@ -91,7 +90,7 @@ async function withdrawConnectionRequest(linkedapi: LinkedApi, personUrl: string
     unfollow: true,
   };
 
-  const withdrawWorkflow = await linkedapi.account.withdrawConnectionRequest(withdrawParams);
+  const withdrawWorkflow = await linkedapi.withdrawConnectionRequest(withdrawParams);
   console.log('🔙 Withdraw connection request workflow started:', withdrawWorkflow.workflowId);
 
   await withdrawWorkflow.result();
@@ -110,7 +109,7 @@ async function retrieveConnections(linkedapi: LinkedApi): Promise<void> {
     },
   };
 
-  const connectionsWorkflow = await linkedapi.account.retrieveConnections(connectionsParams);
+  const connectionsWorkflow = await linkedapi.retrieveConnections(connectionsParams);
   console.log('👥 Retrieve connections workflow started:', connectionsWorkflow.workflowId);
 
   const connectionsResults = await connectionsWorkflow.result();
@@ -132,7 +131,7 @@ async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promis
     personUrl: personUrl,
   };
 
-  const removeWorkflow = await linkedapi.account.removeConnection(removeParams);
+  const removeWorkflow = await linkedapi.removeConnection(removeParams);
   console.log('❌ Remove connection workflow started:', removeWorkflow.workflowId);
 
   await removeWorkflow.result();
@@ -140,15 +139,6 @@ async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promis
   console.log('   🔗 No longer connected with this person');
 }
 
-async function runExample(): Promise<void> {
-  try {
-    await connectionsExample();
-  } catch (error) {
-    console.error('💥 Example failed:', error);
-    process.exit(1);
-  }
-}
-
 if (require.main === module) {
-  runExample();
+  connectionsExample();
 } 

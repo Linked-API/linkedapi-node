@@ -1,10 +1,9 @@
-import LinkedApi from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
 
 async function messagingExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    accountApiToken: process.env.ACCOUNT_API_TOKEN,
-    identificationToken: process.env.IDENTIFICATION_TOKEN,
-    dataApiToken: process.env.DATA_API_TOKEN,
+    apiToken: process.env.API_TOKEN!,
+    identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
   try {
@@ -22,10 +21,10 @@ async function messagingExample(): Promise<void> {
     await pollConversations(linkedapi, targetPersonUrl, targetPersonUrl2);
 
   } catch (error) {
-    if (error instanceof LinkedApi.LinkedApiError) {
+    if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApi.LinkedApiWorkflowError) {
+    } else if (error instanceof LinkedApiWorkflowError) {
       console.error('🚨 Linked API Workflow Error:', error.message);
       console.error('🔍 Reason:', error.reason);
     } else {
@@ -42,7 +41,7 @@ async function sendMessage(linkedapi: LinkedApi, personUrl: string): Promise<voi
     text: 'Hi! I hope you\'re doing well. I came across your profile and was impressed by your work. I\'d love to connect and discuss potential collaboration opportunities.',
   };
 
-  const messageWorkflow = await linkedapi.account.sendMessage(messageParams);
+  const messageWorkflow = await linkedapi.sendMessage(messageParams);
   console.log('💬 Send message workflow started:', messageWorkflow.workflowId);
 
   await messageWorkflow.result();
@@ -58,7 +57,7 @@ async function syncConversation(linkedapi: LinkedApi, personUrl: string): Promis
     personUrl: personUrl,
   };
 
-  const syncWorkflow = await linkedapi.account.syncConversation(syncParams);
+  const syncWorkflow = await linkedapi.syncConversation(syncParams);
   console.log('🔄 Sync conversation workflow started:', syncWorkflow.workflowId);
 
   await syncWorkflow.result();
@@ -76,7 +75,7 @@ async function salesNavigatorSendMessage(linkedapi: LinkedApi, personUrl: string
     subject: 'Let\'s connect!',
   };
 
-  const nvMessageWorkflow = await linkedapi.account.salesNavigatorSendMessage(nvMessageParams);
+  const nvMessageWorkflow = await linkedapi.salesNavigatorSendMessage(nvMessageParams);
   console.log('🎯 Sales Navigator send message workflow started:', nvMessageWorkflow.workflowId);
 
   await nvMessageWorkflow.result();
@@ -92,7 +91,7 @@ async function salesNavigatorSyncConversation(linkedapi: LinkedApi, personUrl: s
     personUrl: personUrl,
   };
 
-  const nvSyncWorkflow = await linkedapi.account.salesNavigatorSyncConversation(nvSyncParams);
+  const nvSyncWorkflow = await linkedapi.salesNavigatorSyncConversation(nvSyncParams);
   console.log('🎯 Sales Navigator sync conversation workflow started:', nvSyncWorkflow.workflowId);
 
   await nvSyncWorkflow.result();
@@ -104,7 +103,7 @@ async function salesNavigatorSyncConversation(linkedapi: LinkedApi, personUrl: s
 async function pollConversations(linkedapi: LinkedApi, standardPersonUrl: string, nvPersonUrl: string): Promise<void> {
   console.log('\n📥 Polling conversations...');
 
-  const pollResponse = await linkedapi.account.pollConversations([
+  const pollResponse = await linkedapi.pollConversations([
     {
       personUrl: standardPersonUrl,
       type: 'st',
@@ -142,15 +141,6 @@ async function pollConversations(linkedapi: LinkedApi, standardPersonUrl: string
   });
 }
 
-async function runExample(): Promise<void> {
-  try {
-    await messagingExample();
-  } catch (error) {
-    console.error('💥 Example failed:', error);
-    process.exit(1);
-  }
-}
-
 if (require.main === module) {
-  runExample();
+  messagingExample();
 } 

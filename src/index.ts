@@ -1,5 +1,3 @@
-import { AccountApi } from "./account-api/account-api";
-import { DataApi } from "./data-api/data-api";
 import type { TLinkedApiConfig } from "./types/config";
 import { LinkedApiError, LinkedApiWorkflowError } from "./types/errors";
 import type { TWorkflowDefinition, TWorkflowResponse } from "./types/workflows";
@@ -7,30 +5,87 @@ import type { TLinkedApiResponse } from "./types/responses";
 import { HttpClient } from "./core/http-client";
 import { WorkflowExecutor } from "./core/workflow-executor";
 import { WorkflowHandler } from "./core/workflow-handler";
+import {
+  AcFetchCompanyMapper,
+  AcFetchNvCompanyMapper,
+  AcFetchPersonMapper,
+  AcNvOpenPersonPageMapper,
+  AcRetrieveConnectionsMapper,
+  AcRetrievePendingRequestsMapper,
+  AcSalesNavigatorSearchCompaniesMapper,
+  AcSalesNavigatorSearchPeopleMapper,
+  AcSearchCompaniesMapper,
+  AcSearchPeopleMapper,
+  SimpleWorkflowMapper,
+  VoidWorkflowMapper,
+} from "./mappers";
+import {
+  TSendMessageParams,
+  TSyncConversationParams,
+  TNvSendMessageParams,
+  TNvSyncConversationParams,
+  TConversationPollRequest,
+  TConversationPollResponse,
+  TConversationPollResult,
+  TBaseFetchPersonParams,
+  TFetchPersonParams,
+  TFetchPersonResult,
+  TNvOpenPersonPageParams,
+  TNvOpenPersonPageResult,
+  TBaseFetchCompanyParams,
+  TFetchCompanyParams,
+  TFetchCompanyResult,
+  TNvBaseFetchCompanyParams,
+  TNvFetchCompanyParams,
+  TNvFetchCompanyResult,
+  TFetchPostParams,
+  TFetchPostResult,
+  TSearchCompanyParams,
+  TSearchCompanyResult,
+  TNvSearchCompanyParams,
+  TNvSearchCompanyResult,
+  TSearchPeopleParams,
+  TSearchPeopleResult,
+  TNvSearchPeopleParams,
+  TNvSearchPeopleResult,
+  TSendConnectionRequestParams,
+  TCheckConnectionStatusParams,
+  TCheckConnectionStatusResult,
+  TWithdrawConnectionRequestParams,
+  TRetrievePendingRequestsResult,
+  TRetrieveConnectionsParams,
+  TRetrieveConnectionsResult,
+  TRemoveConnectionParams,
+  TReactToPostParams,
+  TCommentOnPostParams,
+  TRetrieveSSIResult,
+  TBaseActionParams,
+  TRetrievePerformanceResult,
+  TApiUsageStatsParams,
+  TApiUsageStatsResponse,
+  TApiUsageAction,
+} from "./types";
 
 /**
  * LinkedApi - Official TypeScript SDK for Linked API
  *
- * Provides access to both Account API and Data API functionality.
- * The Account API enables LinkedIn automation and account control, while the Data API provides
- * credit-based data retrieval without requiring LinkedIn account access.
+ * The Linked API enables LinkedIn automation and account control.
  *
  * @see {@link https://linkedapi.io Homepage}
  * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
- * @see {@link https://linkedapi.io/docs/data-api/ Data API Documentation}
  *
  * @example
  * ```typescript
  * import LinkedApi from "linkedapi-node";
  *
- * // Initialize with Account API tokens for LinkedIn automation
- * const linkedapi = LinkedApi.init({
- *   accountApiToken: "your-account-api-token",
+ * // Initialize with Linked API tokens for LinkedIn automation
+ * const linkedapi = new LinkedApi({
+ *   apiToken: "your-api-token",
  *   identificationToken: "your-identification-token"
  * });
  *
- * // Use Account API features with full type safety
- * const personWorkflow = await linkedapi.account.fetchPerson({
+ * // Use Linked API features with full type safety
+ * const personWorkflow = await linkedapi.fetchPerson({
  *   personUrl: "https://www.linkedin.com/in/john-doe",
  *   retrieveExperience: true,
  *   retrievePosts: true,
@@ -38,119 +93,1220 @@ import { WorkflowHandler } from "./core/workflow-handler";
  * });
  * const personData = await personWorkflow.result();
  * ```
- *
- * @example
- * ```typescript
- * // Initialize with Data API token for data enrichment (no account required)
- * const linkedapi = LinkedApi.init({
- *   dataApiToken: "your-data-api-token"
- * });
- *
- * // Use Data API features
- * const companies = await linkedapi.data.searchCompanies({
- *   term: "tech startup",
- *   limit: 10
- * });
- * ```
- *
- * @example
- * ```typescript
- * // Initialize with both APIs for full functionality
- * const linkedapi = LinkedApi.init({
- *   accountApiToken: "your-account-api-token",
- *   identificationToken: "your-identification-token",
- *   dataApiToken: "your-data-api-token"
- * });
- * ```
- *
- * @example
- * ```typescript
- * // Error handling
- * try {
- *   const result = await linkedapi.account.fetchPerson({ personUrl: "..." });
- * } catch (error) {
- *   if (error instanceof LinkedApi.LinkedApiError) {
- *     console.error("API Error:", error.message);
- *   }
- * }
- * ```
  */
 class LinkedApi {
+  private readonly httpClient: HttpClient;
+  private readonly workflowExecutor: WorkflowExecutor;
   /**
    * Initialize LinkedApi client with your API tokens.
    *
    * @param config - Configuration object containing API tokens and optional settings
-   * @returns LinkedApi instance with access to account and data APIs
+   * @returns LinkedApi instance with access to LinkedIn automation features
    */
-  private accountApi?: AccountApi;
-  private dataApi?: DataApi;
 
   constructor(config: TLinkedApiConfig) {
-    const workflowTimeout = config.workflowTimeout ?? 24 * 60 * 60 * 1000;
-
-    if (config.accountApiToken && config.identificationToken) {
-      const accountApiClient = new HttpClient({
-        headers: {
-          "account-api-token": config.accountApiToken,
-          "identification-token": config.identificationToken,
-        },
-      });
-      const accountApiExecutor = new WorkflowExecutor({
-        httpClient: accountApiClient,
-        apiPath: "/account/workflows",
-        workflowTimeout: workflowTimeout,
-      });
-      this.accountApi = new AccountApi(accountApiExecutor, accountApiClient);
-    }
-
-    if (config.dataApiToken) {
-      const dataApiClient = new HttpClient({
-        headers: {
-          "data-api-token": config.dataApiToken,
-        },
-      });
-      const dataApiExecutor = new WorkflowExecutor({
-        httpClient: dataApiClient,
-        apiPath: "/data/workflows",
-        workflowTimeout: workflowTimeout,
-      });
-      this.dataApi = new DataApi(dataApiExecutor);
-    }
+    this.httpClient = new HttpClient({
+      headers: {
+        "account-api-token": config.apiToken,
+        "identification-token": config.identificationToken,
+      },
+    });
+    this.workflowExecutor = new WorkflowExecutor({
+      httpClient: this.httpClient,
+      apiPath: "/account/workflows",
+      workflowTimeout: config.workflowTimeout ?? 24 * 60 * 60 * 1000,
+    });
   }
 
-  get account(): AccountApi {
-    if (!this.accountApi) {
-      throw new Error(
-        "Account API is not initialized. Please provide 'accountApiToken' and 'identificationToken' in the configuration.",
+  /**
+   * Execute a custom workflow with raw workflow definition.
+   *
+   * This method allows you to execute any custom workflow by providing a raw workflow definition.
+   * Use this for advanced use cases when you need to create custom action sequences.
+   *
+   * @param params - The workflow definition containing action types and parameters
+   * @returns Promise resolving to a WorkflowHandler for managing the workflow execution
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/executing-workflows/ Executing Workflows Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/building-workflows/ Building Workflows Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/actions-overview/ Actions Overview Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.executeCustomWorkflow({
+   *   actionType: "st.searchCompanies",
+   *   term: "Tech Inc",
+   *   filter: {
+   *     sizes: ["51-200", "2001-500"],
+   *     locations: ["San Francisco", "New York"],
+   *     industries: ["Software Development", "Robotics Engineering"],
+   *     annualRevenue: {
+   *       min: "0",
+   *       max: "2.5"
+   *     }
+   *   },
+   *   then: {
+   *     actionType: "st.doForCompanies",
+   *     then: {
+   *       actionType: "st.openCompanyPage",
+   *       basicInfo: true
+   *     }
+   *   }
+   * });
+   *
+   * const result = await workflow.result();
+   * ```
+   */
+  public async executeCustomWorkflow(
+    params: TWorkflowDefinition,
+  ): Promise<WorkflowHandler> {
+    const workflow = await this.workflowExecutor.startWorkflow(params);
+    return new WorkflowHandler(workflow.workflowId, this.workflowExecutor);
+  }
+
+  /**
+   * Get the result of a workflow by its ID.
+   *
+   * This method retrieves the result of a previously started workflow using its workflow ID.
+   * Useful for checking workflow status and retrieving results asynchronously.
+   *
+   * @param workflowId - The unique identifier of the workflow
+   * @returns Promise resolving to the workflow response containing completion data or failure information
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflowResponse = await linkedapi.getWorkflowResult("workflow-id-123");
+   *
+   * if (workflowResponse.completion) {
+   *   console.log("Workflow completed:", workflowResponse.completion.data);
+   * } else if (workflowResponse.failure) {
+   *   console.error("Workflow failed:", workflowResponse.failure.message);
+   * }
+   * ```
+   */
+  public async getWorkflowResult(
+    workflowId: string,
+  ): Promise<TWorkflowResponse> {
+    return this.workflowExecutor.getWorkflowResult(workflowId);
+  }
+
+  /**
+   * Send a message to a LinkedIn user via standard LinkedIn messaging.
+   *
+   * This method sends a direct message to a person on LinkedIn. The recipient must be a connection
+   * or allow messages from anyone. This uses the standard LinkedIn messaging interface.
+   *
+   * @param params - Parameters including the person's URL and message text
+   * @returns Promise resolving to a WorkflowHandler for the message sending action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/sending-message/ Sending Messages Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-send-message/ st.sendMessage Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const messageWorkflow = await linkedapi.sendMessage({
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   *   text: "Hi John! I saw your recent post about AI and would love to discuss further."
+   * });
+   *
+   * await messageWorkflow.result();
+   * console.log("Message sent successfully");
+   * ```
+   */
+  public async sendMessage(
+    params: TSendMessageParams,
+  ): Promise<WorkflowHandler<void>> {
+    const sendMessageMapper = new VoidWorkflowMapper<TSendMessageParams>(
+      "st.sendMessage",
+    );
+    const workflowDefinition = sendMessageMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      sendMessageMapper,
+    );
+  }
+
+  /**
+   * Sync a conversation with a LinkedIn user for standard LinkedIn messaging.
+   *
+   * This method synchronizes a conversation with a person, preparing it for future message polling.
+   * Each conversation must be synced once before you can poll it for messages. This is a time-consuming
+   * process that retrieves the conversation history and prepares it for future updates.
+   *
+   * @param params - Parameters including the person's URL
+   * @returns Promise resolving to a WorkflowHandler for the sync action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/working-with-conversations/ Working with Conversations Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-sync-conversation/ st.syncConversation Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const syncWorkflow = await linkedapi.syncConversation({
+   *   personUrl: "https://www.linkedin.com/in/john-doe"
+   * });
+   *
+   * await syncWorkflow.result();
+   * console.log("Conversation synced and ready for polling");
+   * ```
+   */
+  public async syncConversation(
+    params: TSyncConversationParams,
+  ): Promise<WorkflowHandler<void>> {
+    const syncConversationMapper =
+      new VoidWorkflowMapper<TSyncConversationParams>("st.syncConversation");
+    const workflowDefinition = syncConversationMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      syncConversationMapper,
+    );
+  }
+
+  /**
+   * Send a message to a LinkedIn user via Sales Navigator.
+   *
+   * This method sends a direct message to a person using Sales Navigator's messaging capabilities.
+   * Sales Navigator allows messaging people who are not connections and provides enhanced messaging features.
+   *
+   * @param params - Parameters including the person's URL, message text, and subject line
+   * @returns Promise resolving to a WorkflowHandler for the message sending action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/sending-message/ Sending Messages Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-nv-send-message/ nv.sendMessage Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const nvMessageWorkflow = await linkedapi.salesNavigatorSendMessage({
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   *   text: "Hi John! I'm reaching out regarding potential collaboration opportunities.",
+   *   subject: "Partnership Opportunity"
+   * });
+   *
+   * await nvMessageWorkflow.result();
+   * console.log("Sales Navigator message sent successfully");
+   * ```
+   */
+  public async salesNavigatorSendMessage(
+    params: TNvSendMessageParams,
+  ): Promise<WorkflowHandler<void>> {
+    const nvSendMessageMapper = new VoidWorkflowMapper<TNvSendMessageParams>(
+      "nv.sendMessage",
+    );
+    const workflowDefinition = nvSendMessageMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      nvSendMessageMapper,
+    );
+  }
+
+  /**
+   * Sync a conversation with a LinkedIn user for Sales Navigator messaging.
+   *
+   * This method synchronizes a Sales Navigator conversation with a person, preparing it for future message polling.
+   * Each conversation must be synced once before you can poll it for messages. This retrieves the conversation
+   * history from Sales Navigator and prepares it for future updates.
+   *
+   * @param params - Parameters including the person's URL
+   * @returns Promise resolving to a WorkflowHandler for the sync action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/working-with-conversations/ Working with Conversations Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-nv-sync-conversation/ nv.syncConversation Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const nvSyncWorkflow = await linkedapi.salesNavigatorSyncConversation({
+   *   personUrl: "https://www.linkedin.com/in/john-doe"
+   * });
+   *
+   * await nvSyncWorkflow.result();
+   * console.log("Sales Navigator conversation synced and ready for polling");
+   * ```
+   */
+  public async salesNavigatorSyncConversation(
+    params: TNvSyncConversationParams,
+  ): Promise<WorkflowHandler<void>> {
+    const nvSyncConversationMapper =
+      new VoidWorkflowMapper<TNvSyncConversationParams>("nv.syncConversation");
+    const workflowDefinition = nvSyncConversationMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      nvSyncConversationMapper,
+    );
+  }
+
+  /**
+   * Poll multiple conversations to retrieve message history and new messages.
+   *
+   * This method retrieves messages from one or more previously synced conversations using direct HTTP requests.
+   * Unlike syncing, polling is fast and can be done continuously to get real-time message updates.
+   * You can specify a timestamp to get only messages since that time.
+   *
+   * @param conversations - Array of conversation requests specifying person URLs, types, and optional timestamps
+   * @returns Promise resolving to a response containing conversation data and messages
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/working-with-conversations/ Working with Conversations Documentation}
+   *
+   * @example
+   * ```typescript
+   * // Poll multiple conversations
+   * const pollResponse = await linkedapi.pollConversations([
+   *   {
+   *     personUrl: "https://www.linkedin.com/in/john-doe",
+   *     type: "st",
+   *     since: "2023-01-01T00:00:00Z"
+   *   },
+   *   {
+   *     personUrl: "https://www.linkedin.com/in/jane-smith",
+   *     type: "nv"
+   *   }
+   * ]);
+   *
+   * if (pollResponse.success) {
+   *   pollResponse.result?.forEach(conversation => {
+   *     console.log(`Conversation with ${conversation.personUrl}:`);
+   *     console.log(`Messages: ${conversation.messages.length}`);
+   *
+   *     conversation.messages.forEach(message => {
+   *       console.log(`${message.sender}: ${message.text}`);
+   *     });
+   *   });
+   * } else {
+   *   console.error("Polling failed:", pollResponse.error?.message);
+   * }
+   * ```
+   */
+  public async pollConversations(
+    conversations: TConversationPollRequest[],
+  ): Promise<TConversationPollResponse> {
+    const response = await this.httpClient.post<TConversationPollResult[]>(
+      "/account/conversations/poll",
+      conversations,
+    );
+
+    return {
+      success: response.success,
+      result: response.result,
+      error: response.error,
+    };
+  }
+
+  /**
+   * Retrieve detailed information about a LinkedIn person profile.
+   *
+   * This method fetches comprehensive data about a person from their LinkedIn profile,
+   * including basic information, experience, education, skills, and more based on the specified parameters.
+   *
+   * @param params - Parameters specifying the person URL and what data to retrieve
+   * @returns Promise resolving to a WorkflowHandler containing the person's profile data
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/visiting-person-page/ Visiting Person Page Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-open-person-page/ st.openPersonPage Action Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-person-experience/ st.retrievePersonExperience Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-person-education/ st.retrievePersonEducation Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-person-skills/ st.retrievePersonSkills Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-person-languages/ st.retrievePersonLanguages Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-person-posts/ st.retrievePersonPosts Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-person-comments/ st.retrievePersonComments Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-person-reactions/ st.retrievePersonReactions Child Action}
+   *
+   * @example
+   * ```typescript
+   * // Fetch comprehensive person information with type-safe parameters
+   * const personWorkflow = await linkedapi.fetchPerson({
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   *   retrieveExperience: true,
+   *   retrieveEducation: true,
+   *   retrieveSkills: true,
+   *   retrieveLanguages: true,
+   *   retrievePosts: true,
+   *   retrieveComments: true,
+   *   retrieveReactions: true,
+   *   postsRetrievalConfig: {
+   *     limit: 10,
+   *     since: "2024-01-01"
+   *   },
+   *   commentRetrievalConfig: {
+   *     limit: 5,
+   *     since: "2024-01-01"
+   *   },
+   *   reactionRetrievalConfig: {
+   *     limit: 3,
+   *     since: "2024-01-01"
+   *   }
+   * });
+   *
+   * const personData = await personWorkflow.result();
+   * console.log("Person name:", personData.name);
+   * console.log("Headline:", personData.headline);
+   * console.log("Experience:", personData.experiences); // TypeScript knows this exists
+   * console.log("Posts:", personData.posts); // TypeScript knows this exists
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // Simple fetch without additional data - no config objects needed
+   * const basicPersonWorkflow = await linkedapi.fetchPerson({
+   *   personUrl: "https://www.linkedin.com/in/john-doe"
+   * });
+   *
+   * const basicData = await basicPersonWorkflow.result();
+   * console.log("Basic info:", basicData.name, basicData.headline);
+   * // personData.experiences is undefined (and TypeScript knows this)
+   * ```
+   */
+  public async fetchPerson<TParams extends TBaseFetchPersonParams>(
+    params: TFetchPersonParams<TParams>,
+  ): Promise<WorkflowHandler<TFetchPersonResult<TParams>>> {
+    const fetchPersonMapper = new AcFetchPersonMapper<TParams>();
+    const workflowDefinition = fetchPersonMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TFetchPersonResult<TParams>>(
+      workflowId,
+      this.workflowExecutor,
+      fetchPersonMapper,
+    );
+  }
+
+  /**
+   * Retrieve person information via Sales Navigator.
+   *
+   * This method opens a person's profile page in Sales Navigator and retrieves their information.
+   * Sales Navigator provides enhanced data and is useful for sales prospecting activities.
+   *
+   * @param params - Parameters including the person's hashed URL and data options
+   * @returns Promise resolving to a WorkflowHandler containing Sales Navigator person data
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/visiting-person-page/ Visiting Person Page Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-nv-open-person-page/ nv.openPersonPage Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const nvPersonWorkflow = await linkedapi.salesNavigatorFetchPerson({
+   *   personHashedUrl: "https://www.linkedin.com/in/ABC123",
+   * });
+   *
+   * const personData = await nvPersonWorkflow.result();
+   * console.log("Sales Navigator data:", personData);
+   * ```
+   */
+  public async salesNavigatorFetchPerson(
+    params: TNvOpenPersonPageParams,
+  ): Promise<WorkflowHandler<TNvOpenPersonPageResult>> {
+    const nvOpenPersonPageMapper = new AcNvOpenPersonPageMapper();
+    const workflowDefinition = nvOpenPersonPageMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TNvOpenPersonPageResult>(
+      workflowId,
+      this.workflowExecutor,
+      nvOpenPersonPageMapper,
+    );
+  }
+
+  /**
+   * Retrieve detailed information about a LinkedIn company profile.
+   *
+   * This method fetches comprehensive data about a company from their LinkedIn page,
+   * including basic information, employee data, posts, and more based on the specified parameters.
+   *
+   * @param params - Parameters specifying the company URL and what data to retrieve
+   * @returns Promise resolving to a WorkflowHandler containing the company's profile data
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-open-company-page/ st.openCompanyPage Action Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-company-employees/ st.retrieveCompanyEmployees Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-company-dms/ st.retrieveCompanyDMs Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-company-posts/ st.retrieveCompanyPosts Child Action}
+   *
+   * @example
+   * ```typescript
+   * // Fetch company information with employees and posts (new simplified syntax)
+   * const companyWorkflow = await linkedapi.fetchCompany({
+   *   companyUrl: "https://www.linkedin.com/company/microsoft",
+   *   retrieveEmployees: true,
+   *   retrievePosts: true,
+   *   retrieveDms: true,
+   *   employeeRetrievalConfig: {
+   *     limit: 5,
+   *     filter: {
+   *       firstName: 'John',
+   *       lastName: 'Doe',
+   *       position: 'engineer',
+   *       locations: ['United States'],
+   *       industries: ['Software Development', 'Robotics Engineering'],
+   *       schools: ['Stanford University', 'Harvard University'],
+   *     },
+   *   },
+   *   postRetrievalConfig: { limit: 10, since: "2024-01-01" },
+   *   dmRetrievalConfig: { limit: 3 }
+   * });
+   *
+   * const companyData = await companyWorkflow.result();
+   * console.log("Company name:", companyData.name);
+   * console.log("Employee count:", companyData.employees?.length);
+   * console.log("Posts:", companyData.posts?.length);
+   * ```
+   */
+  public async fetchCompany<TParams extends TBaseFetchCompanyParams>(
+    params: TFetchCompanyParams<TParams>,
+  ): Promise<WorkflowHandler<TFetchCompanyResult<TParams>>> {
+    const fetchCompanyMapper = new AcFetchCompanyMapper<TParams>();
+    const workflowDefinition = fetchCompanyMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TFetchCompanyResult<TParams>>(
+      workflowId,
+      this.workflowExecutor,
+      fetchCompanyMapper,
+    );
+  }
+
+  /**
+   * Retrieve company information via Sales Navigator.
+   *
+   * This method opens a company's profile page in Sales Navigator and retrieves their information.
+   * Sales Navigator provides enhanced company data and is useful for B2B sales prospecting.
+   *
+   * @param params - Parameters including the company's hashed URL and data options
+   * @returns Promise resolving to a WorkflowHandler containing Sales Navigator company data
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-nv-open-company-page/ nv.openCompanyPage Action Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-nv-retrieve-company-employees/ nv.retrieveCompanyEmployees Child Action}
+   * @see {@link https://linkedapi.io/docs/account-api/action-nv-retrieve-company-dms/ nv.retrieveCompanyDMs Child Action}
+   *
+   * @example
+   * ```typescript
+   * // Sales Navigator company fetch (new simplified syntax)
+   * const nvCompanyWorkflow = await linkedapi.salesNavigatorFetchCompany({
+   *   companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
+   *   retrieveEmployees: true,
+   *   retrieveDms: true,
+   *   employeeRetrievalConfig: {
+   *     limit: 1,
+   *     filter: {
+   *       positions: ['Manager', 'Engineer'],
+   *       yearsOfExperiences: ['threeToFive', 'sixToTen'],
+   *       industries: ['Software Development', 'Robotics Engineering'],
+   *       schools: ['Stanford University', 'Harvard University'],
+   *     },
+   *   },
+   *   dmRetrievalConfig: {
+   *     limit: 2,
+   *   },
+   * });
+   *
+   * const companyData = await nvCompanyWorkflow.result();
+   * console.log("Company name:", companyData.name);
+   * console.log("Employees:", companyData.employees?.length);
+   * console.log("Decision makers:", companyData.dms?.length);
+   * ```
+   */
+  public async salesNavigatorFetchCompany<
+    TParams extends TNvBaseFetchCompanyParams,
+  >(
+    params: TNvFetchCompanyParams<TParams>,
+  ): Promise<WorkflowHandler<TNvFetchCompanyResult<TParams>>> {
+    const fetchNvCompanyMapper = new AcFetchNvCompanyMapper<TParams>();
+    const workflowDefinition = fetchNvCompanyMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TNvFetchCompanyResult<TParams>>(
+      workflowId,
+      this.workflowExecutor,
+      fetchNvCompanyMapper,
+    );
+  }
+
+  /**
+   * Retrieve detailed information about a LinkedIn post.
+   *
+   * This method fetches comprehensive data about a specific LinkedIn post,
+   * including content, author information, engagement metrics, and comments.
+   *
+   * @param params - Parameters specifying the post URL
+   * @returns Promise resolving to a WorkflowHandler containing the post data
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-open-post/ st.openPost Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const postWorkflow = await linkedapi.fetchPost({
+   *   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789"
+   * });
+   *
+   * const postData = await postWorkflow.result();
+   * console.log("Post content:", postData.text);
+   * console.log("Author:", postData.author);
+   * console.log("Reactions:", postData.reactions);
+   * ```
+   */
+  public async fetchPost(
+    params: TFetchPostParams,
+  ): Promise<WorkflowHandler<TFetchPostResult>> {
+    const fetchPostMapper = new SimpleWorkflowMapper<
+      TFetchPostParams,
+      TFetchPostResult
+    >({
+      actionType: "st.openPost",
+      defaultParams: {
+        basicInfo: true,
+      },
+    });
+    const workflowDefinition = fetchPostMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TFetchPostResult>(
+      workflowId,
+      this.workflowExecutor,
+      fetchPostMapper,
+    );
+  }
+
+  /**
+   * Search for companies on LinkedIn using standard search.
+   *
+   * This method performs a company search on LinkedIn using the standard search interface.
+   * You can filter by various criteria like location, industry, company size, and more.
+   *
+   * @param params - Search parameters including keywords, filters, and pagination options
+   * @returns Promise resolving to a WorkflowHandler containing an array of company search results
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-search-companies/ st.searchCompanies Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const companySearchWorkflow = await linkedapi.searchCompanies({
+   *   term: "software development",
+   *   filter: {
+   *     locations: ["San Francisco", "New York"],
+   *     industries: ["Technology", "Software"],
+   *     sizes: ["51-200", "201-500"]
+   *   },
+   *   limit: 25
+   * });
+   *
+   * const companies = await companySearchWorkflow.result();
+   * console.log("Found companies:", companies.length);
+   * ```
+   */
+  public async searchCompanies(
+    params: TSearchCompanyParams,
+  ): Promise<WorkflowHandler<TSearchCompanyResult[]>> {
+    const searchCompaniesMapper = new AcSearchCompaniesMapper();
+    const workflowDefinition = searchCompaniesMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TSearchCompanyResult[]>(
+      workflowId,
+      this.workflowExecutor,
+      searchCompaniesMapper,
+    );
+  }
+
+  /**
+   * Search for companies on LinkedIn using Sales Navigator.
+   *
+   * This method performs a company search using Sales Navigator's advanced search capabilities.
+   * Sales Navigator provides more detailed filtering options and enhanced company data.
+   *
+   * @param params - Sales Navigator search parameters with advanced filtering options
+   * @returns Promise resolving to a WorkflowHandler containing an array of Sales Navigator company results
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-nv-search-companies/ nv.searchCompanies Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const nvCompanySearchWorkflow = await linkedapi.salesNavigatorSearchCompanies({
+   *   term: "fintech startup",
+   *   filter: {
+   *     locations: ["United States"],
+   *     industries: ["Financial Services"],
+   *     sizes: ["11-50"],
+   *     annualRevenue: {
+   *       min: "0",
+   *       max: "2.5"
+   *     }
+   *   },
+   *   limit: 50
+   * });
+   *
+   * const companies = await nvCompanySearchWorkflow.result();
+   * console.log("Sales Navigator companies:", companies.length);
+   * ```
+   */
+  public async salesNavigatorSearchCompanies(
+    params: TNvSearchCompanyParams,
+  ): Promise<WorkflowHandler<TNvSearchCompanyResult[]>> {
+    const salesNavigatorSearchCompaniesMapper =
+      new AcSalesNavigatorSearchCompaniesMapper();
+    const workflowDefinition =
+      salesNavigatorSearchCompaniesMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TNvSearchCompanyResult[]>(
+      workflowId,
+      this.workflowExecutor,
+      salesNavigatorSearchCompaniesMapper,
+    );
+  }
+
+  /**
+   * Search for people on LinkedIn using standard search.
+   *
+   * This method performs a people search on LinkedIn using the standard search interface.
+   * You can filter by keywords, location, current company, past company, industry, and more.
+   *
+   * @param params - Search parameters including keywords, filters, and pagination options
+   * @returns Promise resolving to a WorkflowHandler containing an array of people search results
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-search-people/ st.searchPeople Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const peopleSearchWorkflow = await linkedapi.searchPeople({
+   *   term: "software engineer React",
+   *   filter: {
+   *     locations: ["San Francisco Bay Area"],
+   *     currentCompanies: ["Google", "Facebook", "Apple"],
+   *     industries: ["Technology"]
+   *   },
+   *   limit: 50
+   * });
+   *
+   * const people = await peopleSearchWorkflow.result();
+   * console.log("Found professionals:", people.length);
+   * ```
+   */
+  public async searchPeople(
+    params: TSearchPeopleParams,
+  ): Promise<WorkflowHandler<TSearchPeopleResult[]>> {
+    const searchPeopleMapper = new AcSearchPeopleMapper();
+    const workflowDefinition = searchPeopleMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TSearchPeopleResult[]>(
+      workflowId,
+      this.workflowExecutor,
+      searchPeopleMapper,
+    );
+  }
+
+  /**
+   * Search for people on LinkedIn using Sales Navigator.
+   *
+   * This method performs a people search using Sales Navigator's advanced search capabilities.
+   * Sales Navigator provides more sophisticated filtering options and enhanced prospect data.
+   *
+   * @param params - Sales Navigator search parameters with advanced filtering options
+   * @returns Promise resolving to a WorkflowHandler containing an array of Sales Navigator people results
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/ Account API Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-nv-search-people/ nv.searchPeople Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const nvPeopleSearchWorkflow = await linkedapi.salesNavigatorSearchPeople({
+   *   term: "VP Marketing B2B SaaS",
+   *   filter: {
+   *     locations: ["United States"],
+   *     currentCompanies: ["Salesforce", "HubSpot"],
+   *     position: "VP"
+   *   },
+   *   limit: 25
+   * });
+   *
+   * const prospects = await nvPeopleSearchWorkflow.result();
+   * console.log("Sales Navigator prospects:", prospects.length);
+   * ```
+   */
+  public async salesNavigatorSearchPeople(
+    params: TNvSearchPeopleParams,
+  ): Promise<WorkflowHandler<TNvSearchPeopleResult[]>> {
+    const salesNavigatorSearchPeopleMapper =
+      new AcSalesNavigatorSearchPeopleMapper();
+    const workflowDefinition =
+      salesNavigatorSearchPeopleMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TNvSearchPeopleResult[]>(
+      workflowId,
+      this.workflowExecutor,
+      salesNavigatorSearchPeopleMapper,
+    );
+  }
+
+  /**
+   * Send a connection request to a LinkedIn user.
+   *
+   * This method sends a connection request to the specified person with an optional personalized message.
+   * The request will appear in the recipient's connection requests section.
+   *
+   * @param params - Parameters including the person's URL and optional connection message
+   * @returns Promise resolving to a WorkflowHandler for the connection request action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-send-connection-request/ st.sendConnectionRequest Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const connectionWorkflow = await linkedapi.sendConnectionRequest({
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   *   note: "Hi John, I'd love to connect and discuss opportunities in tech!"
+   * });
+   *
+   * await connectionWorkflow.result();
+   * console.log("Connection request sent successfully");
+   * ```
+   */
+  public async sendConnectionRequest(
+    params: TSendConnectionRequestParams,
+  ): Promise<WorkflowHandler<void>> {
+    const sendConnectionRequestMapper =
+      new VoidWorkflowMapper<TSendConnectionRequestParams>(
+        "st.sendConnectionRequest",
       );
-    }
-    return this.accountApi;
+    const workflowDefinition = sendConnectionRequestMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      sendConnectionRequestMapper,
+    );
   }
 
-  get data(): DataApi {
-    if (!this.dataApi) {
-      throw new Error(
-        "Data API is not initialized. Please provide 'dataApiToken' in the configuration.",
+  /**
+   * Check the connection status with a specific LinkedIn user.
+   *
+   * This method checks whether you are connected with a person, have a pending request,
+   * or have no connection with them.
+   *
+   * @param params - Parameters including the person's URL
+   * @returns Promise resolving to a WorkflowHandler containing the connection status result
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/checking-connection-status/ Checking Connection Status Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-check-connection-status/ st.checkConnectionStatus Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const statusWorkflow = await linkedapi.checkConnectionStatus({
+   *   personUrl: "https://www.linkedin.com/in/john-doe"
+   * });
+   *
+   * const status = await statusWorkflow.result();
+   * console.log("Connection status:", status.connectionStatus);
+   * ```
+   */
+  public async checkConnectionStatus(
+    params: TCheckConnectionStatusParams,
+  ): Promise<WorkflowHandler<TCheckConnectionStatusResult>> {
+    const checkConnectionStatusMapper = new SimpleWorkflowMapper<
+      TCheckConnectionStatusParams,
+      TCheckConnectionStatusResult
+    >({
+      actionType: "st.checkConnectionStatus",
+    });
+    const workflowDefinition = checkConnectionStatusMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TCheckConnectionStatusResult>(
+      workflowId,
+      this.workflowExecutor,
+      checkConnectionStatusMapper,
+    );
+  }
+
+  /**
+   * Withdraw a previously sent connection request.
+   *
+   * This method withdraws a connection request that was previously sent to a person.
+   * The request will be removed from their pending connection requests.
+   *
+   * @param params - Parameters including the person's URL
+   * @returns Promise resolving to a WorkflowHandler for the withdrawal action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-withdraw-connection-request/ st.withdrawConnectionRequest Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const withdrawWorkflow = await linkedapi.withdrawConnectionRequest({
+   *   personUrl: "https://www.linkedin.com/in/john-doe"
+   * });
+   *
+   * await withdrawWorkflow.result();
+   * console.log("Connection request withdrawn successfully");
+   * ```
+   */
+  public async withdrawConnectionRequest(
+    params: TWithdrawConnectionRequestParams,
+  ): Promise<WorkflowHandler<void>> {
+    const withdrawConnectionRequestMapper =
+      new VoidWorkflowMapper<TWithdrawConnectionRequestParams>(
+        "st.withdrawConnectionRequest",
       );
-    }
-    return this.dataApi;
+    const workflowDefinition =
+      withdrawConnectionRequestMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      withdrawConnectionRequestMapper,
+    );
   }
 
-  // Error classes
-  static LinkedApiError = LinkedApiError;
-  static LinkedApiWorkflowError = LinkedApiWorkflowError;
+  /**
+   * Retrieve all pending connection requests you have received.
+   *
+   * This method fetches a list of all pending connection requests that others have sent to you.
+   * You can optionally filter the results by label.
+   *
+   * @returns Promise resolving to a WorkflowHandler containing an array of pending requests
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-pending-requests/ st.retrievePendingRequests Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const pendingWorkflow = await linkedapi.retrievePendingRequests();
+   *
+   * const pendingRequests = await pendingWorkflow.result();
+   * console.log("Pending requests:", pendingRequests.length);
+   *
+   * pendingRequests.forEach(request => {
+   *   console.log(`${request.name}: ${request.headline}`);
+   *   console.log(`Profile: ${request.publicUrl}`);
+   * });
+   * ```
+   */
+  public async retrievePendingRequests(): Promise<
+    WorkflowHandler<TRetrievePendingRequestsResult[]>
+  > {
+    const retrievePendingRequestsMapper = new AcRetrievePendingRequestsMapper();
+    const workflowDefinition = retrievePendingRequestsMapper.mapRequest({});
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TRetrievePendingRequestsResult[]>(
+      workflowId,
+      this.workflowExecutor,
+      retrievePendingRequestsMapper,
+    );
+  }
+
+  /**
+   * Retrieve your LinkedIn connections with optional filtering.
+   *
+   * This method fetches a list of your LinkedIn connections. You can filter by various criteria
+   * like name, position, location, industry, company, and school.
+   *
+   * @param params - Parameters including optional filters and pagination options
+   * @returns Promise resolving to a WorkflowHandler containing an array of connections
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/managing-existing-connections/ Managing Existing Connections Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-connections/ st.retrieveConnections Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const connectionsWorkflow = await linkedapi.retrieveConnections({
+   *   filter: {
+   *     firstName: "John",
+   *     industries: ["Technology", "Software"],
+   *     locations: ["San Francisco Bay Area"],
+   *     currentCompanies: ["Google", "Microsoft"]
+   *   },
+   *   limit: 50
+   * });
+   *
+   * const connections = await connectionsWorkflow.result();
+   * console.log("Filtered connections:", connections.length);
+   * ```
+   */
+  public async retrieveConnections(
+    params: TRetrieveConnectionsParams = {},
+  ): Promise<WorkflowHandler<TRetrieveConnectionsResult[]>> {
+    const retrieveConnectionsMapper = new AcRetrieveConnectionsMapper();
+    const workflowDefinition = retrieveConnectionsMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TRetrieveConnectionsResult[]>(
+      workflowId,
+      this.workflowExecutor,
+      retrieveConnectionsMapper,
+    );
+  }
+
+  /**
+   * Remove an existing connection from your LinkedIn network.
+   *
+   * This method removes a connection from your LinkedIn network. The person will no longer
+   * be in your connections list and you will lose the connection relationship.
+   *
+   * @param params - Parameters including the person's URL
+   * @returns Promise resolving to a WorkflowHandler for the removal action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/managing-existing-connections/ Managing Existing Connections Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-remove-connection/ st.removeConnection Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const removeWorkflow = await linkedapi.removeConnection({
+   *   personUrl: "https://www.linkedin.com/in/john-doe"
+   * });
+   *
+   * await removeWorkflow.result();
+   * console.log("Connection removed successfully");
+   * ```
+   */
+  public async removeConnection(
+    params: TRemoveConnectionParams,
+  ): Promise<WorkflowHandler<void>> {
+    const removeConnectionMapper =
+      new VoidWorkflowMapper<TRemoveConnectionParams>("st.removeConnection");
+    const workflowDefinition = removeConnectionMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      removeConnectionMapper,
+    );
+  }
+
+  /**
+   * React to a LinkedIn post with an emoji reaction.
+   *
+   * This method adds a reaction (like, love, celebrate, support, funny, insightful) to a LinkedIn post.
+   * You can only have one reaction per post, and adding a new reaction will replace any existing one.
+   *
+   * @param params - Parameters including the post URL and reaction type
+   * @returns Promise resolving to a WorkflowHandler for the reaction action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/reacting-and-commenting/ Reacting and Commenting Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-react-to-post/ st.reactToPost Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const reactionWorkflow = await linkedapi.reactToPost({
+   *   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789",
+   *   type: "like"
+   * });
+   *
+   * await reactionWorkflow.result();
+   * console.log("Post reaction added successfully");
+   * ```
+   */
+  public async reactToPost(
+    params: TReactToPostParams,
+  ): Promise<WorkflowHandler<void>> {
+    const reactToPostMapper = new VoidWorkflowMapper<TReactToPostParams>(
+      "st.reactToPost",
+    );
+    const workflowDefinition = reactToPostMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      reactToPostMapper,
+    );
+  }
+
+  /**
+   * Comment on a LinkedIn post.
+   *
+   * This method adds a text comment to a LinkedIn post. The comment will be visible to other users
+   * and can help increase engagement with the post.
+   *
+   * @param params - Parameters including the post URL and comment text
+   * @returns Promise resolving to a WorkflowHandler for the comment action
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/reacting-and-commenting/ Reacting and Commenting Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-comment-on-post/ st.commentOnPost Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const commentWorkflow = await linkedapi.commentOnPost({
+   *   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789",
+   *   text: "Great insights! Thanks for sharing this valuable information."
+   * });
+   *
+   * await commentWorkflow.result();
+   * console.log("Comment posted successfully");
+   * ```
+   */
+  public async commentOnPost(
+    params: TCommentOnPostParams,
+  ): Promise<WorkflowHandler<void>> {
+    const commentOnPostMapper = new VoidWorkflowMapper<TCommentOnPostParams>(
+      "st.commentOnPost",
+    );
+    const workflowDefinition = commentOnPostMapper.mapRequest(params);
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<void>(
+      workflowId,
+      this.workflowExecutor,
+      commentOnPostMapper,
+    );
+  }
+
+  /**
+   * Retrieve your LinkedIn Social Selling Index (SSI) score.
+   *
+   * This method fetches your current SSI score and rankings. The SSI score measures your social selling
+   * performance across four key areas: establishing professional brand, finding right people,
+   * engaging with insights, and building strong relationships.
+   *
+   * @returns Promise resolving to a WorkflowHandler containing SSI data
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/retrieving-ssi-and-performance/ Retrieving SSI and Performance Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-ssi/ st.retrieveSSI Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const ssiWorkflow = await linkedapi.retrieveSSI();
+   *
+   * const ssiData = await ssiWorkflow.result();
+   * console.log("SSI Score:", ssiData.ssi);
+   * console.log("Industry Ranking:", ssiData.industryTop);
+   * console.log("Network Ranking:", ssiData.networkTop);
+   * ```
+   */
+  public async retrieveSSI(): Promise<WorkflowHandler<TRetrieveSSIResult>> {
+    const retrieveSSIMapper = new SimpleWorkflowMapper<
+      TBaseActionParams,
+      TRetrieveSSIResult
+    >({
+      actionType: "st.retrieveSSI",
+    });
+    const workflowDefinition = retrieveSSIMapper.mapRequest({});
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TRetrieveSSIResult>(
+      workflowId,
+      this.workflowExecutor,
+      retrieveSSIMapper,
+    );
+  }
+
+  /**
+   * Retrieve your LinkedIn performance and analytics data.
+   *
+   * This method fetches your LinkedIn performance metrics including profile views,
+   * search appearances, post impressions, and other engagement statistics.
+   *
+   * @returns Promise resolving to a WorkflowHandler containing performance data
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/retrieving-ssi-and-performance/ Retrieving SSI and Performance Documentation}
+   * @see {@link https://linkedapi.io/docs/account-api/action-st-retrieve-performance/ st.retrievePerformance Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const performanceWorkflow = await linkedapi.retrievePerformance();
+   *
+   * const performanceData = await performanceWorkflow.result();
+   * console.log("Profile views:", performanceData.profileViews);
+   * console.log("Search appearances:", performanceData.searchAppearances);
+   * console.log("Post impressions:", performanceData.postImpressions);
+   * ```
+   */
+  public async retrievePerformance(): Promise<
+    WorkflowHandler<TRetrievePerformanceResult>
+  > {
+    const retrievePerformanceMapper = new SimpleWorkflowMapper<
+      TBaseActionParams,
+      TRetrievePerformanceResult
+    >({
+      actionType: "st.retrievePerformance",
+    });
+    const workflowDefinition = retrievePerformanceMapper.mapRequest({});
+    const { workflowId } =
+      await this.workflowExecutor.startWorkflow(workflowDefinition);
+    return new WorkflowHandler<TRetrievePerformanceResult>(
+      workflowId,
+      this.workflowExecutor,
+      retrievePerformanceMapper,
+    );
+  }
+
+  /**
+   * Retrieve Account API usage statistics for a specific time period.
+   *
+   * This method fetches statistics about all actions executed during the specified period.
+   * Use this information to monitor your LinkedIn automation usage and stay within limits.
+   * The difference between start and end timestamps must not exceed 30 days.
+   *
+   * @param params - Parameters including start and end timestamps (ISO format)
+   * @returns Promise resolving to API usage statistics response
+   *
+   * @see {@link https://linkedapi.io/docs/account-api/api-usage-statistics/ API Usage Statistics Documentation}
+   *
+   * @example
+   * ```typescript
+   * // Get usage statistics for the last 7 days
+   * const endDate = new Date();
+   * const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+   *
+   * const statsResponse = await linkedapi.getApiUsageStats({
+   *   start: startDate.toISOString(),
+   *   end: endDate.toISOString()
+   * });
+   *
+   * if (statsResponse.success) {
+   *   console.log("Total actions executed:", statsResponse.result?.length);
+   *
+   *   statsResponse.result?.forEach(action => {
+   *     console.log(`${action.actionType}: ${action.success ? 'SUCCESS' : 'FAILED'} at ${action.time}`);
+   *   });
+   * } else {
+   *   console.error("Failed to retrieve stats:", statsResponse.error?.message);
+   * }
+   * ```
+   */
+  public async getApiUsageStats(
+    params: TApiUsageStatsParams,
+  ): Promise<TApiUsageStatsResponse> {
+    const queryParams = new URLSearchParams({
+      start: params.start,
+      end: params.end,
+    });
+
+    const response = await this.httpClient.get<TApiUsageAction[]>(
+      `/account/stats/actions?${queryParams.toString()}`,
+    );
+
+    return {
+      success: response.success,
+      result: response.result,
+      error: response.error,
+    };
+  }
 }
 
 export default LinkedApi;
 
-export {
-  LinkedApi,
-  AccountApi,
-  DataApi,
-  LinkedApiError,
-  LinkedApiWorkflowError,
-  WorkflowHandler,
-};
+export { LinkedApi, LinkedApiError, LinkedApiWorkflowError, WorkflowHandler };
 
 export type {
   TLinkedApiConfig,
