@@ -2,17 +2,15 @@ import LinkedApi, { TSearchCompanySize } from 'linkedapi-node';
 
 async function searchCompaniesExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    accountApiToken: process.env.ACCOUNT_API_TOKEN,
-    identificationToken: process.env.IDENTIFICATION_TOKEN,
-    dataApiToken: process.env.DATA_API_TOKEN,
+    apiToken: process.env.API_TOKEN!,
+    identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
   try {
     console.log('🚀 Linked API searchCompanies example starting...');
 
-    await accountApiExample(linkedapi);
-    await accountApiSalesNavigatorExample(linkedapi);
-    await dataApiExample(linkedapi);
+    await standardExample(linkedapi);
+    await salesNavigatorExample(linkedapi);
 
   } catch (error) {
     if (error instanceof LinkedApi.LinkedApiError) {
@@ -27,7 +25,7 @@ async function searchCompaniesExample(): Promise<void> {
   }
 }
 
-async function accountApiExample(linkedapi: LinkedApi): Promise<void> {
+async function standardExample(linkedapi: LinkedApi): Promise<void> {
   const searchParams = {
     term: 'technology startup',
     limit: 2,
@@ -53,8 +51,7 @@ async function accountApiExample(linkedapi: LinkedApi): Promise<void> {
   });
 }
 
-async function accountApiSalesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
-  // Example: Sales Navigator company search (Account API only)
+async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   const nvSearchParams = {
     term: 'fintech',
     limit: 1,
@@ -84,41 +81,6 @@ async function accountApiSalesNavigatorExample(linkedapi: LinkedApi): Promise<vo
   });
 }
 
-async function dataApiExample(linkedapi: LinkedApi): Promise<void> {
-  const dataSearchParams = {
-    term: 'artificial intelligence',
-    limit: 5,
-    filter: {
-      locations: ['Seattle', 'Boston'],
-      industries: ['Technology', 'Artificial Intelligence'],
-    },
-  };
-
-  console.log('\n🔍 Searching companies with Data API...');
-  const dataSearchWorkflow = await linkedapi.data.searchCompanies(dataSearchParams);
-  console.log('🔍 Data API workflow started:', dataSearchWorkflow.workflowId);
-  const dataResults = await dataSearchWorkflow.result();
-
-  console.log('✅ Data API company search completed');
-  console.log(`📊 Found ${dataResults.length} companies`);
-  dataResults.forEach((company, index) => {
-    console.log(`  ${index + 1}. ${company.name}`);
-    console.log(`     Industry: ${company.industry}`);
-    console.log(`     Employees: ${company.employeeCount}`);
-    console.log(`     URL: ${company.hashedUrl}`);
-  });
-}
-
-async function runExample(): Promise<void> {
-  try {
-    await searchCompaniesExample();
-    console.log('✨ Search companies example completed successfully');
-  } catch (error) {
-    console.error('💥 Example failed:', error);
-    process.exit(1);
-  }
-}
-
 if (require.main === module) {
-  runExample();
-} 
+  searchCompaniesExample();
+}

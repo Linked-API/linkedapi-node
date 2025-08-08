@@ -2,16 +2,14 @@ import LinkedApi from 'linkedapi-node';
 
 async function fetchCompanyExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    accountApiToken: process.env.ACCOUNT_API_TOKEN,
-    identificationToken: process.env.IDENTIFICATION_TOKEN,
-    dataApiToken: process.env.DATA_API_TOKEN,
+    apiToken: process.env.API_TOKEN!,
+    identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
   try {
     console.log('🚀 TypeScript Linked API example starting...');
-    await accountApiExample(linkedapi);
-    await accountApiSalesNavigatorExample(linkedapi);
-    await dataApiExample(linkedapi);
+    await standardExample(linkedapi);
+    await salesNavigatorExample(linkedapi);
 
   } catch (error) {
     if (error instanceof LinkedApi.LinkedApiError) {
@@ -26,7 +24,7 @@ async function fetchCompanyExample(): Promise<void> {
   }
 }
 
-async function accountApiExample(linkedapi: LinkedApi): Promise<void> {
+async function standardExample(linkedapi: LinkedApi): Promise<void> {
   const fetchCompanyWorkflow = await linkedapi.account.fetchCompany({
     companyUrl: 'https://www.linkedin.com/company/linkedin/',
     retrieveEmployees: true,
@@ -62,7 +60,7 @@ async function accountApiExample(linkedapi: LinkedApi): Promise<void> {
   console.log(`📝 Posts Retrieved: ${company.posts?.length || 0}`);
 }
 
-async function accountApiSalesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
+async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   const nvCompanyResult = await linkedapi.account.salesNavigatorFetchCompany({
     companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
     retrieveEmployees: true,
@@ -93,48 +91,6 @@ async function accountApiSalesNavigatorExample(linkedapi: LinkedApi): Promise<vo
   console.log(`🎯 Decision Makers Retrieved: ${nvCompany.dms?.length || 0}`);
 }
 
-async function dataApiExample(linkedapi: LinkedApi): Promise<void> {
-  const dataCompanyResult = await linkedapi.data.fetchCompany({
-    companyUrl: 'https://www.linkedin.com/sales/company/1337',
-    retrieveEmployees: true,
-    retrieveDms: true,
-    employeeRetrievalConfig: {
-      limit: 10,
-      filter: {
-        position: 'engineer',
-        locations: ['United States'],
-        industries: ['Technology', 'Software'],
-        schools: ['Stanford University', 'MIT'],
-        yearsOfExperiences: ['threeToFive', 'sixToTen'],
-      },
-    },
-    dmRetrievalConfig: {
-      limit: 2,
-    },
-  });
-
-  console.log('🔍 Data API company workflow started: ', dataCompanyResult.workflowId);
-  const dataCompany = await dataCompanyResult.result();
-
-  console.log('✅ Data API company page opened successfully');
-  console.log(`🏢 Company: ${dataCompany.name}`);
-  console.log(`📖 Description: ${dataCompany.description}`);
-  console.log(`📍 Location: ${dataCompany.location}`);
-  console.log(`🏭 Industry: ${dataCompany.industry}`);
-  console.log(`👥 Employee Count: ${dataCompany.employeeCount}`);
-  console.log(`📅 Founded: ${dataCompany.yearFounded}`);
-  console.log(`👨‍💼 Employees Retrieved: ${dataCompany.employees?.length || 0}`);
-}
-
-async function runExample(): Promise<void> {
-  try {
-    await fetchCompanyExample();
-  } catch (error) {
-    console.error('💥 Example failed:', error);
-    process.exit(1);
-  }
-}
-
 if (require.main === module) {
-  runExample();
+  fetchCompanyExample();
 }

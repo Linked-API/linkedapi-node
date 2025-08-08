@@ -3,9 +3,8 @@ import LinkedApi from 'linkedapi-node';
 async function connectionsExample(): Promise<void> {
 
   const linkedapi = new LinkedApi({
-    accountApiToken: process.env.ACCOUNT_API_TOKEN,
-    identificationToken: process.env.IDENTIFICATION_TOKEN,
-    dataApiToken: process.env.DATA_API_TOKEN,
+    apiToken: process.env.API_TOKEN!,
+    identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
   try {
@@ -140,15 +139,6 @@ async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promis
   console.log('   🔗 No longer connected with this person');
 }
 
-async function runExample(): Promise<void> {
-  try {
-    await connectionsExample();
-  } catch (error) {
-    console.error('💥 Example failed:', error);
-    process.exit(1);
-  }
-}
-
 if (require.main === module) {
-  runExample();
+  connectionsExample();
 } 

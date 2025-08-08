@@ -2,9 +2,8 @@ import LinkedApi from 'linkedapi-node';
 
 async function postActionsExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    accountApiToken: process.env.ACCOUNT_API_TOKEN,
-    identificationToken: process.env.IDENTIFICATION_TOKEN,
-    dataApiToken: process.env.DATA_API_TOKEN,
+    apiToken: process.env.API_TOKEN!,
+    identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
   try {
@@ -55,15 +54,6 @@ async function commentOnPost(linkedapi: LinkedApi): Promise<void> {
   console.log('✅ Comment added successfully');
 }
 
-async function runExample(): Promise<void> {
-  try {
-    await postActionsExample();
-  } catch (error) {
-    console.error('💥 Example failed:', error);
-    process.exit(1);
-  }
-}
-
 if (require.main === module) {
-  runExample();
+  postActionsExample();
 } 

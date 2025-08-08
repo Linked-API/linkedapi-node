@@ -1,6 +1,5 @@
 export interface TLinkedApiConfig {
-  dataApiToken?: string;
-  accountApiToken?: string;
-  identificationToken?: string;
+  apiToken: string;
+  identificationToken: string;
   workflowTimeout?: number;
 }

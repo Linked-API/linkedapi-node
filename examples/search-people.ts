@@ -2,16 +2,14 @@ import LinkedApi, { TYearsOfExperience } from 'linkedapi-node';
 
 async function searchPeopleExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    accountApiToken: process.env.ACCOUNT_API_TOKEN,
-    identificationToken: process.env.IDENTIFICATION_TOKEN,
-    dataApiToken: process.env.DATA_API_TOKEN,
+    apiToken: process.env.API_TOKEN!,
+    identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
   try {
     console.log('🚀 Linked API searchPeople example starting...');
-    await accountApiExample(linkedapi);
+    await standardExample(linkedapi);
     await salesNavigatorExample(linkedapi);
-    await dataApiExample(linkedapi);
 
   } catch (error) {
     if (error instanceof LinkedApi.LinkedApiError) {
@@ -26,7 +24,7 @@ async function searchPeopleExample(): Promise<void> {
   }
 }
 
-async function accountApiExample(linkedapi: LinkedApi): Promise<void> {
+async function standardExample(linkedapi: LinkedApi): Promise<void> {
   const searchParams = {
     term: 'software engineer',
     limit: 10,
@@ -83,45 +81,6 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   });
 }
 
-async function dataApiExample(linkedapi: LinkedApi): Promise<void> {
-  const dataSearchParams = {
-    term: 'data scientist',
-    limit: 6,
-    filter: {
-      lastName: 'Johnson',
-      position: 'Senior Data Scientist',
-      locations: ['Seattle', 'Boston', 'California'],
-      currentCompanies: ['Tesla', 'SpaceX', 'Apple'],
-      schools: ['UC Berkeley', 'Carnegie Mellon', 'Harvard University'],
-    },
-  };
-
-  console.log('\n🔍 Searching people with Data API...');
-  const dataSearchWorkflow = await linkedapi.data.searchPeople(dataSearchParams);
-  console.log('🔍 Data API workflow started:', dataSearchWorkflow.workflowId);
-  const dataResults = await dataSearchWorkflow.result();
-
-  console.log('✅ Data API people search completed');
-  console.log(`📊 Found ${dataResults.length} people`);
-  dataResults.forEach((person, index) => {
-    console.log(`  ${index + 1}. ${person.name}`);
-    console.log(`     Position: ${person.position}`);
-    console.log(`     Location: ${person.location}`);
-    console.log(`     URL: ${person.hashedUrl}`);
-  });
-
-}
-
-async function runExample(): Promise<void> {
-  try {
-    await searchPeopleExample();
-    console.log('✨ Search people example completed successfully');
-  } catch (error) {
-    console.error('💥 Example failed:', error);
-    process.exit(1);
-  }
-}
-
 if (require.main === module) {
-  runExample();
+  searchPeopleExample();
 } 

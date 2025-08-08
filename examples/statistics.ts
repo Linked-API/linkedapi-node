@@ -2,9 +2,8 @@ import LinkedApi from 'linkedapi-node';
 
 async function statisticsExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    accountApiToken: process.env.ACCOUNT_API_TOKEN,
-    identificationToken: process.env.IDENTIFICATION_TOKEN,
-    dataApiToken: process.env.DATA_API_TOKEN,
+    apiToken: process.env.API_TOKEN!,
+    identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
   try {
@@ -92,15 +91,6 @@ async function getRecentUsageStats(linkedapi: LinkedApi): Promise<void> {
   }
 }
 
-async function runExample(): Promise<void> {
-  try {
-    await statisticsExample();
-  } catch (error) {
-    console.error('💥 Example failed:', error);
-    process.exit(1);
-  }
-}
-
 if (require.main === module) {
-  runExample();
-} 
+  statisticsExample();
+}
