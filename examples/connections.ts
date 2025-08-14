@@ -3,7 +3,7 @@ import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-nod
 async function connectionsExample(): Promise<void> {
 
   const linkedapi = new LinkedApi({
-    apiToken: process.env.API_TOKEN!,
+    linkedApiToken: process.env.LINKED_API_TOKEN!,
     identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 

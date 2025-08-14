@@ -4,7 +4,7 @@ import type {
 } from "../types/actions/search-company";
 import { ArrayWorkflowMapper } from "./array-workflow-mapper.abstract";
 
-export class AcSearchCompaniesMapper extends ArrayWorkflowMapper<
+export class SearchCompaniesMapper extends ArrayWorkflowMapper<
   TSearchCompanyParams,
   TSearchCompanyResult
 > {

@@ -31,16 +31,26 @@ export interface TBaseFetchPersonParams extends TBaseActionParams {
   retrieveReactions?: boolean;
 }
 
+export interface TBaseFetchPersonParamsWide extends TBaseFetchPersonParams {
+  retrieveExperience: true;
+  retrieveEducation: true;
+  retrieveSkills: true;
+  retrieveLanguages: true;
+  retrievePosts: true;
+  retrieveComments: true;
+  retrieveReactions: true;
+}
+
 export type TFetchPersonParams<
   T extends TBaseFetchPersonParams = TBaseFetchPersonParams,
 > = T & {
   postsRetrievalConfig?: T["retrievePosts"] extends true
     ? TLimitSinceParams | undefined
     : never;
-  commentRetrievalConfig?: T["retrieveComments"] extends true
+  commentsRetrievalConfig?: T["retrieveComments"] extends true
     ? TLimitSinceParams | undefined
     : never;
-  reactionRetrievalConfig?: T["retrieveReactions"] extends true
+  reactionsRetrievalConfig?: T["retrieveReactions"] extends true
     ? TLimitSinceParams | undefined
     : never;
 };
@@ -61,26 +71,36 @@ type TBasePerson = Pick<
 export type TFetchPersonResult<TParams extends TBaseFetchPersonParams> =
   TBasePerson &
     (TParams["retrieveExperience"] extends true
-      ? { experiences: ReadonlyArray<TPersonExperience> }
+      ? { experiences: ReadonlyArray<TPersonExperience> | undefined }
       : Record<string, never>) &
     (TParams["retrieveEducation"] extends true
-      ? { education: ReadonlyArray<TPersonEducation> }
+      ? { education: ReadonlyArray<TPersonEducation> | undefined }
       : Record<string, never>) &
     (TParams["retrieveSkills"] extends true
-      ? { skills: ReadonlyArray<TPersonSkill> }
+      ? { skills: ReadonlyArray<TPersonSkill> | undefined }
       : Record<string, never>) &
     (TParams["retrieveLanguages"] extends true
-      ? { languages: ReadonlyArray<TPersonLanguage> }
+      ? { languages: ReadonlyArray<TPersonLanguage> | undefined }
       : Record<string, never>) &
     (TParams["retrievePosts"] extends true
-      ? { posts: ReadonlyArray<TPost> }
+      ? { posts: ReadonlyArray<TPost> | undefined }
       : Record<string, never>) &
     (TParams["retrieveComments"] extends true
-      ? { comments: ReadonlyArray<TComment> }
+      ? { comments: ReadonlyArray<TComment> | undefined }
       : Record<string, never>) &
     (TParams["retrieveReactions"] extends true
-      ? { reactions: ReadonlyArray<TReaction> }
+      ? { reactions: ReadonlyArray<TReaction> | undefined }
       : Record<string, never>);
+
+export type TFetchPersonResultWide = TBasePerson & {
+  experiences?: ReadonlyArray<TPersonExperience>;
+  education?: ReadonlyArray<TPersonEducation>;
+  skills?: ReadonlyArray<TPersonSkill>;
+  languages?: ReadonlyArray<TPersonLanguage>;
+  posts?: ReadonlyArray<TPost>;
+  comments?: ReadonlyArray<TComment>;
+  reactions?: ReadonlyArray<TReaction>;
+};
 
 export interface TPersonExperience {
   position: string;

@@ -4,7 +4,7 @@ import type {
 } from "../types/actions/search-people";
 import { ArrayWorkflowMapper } from "./array-workflow-mapper.abstract";
 
-export class AcSalesNavigatorSearchPeopleMapper extends ArrayWorkflowMapper<
+export class NvSearchPeopleMapper extends ArrayWorkflowMapper<
   TNvSearchPeopleParams,
   TNvSearchPeopleResult
 > {

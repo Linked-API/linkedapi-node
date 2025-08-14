@@ -41,6 +41,18 @@ export class SimpleWorkflowMapper<TParams extends TBaseActionParams, TResult>
       throw LinkedApiWorkflowError.unknownError();
     }
 
-    return response.completion.data as TResult;
+    const completion = response.completion;
+    if (Array.isArray(completion)) {
+      return completion as TResult;
+    }
+
+    if (completion.error) {
+      throw new LinkedApiWorkflowError(
+        completion.error.message,
+        completion.error.type,
+      );
+    }
+
+    return completion.data as TResult;
   }
 }

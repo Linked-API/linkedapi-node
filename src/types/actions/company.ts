@@ -22,20 +22,26 @@ export interface TCompany {
 export interface TBaseFetchCompanyParams extends TBaseActionParams {
   companyUrl: string;
   retrieveEmployees?: boolean;
-  retrieveDms?: boolean;
+  retrieveDMs?: boolean;
   retrievePosts?: boolean;
+}
+
+export interface TBaseFetchCompanyParamsWide extends TBaseFetchCompanyParams {
+  retrieveEmployees: true;
+  retrieveDMs: true;
+  retrievePosts: true;
 }
 
 export type TFetchCompanyParams<
   T extends TBaseFetchCompanyParams = TBaseFetchCompanyParams,
 > = T & {
-  employeeRetrievalConfig?: T["retrieveEmployees"] extends true
-    ? TStCompanyEmployeeRetrievalConfig | undefined
+  employeesRetrievalConfig?: T["retrieveEmployees"] extends true
+    ? TStCompanyEmployeesRetrievalConfig | undefined
     : never;
-  dmRetrievalConfig?: T["retrieveDms"] extends true
+  dmsRetrievalConfig?: T["retrieveDMs"] extends true
     ? TLimitParams | undefined
     : never;
-  postRetrievalConfig?: T["retrievePosts"] extends true
+  postsRetrievalConfig?: T["retrievePosts"] extends true
     ? TLimitSinceParams | undefined
     : never;
 };
@@ -61,12 +67,18 @@ export type TFetchCompanyResult<TParams extends TBaseFetchCompanyParams> =
     (TParams["retrieveEmployees"] extends true
       ? { employees: ReadonlyArray<TStCompanyEmployee> }
       : Record<string, never>) &
-    (TParams["retrieveDms"] extends true
+    (TParams["retrieveDMs"] extends true
       ? { dms: ReadonlyArray<TStCompanyDm> }
       : Record<string, never>) &
     (TParams["retrievePosts"] extends true
       ? { posts: ReadonlyArray<TPost> }
       : Record<string, never>);
+
+export type TFetchCompanyResultWide = TBaseCompany & {
+  employees?: ReadonlyArray<TStCompanyEmployee>;
+  dms?: ReadonlyArray<TStCompanyDm>;
+  posts?: ReadonlyArray<TPost>;
+};
 
 export interface TStCompanyEmployee {
   name: string;
@@ -83,7 +95,7 @@ export interface TStCompanyDm {
   countryCode: string;
 }
 
-export interface TStCompanyEmployeeRetrievalConfig extends TLimitParams {
+export interface TStCompanyEmployeesRetrievalConfig extends TLimitParams {
   filter?: {
     firstName?: string;
     lastName?: string;

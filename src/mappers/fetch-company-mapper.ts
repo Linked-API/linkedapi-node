@@ -11,17 +11,17 @@ const FETCH_COMPANY_ACTIONS: TActionConfig[] = [
   {
     paramName: "retrieveEmployees",
     actionType: "st.retrieveCompanyEmployees",
-    configSource: "employeeRetrievalConfig",
+    configSource: "employeesRetrievalConfig",
   },
   {
-    paramName: "retrieveDms",
+    paramName: "retrieveDMs",
     actionType: "st.retrieveCompanyDMs",
-    configSource: "dmRetrievalConfig",
+    configSource: "dmsRetrievalConfig",
   },
   {
     paramName: "retrievePosts",
     actionType: "st.retrieveCompanyPosts",
-    configSource: "postRetrievalConfig",
+    configSource: "postsRetrievalConfig",
   },
 ];
 
@@ -40,7 +40,7 @@ const RESPONSE_MAPPINGS = [
   },
 ];
 
-export class AcFetchCompanyMapper<
+export class FetchCompanyMapper<
   TParams extends TBaseFetchCompanyParams,
 > extends ThenWorkflowMapper<TParams, TFetchCompanyResult<TParams>> {
   constructor() {

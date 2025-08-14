@@ -4,7 +4,7 @@ import type {
 } from "../types/actions/connection";
 import { ThenWorkflowMapper } from "./then-workflow-mapper.abstract";
 
-export class AcNvOpenPersonPageMapper extends ThenWorkflowMapper<
+export class NvFetchPersonMapper extends ThenWorkflowMapper<
   TNvOpenPersonPageParams,
   TNvOpenPersonPageResult
 > {

@@ -33,33 +33,22 @@ export interface TNvCompanyDm {
 export interface TNvBaseFetchCompanyParams extends TBaseActionParams {
   companyHashedUrl: string;
   retrieveEmployees?: boolean;
-  retrieveDms?: boolean;
+  retrieveDMs?: boolean;
 }
 
-export interface TDtBaseFetchCompanyParams extends TBaseActionParams {
-  companyUrl: string;
-  retrieveEmployees?: boolean;
-  retrieveDms?: boolean;
+export interface TNvBaseFetchCompanyParamsWide
+  extends TNvBaseFetchCompanyParams {
+  retrieveEmployees: true;
+  retrieveDMs: true;
 }
 
 export type TNvFetchCompanyParams<
   T extends TNvBaseFetchCompanyParams = TNvBaseFetchCompanyParams,
 > = T & {
-  employeeRetrievalConfig?: T["retrieveEmployees"] extends true
+  employeesRetrievalConfig?: T["retrieveEmployees"] extends true
     ? TNvCompanyEmployeeRetrievalConfig | undefined
     : never;
-  dmRetrievalConfig?: T["retrieveDms"] extends true
-    ? TLimitParams | undefined
-    : never;
-};
-
-export type TDtFetchCompanyParams<
-  T extends TDtBaseFetchCompanyParams = TDtBaseFetchCompanyParams,
-> = T & {
-  employeeRetrievalConfig?: T["retrieveEmployees"] extends true
-    ? TNvCompanyEmployeeRetrievalConfig | undefined
-    : never;
-  dmRetrievalConfig?: T["retrieveDms"] extends true
+  dmsRetrievalConfig?: T["retrieveDMs"] extends true
     ? TLimitParams | undefined
     : never;
 };
@@ -80,20 +69,16 @@ type TNvBaseCompany = Pick<
 export type TNvFetchCompanyResult<TParams extends TNvBaseFetchCompanyParams> =
   TNvBaseCompany &
     (TParams["retrieveEmployees"] extends true
-      ? { employees: ReadonlyArray<TNvCompanyEmployee> }
+      ? { employees: ReadonlyArray<TNvCompanyEmployee> | undefined }
       : Record<string, never>) &
-    (TParams["retrieveDms"] extends true
-      ? { dms: ReadonlyArray<TNvCompanyDm> }
+    (TParams["retrieveDMs"] extends true
+      ? { dms: ReadonlyArray<TNvCompanyDm> | undefined }
       : Record<string, never>);
 
-export type TDtFetchCompanyResult<TParams extends TDtBaseFetchCompanyParams> =
-  TNvBaseCompany &
-    (TParams["retrieveEmployees"] extends true
-      ? { employees: ReadonlyArray<TNvCompanyEmployee> }
-      : Record<string, never>) &
-    (TParams["retrieveDms"] extends true
-      ? { dms: ReadonlyArray<TNvCompanyDm> }
-      : Record<string, never>);
+export type TNvFetchCompanyResultWide = TNvBaseCompany & {
+  employees?: ReadonlyArray<TNvCompanyEmployee>;
+  dms?: ReadonlyArray<TNvCompanyDm>;
+};
 
 export interface TNvCompanyEmployeeRetrievalConfig extends TLimitParams {
   filter?: {

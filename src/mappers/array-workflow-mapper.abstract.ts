@@ -37,7 +37,13 @@ export abstract class ArrayWorkflowMapper<
       throw LinkedApiWorkflowError.unknownError();
     }
 
-    const data = response.completion.data;
+    const completion = response.completion;
+
+    if (Array.isArray(completion)) {
+      return completion.map((item) => item.data) as TResult[];
+    }
+
+    const data = completion.data;
 
     if (Array.isArray(data)) {
       return data as TResult[];

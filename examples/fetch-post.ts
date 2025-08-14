@@ -2,7 +2,7 @@ import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-nod
 
 async function fetchPostExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    apiToken: process.env.API_TOKEN!,
+    linkedApiToken: process.env.LINKED_API_TOKEN!,
     identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
@@ -23,23 +23,23 @@ async function fetchPostExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const accountPostWorkflow = await linkedapi.fetchPost({
+  const postWorkflow = await linkedapi.fetchPost({
     postUrl: 'https://www.linkedin.com/posts/post-url'
   });
-  console.log('🔍 Account API workflow started:', accountPostWorkflow.workflowId);
-  const accountPost = await accountPostWorkflow.result();
+  console.log('🔍 Workflow started:', postWorkflow.workflowId);
+  const post = await postWorkflow.result();
 
-  console.log('✅ Account API post fetched successfully');
-  console.log(`📄 Post URL: ${accountPost.url}`);
-  console.log(`⏰ Post Time: ${accountPost.time}`);
-  console.log(`📝 Post Type: ${accountPost.type}`);
-  console.log(`💬 Text: ${accountPost.text || 'No text content'}`);
-  console.log(`🔄 Repost Text: ${accountPost.repostText || 'Not a repost'}`);
-  console.log(`🖼️ Images: ${accountPost.images?.length || 0} image(s)`);
-  console.log(`🎥 Has Video: ${accountPost.hasVideo}`);
-  console.log(`📊 Has Poll: ${accountPost.hasPoll}`);
-  console.log(`👍 Reactions: ${accountPost.reactionCount}`);
-  console.log(`💬 Comments: ${accountPost.commentCount}`);
+  console.log('✅ Post fetched successfully');
+  console.log(`📄 Post URL: ${post.url}`);
+  console.log(`⏰ Post Time: ${post.time}`);
+  console.log(`📝 Post Type: ${post.type}`);
+  console.log(`💬 Text: ${post.text || 'No text content'}`);
+  console.log(`🔄 Repost Text: ${post.repostText || 'Not a repost'}`);
+  console.log(`🖼️ Images: ${post.images?.length || 0} image(s)`);
+  console.log(`🎥 Has Video: ${post.hasVideo}`);
+  console.log(`📊 Has Poll: ${post.hasPoll}`);
+  console.log(`👍 Reactions: ${post.reactionCount}`);
+  console.log(`💬 Comments: ${post.commentCount}`);
 }
 
 if (require.main === module) {

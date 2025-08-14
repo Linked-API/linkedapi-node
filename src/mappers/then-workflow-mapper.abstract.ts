@@ -1,8 +1,8 @@
 import { LinkedApiWorkflowError } from "../types/errors";
 import type { TBaseActionParams } from "../types/params";
 import type {
-  TThenAction,
-  TWorkflowData,
+  TActionResponse,
+  TWorkflowSingleData,
   TWorkflowDefinition,
   TWorkflowResponse,
 } from "../types/workflows";
@@ -67,18 +67,25 @@ export abstract class ThenWorkflowMapper<
       throw LinkedApiWorkflowError.unknownError();
     }
 
-    const { data, error } = response.completion;
-    if (error) {
-      throw new LinkedApiWorkflowError(error.message, error.type);
+    const completion = response.completion;
+    if (Array.isArray(completion)) {
+      return completion as TResult;
     }
-    if (data) {
-      return this.mapThenFromResponse(data);
+
+    if (completion.error) {
+      throw new LinkedApiWorkflowError(
+        completion.error.message,
+        completion.error.type,
+      );
+    }
+    if (completion.data) {
+      return this.mapThenFromResponse(completion.data as TWorkflowSingleData);
     }
 
     throw LinkedApiWorkflowError.unknownError();
   }
 
-  private mapThenFromResponse(data: TWorkflowData): TResult {
+  private mapThenFromResponse(data: TWorkflowSingleData): TResult {
     const result = { ...data };
     const thenActions = data.then;
 
@@ -89,12 +96,19 @@ export abstract class ThenWorkflowMapper<
     for (const mapping of this.responseMappings) {
       if (Array.isArray(thenActions) && thenActions.length > 0) {
         const thenAction = thenActions.find(
-          (action: TThenAction) => action.actionType === mapping.actionType,
+          (action: TActionResponse) => action.actionType === mapping.actionType,
         );
         if (thenAction) {
           (result as Record<string, unknown>)[mapping.targetProperty] =
             thenAction.data;
         }
+        continue;
+      }
+
+      if ((thenActions as TActionResponse).actionType === mapping.actionType) {
+        (result as Record<string, unknown>)[mapping.targetProperty] = (
+          thenActions as TActionResponse
+        ).data;
       }
     }
     delete (result as Record<string, unknown>)["then"];
