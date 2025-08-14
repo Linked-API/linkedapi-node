@@ -32,12 +32,12 @@ const FETCH_PERSON_ACTIONS: TActionConfig[] = [
   {
     paramName: "retrieveComments",
     actionType: "st.retrievePersonComments",
-    configSource: "commentRetrievalConfig",
+    configSource: "commentsRetrievalConfig",
   },
   {
     paramName: "retrieveReactions",
     actionType: "st.retrievePersonReactions",
-    configSource: "reactionRetrievalConfig",
+    configSource: "reactionsRetrievalConfig",
   },
 ];
 
@@ -72,7 +72,7 @@ const RESPONSE_MAPPINGS = [
   },
 ];
 
-export class AcFetchPersonMapper<
+export class FetchPersonMapper<
   TParams extends TBaseFetchPersonParams,
 > extends ThenWorkflowMapper<TParams, TFetchPersonResult<TParams>> {
   constructor() {

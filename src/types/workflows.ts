@@ -1,17 +1,27 @@
-export interface TWorkflowDefinition {
+export interface TSingleActionWorkflowDefinition {
   actionType: string;
   [key: string]: unknown;
 }
 
+export type TWorkflowDefinition =
+  | TSingleActionWorkflowDefinition
+  | TSingleActionWorkflowDefinition[];
+
 export type TWorkflowStatus = "running" | "completed" | "failed";
 
-export interface TWorkflowCompletion<
+export type TWorkflowCompletion<TResult extends TWorkflowData = TWorkflowData> =
+
+    | TWorkflowCompletionSingleAction<TResult>
+    | TWorkflowCompletionSingleAction<TResult>[];
+
+export interface TWorkflowCompletionSingleAction<
   TResult extends TWorkflowData = TWorkflowData,
 > {
   data?: TResult;
   error?: TWorkflowActionError;
   actionType: string;
-  success?: boolean;
+  success: boolean;
+  label?: string;
 }
 
 export interface TWorkflowActionError {
@@ -32,14 +42,26 @@ export interface TWorkflowResponse<
   failure?: TWorkflowFailure;
 }
 
-export interface TWorkflowData {
+export interface TWorkflowSingleData {
   [key: string]: unknown;
-  then?: TThenAction[];
+  then?: TThen;
 }
 
-export interface TThenAction {
-  actionType: string;
+export type TWorkflowData = TWorkflowSingleData | TWorkflowSingleData[];
+
+export interface TSingleActionResponse<
+  TResult extends TWorkflowData = TWorkflowData,
+> {
+  data?: TResult;
   error?: TWorkflowActionError;
-  data: TWorkflowData;
+  actionType: string;
   success: boolean;
+  label?: string;
 }
+
+export type TActionResponse<TResult extends TWorkflowData = TWorkflowData> =
+  TSingleActionResponse<TResult>;
+
+export type TThen<TResult extends TWorkflowData = TWorkflowData> =
+  | TActionResponse<TResult>
+  | TActionResponse<TResult>[];

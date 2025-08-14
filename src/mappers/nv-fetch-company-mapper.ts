@@ -11,12 +11,12 @@ const FETCH_NV_COMPANY_ACTIONS: TActionConfig[] = [
   {
     paramName: "retrieveEmployees",
     actionType: "nv.retrieveCompanyEmployees",
-    configSource: "employeeRetrievalConfig",
+    configSource: "employeesRetrievalConfig",
   },
   {
-    paramName: "retrieveDms",
+    paramName: "retrieveDMs",
     actionType: "nv.retrieveCompanyDMs",
-    configSource: "dmRetrievalConfig",
+    configSource: "dmsRetrievalConfig",
   },
 ];
 
@@ -31,7 +31,7 @@ const RESPONSE_MAPPINGS = [
   },
 ];
 
-export class AcFetchNvCompanyMapper<
+export class NvFetchCompanyMapper<
   TParams extends TNvBaseFetchCompanyParams,
 > extends ThenWorkflowMapper<TParams, TNvFetchCompanyResult<TParams>> {
   constructor() {

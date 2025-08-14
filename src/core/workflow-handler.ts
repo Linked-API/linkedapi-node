@@ -5,10 +5,13 @@ import type {
   WaitForCompletionOptions,
   WorkflowExecutor,
 } from "./workflow-executor";
+import { TSupportedFunctionName } from "../core/workflow-restoration";
+import { LinkedApiError, LinkedApiWorkflowTimeoutError } from "../types";
 
 export class WorkflowHandler<TResult = TWorkflowResponse> {
   constructor(
     public readonly workflowId: string,
+    public readonly functionName: TSupportedFunctionName,
     private readonly workflowExecutor: WorkflowExecutor,
     private readonly mapper?: BaseMapper<TBaseActionParams, TResult>,
   ) {}
@@ -16,15 +19,25 @@ export class WorkflowHandler<TResult = TWorkflowResponse> {
   public async result(
     options: WaitForCompletionOptions = {},
   ): Promise<TResult> {
-    const rawResult = await this.workflowExecutor.result(
-      this.workflowId,
-      options,
-    );
+    try {
+      const rawResult = await this.workflowExecutor.result(
+        this.workflowId,
+        options,
+      );
 
-    if (!this.mapper) {
-      return rawResult as TResult;
+      if (!this.mapper) {
+        return rawResult as TResult;
+      }
+
+      return this.mapper.mapResponse(rawResult);
+    } catch (error) {
+      if (error instanceof LinkedApiError && error.type === "timeout") {
+        throw new LinkedApiWorkflowTimeoutError(
+          this.workflowId,
+          this.functionName,
+        );
+      }
+      throw error;
     }
-
-    return this.mapper.mapResponse(rawResult);
   }
 }

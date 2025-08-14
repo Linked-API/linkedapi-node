@@ -1,6 +1,8 @@
+import { TSupportedFunctionName } from "../core/workflow-restoration";
+
 /**
  * This error is thrown when a workflow fails to complete.
- * @see {@link https://linkedapi.io/docs/account-api/actions-overview/#result-options}
+ * @see {@link https://linkedapi.io/docs/actions-overview/#result-options}
  */
 export class LinkedApiWorkflowError extends Error {
   public reason: string;
@@ -19,7 +21,7 @@ export class LinkedApiWorkflowError extends Error {
 
 /**
  * This error is thrown when a request fails.
- * @see {@link https://linkedapi.io/docs/account-api/making-requests/#common-errors}
+ * @see {@link https://linkedapi.io/docs/making-requests/#common-errors}
  */
 export class LinkedApiError extends Error {
   public type: string;
@@ -31,5 +33,21 @@ export class LinkedApiError extends Error {
     this.type = type;
     this.message = message;
     this.details = details;
+  }
+}
+
+/**
+ * This error is thrown when a workflow times out.
+ */
+export class LinkedApiWorkflowTimeoutError extends Error {
+  public readonly workflowId: string;
+  public readonly functionName: TSupportedFunctionName;
+
+  constructor(workflowId: string, functionName: TSupportedFunctionName) {
+    super(
+      `Workflow ${workflowId} timed out. Use restoreWorkflow(${workflowId}, ${functionName}) to restore the workflow.`,
+    );
+    this.workflowId = workflowId;
+    this.functionName = functionName;
   }
 }

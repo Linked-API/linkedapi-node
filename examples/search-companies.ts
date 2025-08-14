@@ -2,7 +2,7 @@ import LinkedApi, { LinkedApiError, LinkedApiWorkflowError, TSearchCompanySize }
 
 async function searchCompaniesExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    apiToken: process.env.API_TOKEN!,
+    linkedApiToken: process.env.LINKED_API_TOKEN!,
     identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
@@ -36,14 +36,14 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
     },
   };
 
-  console.log('🔍 Searching companies with Account API...');
-  const accountSearchWorkflow = await linkedapi.searchCompanies(searchParams);
-  console.log('🔍 Account API workflow started:', accountSearchWorkflow.workflowId);
-  const accountResults = await accountSearchWorkflow.result();
+  console.log('🔍 Searching companies with Linked API...');
+  const searchWorkflow = await linkedapi.searchCompanies(searchParams);
+  console.log('🔍 Workflow started:', searchWorkflow.workflowId);
+  const results = await searchWorkflow.result();
 
-  console.log('✅ Account API company search completed');
-  console.log(`📊 Found ${accountResults.length} companies`);
-  accountResults.forEach((company, index) => {
+  console.log('✅ Company search completed');
+  console.log(`📊 Found ${results.length} companies`);
+  results.forEach((company, index) => {
     console.log(`  ${index + 1}. ${company.name}`);
     console.log(`     Industry: ${company.industry}`);
     console.log(`     Location: ${company.location}`);
@@ -66,7 +66,7 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     },
   };
 
-  console.log('\n🎯 Searching companies with Sales Navigator (Account API)...');
+  console.log('\n🎯 Searching companies with Sales Navigator...');
   const nvSearchWorkflow = await linkedapi.salesNavigatorSearchCompanies(nvSearchParams);
   console.log('🔍 Sales Navigator workflow started:', nvSearchWorkflow.workflowId);
   const nvResults = await nvSearchWorkflow.result();

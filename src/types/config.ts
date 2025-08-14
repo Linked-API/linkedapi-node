@@ -1,5 +1,5 @@
 export interface TLinkedApiConfig {
-  apiToken: string;
+  linkedApiToken: string;
   identificationToken: string;
   workflowTimeout?: number;
 }

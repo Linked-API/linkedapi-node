@@ -2,7 +2,7 @@ import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-nod
 
 async function postActionsExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    apiToken: process.env.API_TOKEN!,
+    linkedApiToken: process.env.LINKED_API_TOKEN!,
     identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
@@ -10,7 +10,6 @@ async function postActionsExample(): Promise<void> {
     console.log('🚀 Linked API Post Actions example starting...');
     await reactToPost(linkedapi);
     await commentOnPost(linkedapi);
-
   } catch (error) {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
@@ -56,4 +55,4 @@ async function commentOnPost(linkedapi: LinkedApi): Promise<void> {
 
 if (require.main === module) {
   postActionsExample();
-} 
+}

@@ -2,7 +2,7 @@ import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-nod
 
 async function fetchCompanyExample(): Promise<void> {
   const linkedapi = new LinkedApi({
-    apiToken: process.env.API_TOKEN!,
+    linkedApiToken: process.env.LINKED_API_TOKEN!,
     identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
@@ -28,19 +28,19 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
   const fetchCompanyWorkflow = await linkedapi.fetchCompany({
     companyUrl: 'https://www.linkedin.com/company/linkedin/',
     retrieveEmployees: true,
-    retrieveDms: true,
+    retrieveDMs: true,
     retrievePosts: true,
-    employeeRetrievalConfig: {
+    employeesRetrievalConfig: {
       limit: 2,
       filter: {
         position: 'engineer',
         locations: ['United States'],
       },
     },
-    dmRetrievalConfig: {
+    dmsRetrievalConfig: {
       limit: 2,
     },
-    postRetrievalConfig: {
+    postsRetrievalConfig: {
       limit: 10,
       since: '2024-01-01',
     },
@@ -64,14 +64,14 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   const nvCompanyResult = await linkedapi.salesNavigatorFetchCompany({
     companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
     retrieveEmployees: true,
-    retrieveDms: true,
-    employeeRetrievalConfig: {
+    retrieveDMs: true,
+    employeesRetrievalConfig: {
       limit: 1,
       filter: {
         positions: ['Manager', 'Engineer'],
       },
     },
-    dmRetrievalConfig: {
+    dmsRetrievalConfig: {
       limit: 2,
     },
   });

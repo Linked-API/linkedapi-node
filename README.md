@@ -4,7 +4,6 @@
 - [Quick Start](#-quick-start)
 - [Linked API](#-linked-api)
 - [Best Practices](#-best-practices)
-- [Workflow Consistency & State Management](#-workflow-consistency--state-management)
 - [Error Handling](#-error-handling)
 - [TypeScript Support](#-typescript-support)
 - [License](#-license)
@@ -26,7 +25,7 @@ import LinkedApi from "linkedapi-node";
 
 // Initialize with your API tokens
 const linkedapi = new LinkedApi({
-  apiToken: "your-api-token",
+  linkedApiToken: "your-linked-api-token",
   identificationToken: "your-identification-token",
 });
 
@@ -57,7 +56,7 @@ const companies = await searchCompaniesWorkflow.result();
 const companyWorkflow = await linkedapi.fetchCompany({
   companyUrl: "https://www.linkedin.com/company/company1",
   retrieveEmployees: true,
-  employeeRetrievalConfig: {
+  employeesRetrievalConfig: {
     filter: {
       schools: ["Harvard University", "Stanford University"],
     },
@@ -74,20 +73,20 @@ Linked API lets you manage LinkedIn accounts programmatically through an API int
 
 To use Linked API you must initialize with:
 
-- `apiToken` – your main token that enables overall Linked API access.
+- `linkedApiToken` – your main token that enables overall Linked API access.
 - `identificationToken` – unique token specific to each managed LinkedIn account.
 
 ```typescript
 const linkedapi = new LinkedApi({
-  apiToken: "your-api-token",
+  linkedApiToken: "your-linked-api-token",
   identificationToken: "your-identification-token",
 });
 ```
 
-You can obtain these tokens through [Linked API Platform](https://app.linkedapi.io/account-api?ref=linkedapi-node), as demonstrated below:
+You can obtain these tokens through [Linked API Platform](https://app.linkedapi.io?ref=linkedapi-node), as demonstrated below:
 ![API Tokens](https://linkedapi.io/content/images/size/w1600/2025/07/tokens-1.webp)
 
-**📖 Documentation:** [Documentation](https://linkedapi.io/docs/account-api/)
+**📖 Documentation:** [Documentation](https://linkedapi.io/docs)
 
 ---
 
@@ -97,7 +96,7 @@ Execute custom LinkedIn automation workflows with raw workflow definitions.
 
 - **Parameters:** `TWorkflowDefinition` - Custom workflow definition
 - **Returns:** `Promise<WorkflowHandler>` - Workflow handler for result management
-- **Documentation:** [Building Workflows](https://linkedapi.io/docs/account-api/building-workflows/) | [Executing Workflows](https://linkedapi.io/docs/account-api/executing-workflows/) | [Actions Overview](https://linkedapi.io/docs/account-api/actions-overview/)
+- **Documentation:** [Building Workflows](https://linkedapi.io/docs/building-workflows/) | [Executing Workflows](https://linkedapi.io/docs/executing-workflows/) | [Actions Overview](https://linkedapi.io/docs/actions-overview/)
 
 ```typescript
 const workflow = await linkedapi.executeCustomWorkflow({
@@ -115,10 +114,39 @@ Retrieve the result of a previously started workflow by its ID.
 
 - **Parameters:** `string` - Workflow ID
 - **Returns:** `Promise<TWorkflowResponse>` - Workflow response with completion data
-- **Documentation:** [Executing Workflows](https://linkedapi.io/docs/account-api/executing-workflows/)
+- **Documentation:** [Executing Workflows](https://linkedapi.io/docs/executing-workflows/)
 
 ```typescript
 const result = await linkedapi.getWorkflowResult("workflow-id-123");
+```
+
+---
+
+### `restoreWorkflow(workflowId, functionName)`
+
+Restore a WorkflowHandler for a previously started workflow using its ID and function name with type safety.
+
+- **Parameters:**
+  - `workflowId: string` - The unique identifier of the workflow to restore
+  - `functionName: TSupportedFunctionName` - The name of the function that was used to create the workflow
+- **Returns:** `Promise<WorkflowHandler<TRestoreResultType<TFunction>>>` - WorkflowHandler with exact result type based on the function name
+- **Type Safety:** Full TypeScript inference for exact return types based on the function name
+- **Documentation:** [Executing Workflows](https://linkedapi.io/docs/executing-workflows/)
+
+```typescript
+// Restore a person fetching workflow with full type safety
+const personHandler = await linkedapi.restoreWorkflow(
+  "workflow-id-123",
+  "fetchPerson"
+);
+const personData = await personHandler.result();
+
+// Restore a company fetching workflow
+const companyHandler = await linkedapi.restoreWorkflow(
+  "workflow-id-456",
+  "fetchCompany"
+);
+const companyData = await companyHandler.result();
 ```
 
 ---
@@ -144,11 +172,11 @@ const personWorkflow = await linkedapi.fetchPerson({
     limit: 20, // Maximum number of posts to retrieve (1-20)
     since: "2024-01-01", // Retrieve posts since this date (YYYY-MM-DD)
   },
-  commentRetrievalConfig: {
+  commentsRetrievalConfig: {
     limit: 10, // Maximum number of comments to retrieve (1-20)
     since: "2024-01-01", // Retrieve comments since this date
   },
-  reactionRetrievalConfig: {
+  reactionsRetrievalConfig: {
     limit: 15, // Maximum number of reactions to retrieve (1-20)
     since: "2024-01-01", // Retrieve reactions since this date
   },
@@ -185,8 +213,8 @@ const companyWorkflow = await linkedapi.fetchCompany({
   companyUrl: "https://www.linkedin.com/company/microsoft",
   retrieveEmployees: true, // Get company employees with their profiles
   retrievePosts: true, // Get recent company posts and updates
-  retrieveDms: true, // Get decision makers and key personnel
-  employeeRetrievalConfig: {
+  retrieveDMs: true, // Get decision makers and key personnel
+  employeesRetrievalConfig: {
     limit: 25, // Maximum number of employees to retrieve (1-500)
     filter: {
       firstName: "John", // Filter by employee first name
@@ -199,11 +227,11 @@ const companyWorkflow = await linkedapi.fetchCompany({
       schools: ["Stanford University", "MIT"], // Filter by educational background
     },
   },
-  postRetrievalConfig: {
+  postsRetrievalConfig: {
     limit: 10, // Maximum number of posts to retrieve (1-20)
     since: "2024-01-01", // Retrieve posts since this date (YYYY-MM-DD)
   },
-  dmRetrievalConfig: {
+  dmsRetrievalConfig: {
     limit: 5, // Maximum number of decision makers to retrieve
   },
 });
@@ -222,9 +250,9 @@ Retrieve company data through Sales Navigator with advanced filtering and prospe
 ```typescript
 const nvCompanyWorkflow = await linkedapi.salesNavigatorFetchCompany({
   companyHashedUrl: "https://www.linkedin.com/sales/company/1035",
-  retrieveEmployees: true, // Get company employees with Sales Navigator data
-  retrieveDms: true, // Get decision makers and key personnel
-  employeeRetrievalConfig: {
+  retrieveEmployees: true, // Get company employees with Sales Navigator
+  retrieveDMs: true, // Get decision makers
+  employeesRetrievalConfig: {
     limit: 25, // Maximum number of employees to retrieve (1-500)
     filter: {
       firstName: "John",
@@ -236,7 +264,7 @@ const nvCompanyWorkflow = await linkedapi.salesNavigatorFetchCompany({
       yearsOfExperiences: ["threeToFive", "sixToTen"],
     },
   },
-  dmRetrievalConfig: {
+  dmsRetrievalConfig: {
     limit: 10, // Maximum number of decision makers to retrieve (1-20)
   },
 });
@@ -364,7 +392,7 @@ const nvPeopleSearch = await linkedapi.salesNavigatorSearchPeople({
 Send connection requests to LinkedIn users with optional personalized messages.
 
 - **Parameters:** `TSendConnectionRequestParams` - Person URL and optional message
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 
 ```typescript
 await linkedapi.sendConnectionRequest({
@@ -397,7 +425,7 @@ console.log("Connection status:", status.connectionStatus); // 'connected', 'pen
 Withdraw previously sent connection requests.
 
 - **Parameters:** `TWithdrawConnectionRequestParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 
 ```typescript
 await linkedapi.withdrawConnectionRequest({
@@ -447,7 +475,7 @@ const connectionsWorkflow = await linkedapi.retrieveConnections({
 Remove existing connections from your LinkedIn network.
 
 - **Parameters:** `TRemoveConnectionParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 
 ```typescript
 await linkedapi.removeConnection({
@@ -462,7 +490,7 @@ await linkedapi.removeConnection({
 React to LinkedIn posts with various reaction types (like, love, support, etc.).
 
 - **Parameters:** `TReactToPostParams` - Post URL and reaction type
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 
 ```typescript
 await linkedapi.reactToPost({
@@ -478,7 +506,7 @@ await linkedapi.reactToPost({
 Comment on LinkedIn posts to engage with your network.
 
 - **Parameters:** `TCommentOnPostParams` - Post URL and comment text
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 
 ```typescript
 await linkedapi.commentOnPost({
@@ -522,7 +550,7 @@ console.log("Post views:", metrics.postViewsLast7Days);
 
 ### `getApiUsageStats(params)`
 
-Retrieve Account API usage statistics for monitoring and optimization.
+Retrieve Linked API usage statistics for monitoring and optimization.
 
 - **Parameters:** `TApiUsageStatsParams` - Start and end timestamps (max 30 days apart)
 - **Returns:** `Promise<TApiUsageStatsResponse>` - Array of executed actions with success/failure data
@@ -554,7 +582,7 @@ if (statsResponse.success) {
 Send messages to LinkedIn users through standard LinkedIn messaging.
 
 - **Parameters:** `TSendMessageParams` - Person URL and message text
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 
 ```typescript
 await linkedapi.sendMessage({
@@ -570,7 +598,7 @@ await linkedapi.sendMessage({
 Sync conversation history with a LinkedIn user for message polling.
 
 - **Parameters:** `TSyncConversationParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 - **Related Methods:** Use with `pollConversations()` to retrieve message history
 
 ```typescript
@@ -586,7 +614,7 @@ await linkedapi.syncConversation({
 Send messages through Sales Navigator with enhanced messaging capabilities.
 
 - **Parameters:** `TNvSendMessageParams` - Person URL, message text, and optional subject
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 
 ```typescript
 await linkedapi.salesNavigatorSendMessage({
@@ -603,7 +631,7 @@ await linkedapi.salesNavigatorSendMessage({
 Sync Sales Navigator conversation for message polling.
 
 - **Parameters:** `TNvSyncConversationParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (no result data)
+- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
 
 ```typescript
 await linkedapi.salesNavigatorSyncConversation({
@@ -698,7 +726,7 @@ try {
     try {
       const companyEmployeesWorkflow = await linkedapi.fetchCompany({
         retrieveEmployees: true,
-        employeeRetrievalConfig: {
+        employeesRetrievalConfig: {
           limit: 5,
           filter: {
             position: "manager"
@@ -727,7 +755,7 @@ try {
 }
 ```
 
-**📖 Learn more:** [Building Custom Workflows](https://linkedapi.io/docs/account-api/building-workflows/) | [Actions Overview](https://linkedapi.io/docs/account-api/actions-overview/)
+**📖 Learn more:** [Building Custom Workflows](https://linkedapi.io/docs/building-workflows/) | [Actions Overview](https://linkedapi.io/docs/actions-overview/)
 
 ### Workflow Consistency & State Management
 
@@ -749,7 +777,7 @@ const workflowId = personWorkflow.workflowId;
 console.log("Workflow started with ID:", workflowId);
 
 // Store in database/file/memory for later retrieval
-await saveWorkflowToDatabase(workflowId);
+await saveWorkflowToDatabase(workflowId, "fetchPerson");
 try {
   const person = await personWorkflow.result();
 } finally {
@@ -759,28 +787,21 @@ try {
 
 #### Retrieving Results After App Restart
 
-If your application restarts or you need to check workflow status later, use `getWorkflowResult(workflowId)`:
+If your application restarts or you need to check workflow status later, you can:
+- Restore a `WorkflowHandler` using `restoreWorkflow(workflowId, functionName)` with full type safety
 
 ```typescript
-// Account API - retrieve workflow result by ID
-const savedWorkflows = await getWorkflowsFromDatabase();
-for (workflowId of runningWorkflows) {
-  try {
-    const result = await linkedapi.getWorkflowResult(workflowId);
+// 1) Raw handler
+const rawHandler = await linkedapi.restoreWorkflow(savedWorkflowId);
 
-    if (result.completion) {
-      console.log("Workflow completed:", result.completion.data);
-      await deleteWorkflowFromDatabase(workflowId);
-    } else {
-      console.log("Workflow still running...");
-      // Continue polling or set up periodic checks
-    }
-  } catch (error) {
-    console.error("Workflow failed:", error);
-    await deleteWorkflowFromDatabase(workflowId);
-  }
-}
+// 2) Streamlined restoration with function name (wide result type with full type safety)
+const handler = await linkedapi.restoreWorkflow(savedWorkflowId, "fetchPerson");
+const result = await handler.result();
+console.log("Person name:", result.name);
+console.log("Experience count:", result.experiences?.length);
 ```
+
+See `examples/restore-workflow.ts` for a full example.
 
 ---
 
@@ -788,8 +809,9 @@ for (workflowId of runningWorkflows) {
 
 Linked API provides structured error handling for different failure scenarios.
 
-- **`LinkedApiError`** - throws if a [common error](https://linkedapi.io/docs/account-api/making-requests/#common-errors) occurs
-- **`LinkedApiWorkflowError`** - throws in case of the [workflow execution](https://linkedapi.io/docs/account-api/actions-overview/#result-options) error (like invalid URL or messaging not allowed)
+- **`LinkedApiError`** - throws if a [common error](https://linkedapi.io/docs/making-requests/#common-errors) occurs
+- **`LinkedApiWorkflowError`** - throws in case of the [workflow execution](https://linkedapi.io/docs/actions-overview/#result-options) error (like invalid URL or messaging not allowed)
+- **`LinkedApiWorkflowTimeoutError`** - throws in case of timeout. Contains `workflowId` and `functionName` for future restoration
 
 ```typescript
 import LinkedApi from "linkedapi-node";
@@ -815,8 +837,8 @@ try {
 
 ### Common Error Types
 
-- **`accountApiTokenRequired`** - Missing API token
-- **`invalidAccountApiToken`** - Invalid API token
+- **`linkedApiTokenRequired`** - Missing API token
+- **`invalidLinkedApiToken`** - Invalid API token
 - **`identificationTokenRequired`** - Missing Indentification token
 - **`invalidIdentificationToken`** - Invalid Identification Token
 - **`subscriptionRequired`** - No purchased subscription seats available for this LinkedIn account.
