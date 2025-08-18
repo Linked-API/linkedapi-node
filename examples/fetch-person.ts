@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from 'linkedapi-node';
 
 async function fetchPersonExample(): Promise<void> {
 
@@ -16,9 +16,6 @@ async function fetchPersonExample(): Promise<void> {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApiWorkflowError) {
-      console.error('🚨 Linked API Workflow Error:', error.message);
-      console.error('🔍 Reason:', error.reason);
     } else {
       console.error('💥 Unknown error:', error);
     }
@@ -26,7 +23,7 @@ async function fetchPersonExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const personResult = await linkedapi.fetchPerson({
+  const personHandler = await linkedapi.fetchPerson({
     personUrl: 'https://www.linkedin.com/in/example-person/',
     retrieveExperience: true,
     retrieveEducation: true,
@@ -46,15 +43,20 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
       limit: 5,
     },
   });
-  console.log('🔍 Workflow started: ', personResult.workflowId);
-  const person = await personResult.result();
-
-  console.log('✅ Person page opened successfully');
-  console.log(`👤 Name: ${person.name}`);
-  console.log(`💼 Position: ${person.position} at ${person.companyName}`);
-  console.log(`📍 Location: ${person.location}`);
-  console.log(`🌐 Skills: ${person.skills}`);
-  console.log(`💼 Experiences: ${person.experiences}`);
+  console.log('🔍 Workflow started: ', personHandler.workflowId);
+  const personResult = await personHandler.result();
+  if (personResult.data) {
+    const person = personResult.data;
+    console.log('✅ Person page opened successfully');
+    console.log(`👤 Name: ${person.name}`);
+    console.log(`💼 Position: ${person.position} at ${person.companyName}`);
+    console.log(`📍 Location: ${person.location}`);
+    console.log(`🌐 Skills: ${person.skills}`);
+    console.log(`💼 Experiences: ${person.experiences}`);
+  }
+  if (personResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(personResult.errors, null, 2));
+  }
 }
 
 async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
@@ -62,14 +64,19 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     personHashedUrl: 'https://www.linkedin.com/in/abc123',
   };
 
-  const personResult = await linkedapi.salesNavigatorFetchPerson(fetchParams);
-  console.log('🔍 Workflow started: ', personResult.workflowId);
-  const person = await personResult.result();
-
-  console.log('✅ Person page opened successfully');
-  console.log(`👤 Name: ${person.name}`);
-  console.log(`💼 Position: ${person.position} at ${person.companyName}`);
-  console.log(`📍 Location: ${person.location}`);
+  const personHandler = await linkedapi.salesNavigatorFetchPerson(fetchParams);
+  console.log('🔍 Workflow started: ', personHandler.workflowId);
+  const personResult = await personHandler.result();
+  if (personResult.data) {
+    const person = personResult.data;
+    console.log('✅ Person page opened successfully');
+    console.log(`👤 Name: ${person.name}`);
+    console.log(`💼 Position: ${person.position} at ${person.companyName}`);
+    console.log(`📍 Location: ${person.location}`);
+  }
+  if (personResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(personResult.errors, null, 2));
+  }
 }
 
 if (require.main === module) {

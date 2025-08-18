@@ -1,15 +1,16 @@
 import { TDefaultParameters } from "./base-mapper.abstract";
-import { LinkedApiWorkflowError } from "../types/errors";
+import { TLinkedApiActionError } from "../types/errors";
 import type { TBaseActionParams } from "../types/params";
 import type {
   TWorkflowDefinition,
   TWorkflowResponse,
 } from "../types/workflows";
-import type { BaseMapper } from "./base-mapper.abstract";
+import { BaseMapper, TMappedResponse } from "./base-mapper.abstract";
 
-export class SimpleWorkflowMapper<TParams extends TBaseActionParams, TResult>
-  implements BaseMapper<TParams, TResult>
-{
+export class SimpleWorkflowMapper<
+  TParams extends TBaseActionParams,
+  TResult,
+> extends BaseMapper<TParams, TResult> {
   private readonly actionType: string;
   private readonly defaultParams: TDefaultParameters;
 
@@ -20,6 +21,7 @@ export class SimpleWorkflowMapper<TParams extends TBaseActionParams, TResult>
     actionType: string;
     defaultParams?: TDefaultParameters;
   }) {
+    super();
     this.actionType = actionType;
     this.defaultParams = defaultParams ?? {};
   }
@@ -32,27 +34,30 @@ export class SimpleWorkflowMapper<TParams extends TBaseActionParams, TResult>
     } as unknown as TWorkflowDefinition;
   }
 
-  public mapResponse(response: TWorkflowResponse): TResult {
-    if (!response.completion) {
-      const { failure } = response;
-      if (failure) {
-        throw new LinkedApiWorkflowError(failure.reason, failure.message);
-      }
-      throw LinkedApiWorkflowError.unknownError();
-    }
+  public mapResponse(response: TWorkflowResponse): TMappedResponse<TResult> {
+    const completion = this.getCompletion(response);
 
-    const completion = response.completion;
     if (Array.isArray(completion)) {
-      return completion as TResult;
+      return {
+        data: completion
+          .map((action) => action.data)
+          .filter(Boolean) as TResult,
+        errors: completion
+          .map((action) => action.error)
+          .filter(Boolean) as TLinkedApiActionError[],
+      };
     }
 
     if (completion.error) {
-      throw new LinkedApiWorkflowError(
-        completion.error.message,
-        completion.error.type,
-      );
+      return {
+        data: undefined,
+        errors: [completion.error].filter(Boolean) as TLinkedApiActionError[],
+      };
     }
 
-    return completion.data as TResult;
+    return {
+      data: completion.data as TResult,
+      errors: [],
+    };
   }
 }

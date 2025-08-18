@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, LinkedApiWorkflowError, TSearchCompanySize } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, TSearchCompanySize } from 'linkedapi-node';
 
 async function searchCompaniesExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -16,9 +16,6 @@ async function searchCompaniesExample(): Promise<void> {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApiWorkflowError) {
-      console.error('🚨 Linked API Workflow Error:', error.message);
-      console.error('🔍 Reason:', error.reason);
     } else {
       console.error('💥 Unknown error:', error);
     }
@@ -39,16 +36,21 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
   console.log('🔍 Searching companies with Linked API...');
   const searchWorkflow = await linkedapi.searchCompanies(searchParams);
   console.log('🔍 Workflow started:', searchWorkflow.workflowId);
-  const results = await searchWorkflow.result();
-
-  console.log('✅ Company search completed');
-  console.log(`📊 Found ${results.length} companies`);
-  results.forEach((company, index) => {
-    console.log(`  ${index + 1}. ${company.name}`);
-    console.log(`     Industry: ${company.industry}`);
-    console.log(`     Location: ${company.location}`);
-    console.log(`     URL: ${company.publicUrl}`);
-  });
+  const result = await searchWorkflow.result();
+  if (result.data) {
+    const results = result.data;
+    console.log('✅ Company search completed');
+    console.log(`📊 Found ${results.length} companies`);
+    results.forEach((company, index) => {
+      console.log(`  ${index + 1}. ${company.name}`);
+      console.log(`     Industry: ${company.industry}`);
+      console.log(`     Location: ${company.location}`);
+      console.log(`     URL: ${company.publicUrl}`);
+    });
+  }
+  if (result.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
+  }
 }
 
 async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
@@ -71,14 +73,20 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   console.log('🔍 Sales Navigator workflow started:', nvSearchWorkflow.workflowId);
   const nvResults = await nvSearchWorkflow.result();
 
-  console.log('✅ Sales Navigator company search completed');
-  console.log(`📊 Found ${nvResults.length} companies`);
-  nvResults.forEach((company, index) => {
-    console.log(`  ${index + 1}. ${company.name}`);
-    console.log(`     Industry: ${company.industry}`);
-    console.log(`     Employees: ${company.employeeCount}`);
-    console.log(`     URL: ${company.hashedUrl}`);
-  });
+  if (nvResults.data) {
+    const results = nvResults.data;
+    console.log('✅ Sales Navigator company search completed');
+    console.log(`📊 Found ${results.length} companies`);
+    results.forEach((company, index) => {
+      console.log(`  ${index + 1}. ${company.name}`);
+      console.log(`     Industry: ${company.industry}`);
+      console.log(`     Employees: ${company.employeeCount}`);
+      console.log(`     URL: ${company.hashedUrl}`);
+    });
+  }
+  if (nvResults.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(nvResults.errors, null, 2));
+  }
 }
 
 if (require.main === module) {

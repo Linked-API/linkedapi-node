@@ -1,4 +1,4 @@
-import { LinkedApiWorkflowError } from "../types/errors";
+import { LinkedApiError, TLinkedApiActionError } from "../types/errors";
 import type { TBaseActionParams } from "../types/params";
 import type {
   TActionResponse,
@@ -6,7 +6,11 @@ import type {
   TWorkflowDefinition,
   TWorkflowResponse,
 } from "../types/workflows";
-import type { BaseMapper, TDefaultParameters } from "./base-mapper.abstract";
+import {
+  BaseMapper,
+  TDefaultParameters,
+  TMappedResponse,
+} from "./base-mapper.abstract";
 
 export interface TActionConfig {
   paramName: string;
@@ -22,8 +26,7 @@ export interface TResponseMappingConfig {
 export abstract class ThenWorkflowMapper<
   TParams extends TBaseActionParams,
   TResult,
-> implements BaseMapper<TParams, TResult>
-{
+> extends BaseMapper<TParams, TResult> {
   private readonly actionConfigs: TActionConfig[];
   private readonly responseMappings: TResponseMappingConfig[];
   private readonly baseActionType: string;
@@ -40,13 +43,14 @@ export abstract class ThenWorkflowMapper<
     baseActionType: string;
     defaultParams?: TDefaultParameters;
   }) {
+    super();
     this.actionConfigs = actionConfigs;
     this.responseMappings = responseMappings;
     this.baseActionType = baseActionType;
     this.defaultParams = defaultParams ?? {};
   }
 
-  public mapRequest(params: TParams): TWorkflowDefinition {
+  public override mapRequest(params: TParams): TWorkflowDefinition {
     const then = this.buildThenForRequest(params);
     const clearParams = this.clearParams(params);
 
@@ -58,39 +62,47 @@ export abstract class ThenWorkflowMapper<
     } as unknown as TWorkflowDefinition;
   }
 
-  public mapResponse(response: TWorkflowResponse): TResult {
-    if (!response.completion) {
-      const { failure } = response;
-      if (failure) {
-        throw new LinkedApiWorkflowError(failure.reason, failure.message);
-      }
-      throw LinkedApiWorkflowError.unknownError();
-    }
+  public override mapResponse(
+    response: TWorkflowResponse,
+  ): TMappedResponse<TResult> {
+    const completion = this.getCompletion(response);
 
-    const completion = response.completion;
     if (Array.isArray(completion)) {
-      return completion as TResult;
+      return {
+        data: completion
+          .map((action) => action.data)
+          .filter(Boolean) as TResult,
+        errors: completion
+          .map((action) => action.error)
+          .filter(Boolean) as TLinkedApiActionError[],
+      };
     }
 
     if (completion.error) {
-      throw new LinkedApiWorkflowError(
-        completion.error.message,
-        completion.error.type,
-      );
+      return {
+        data: undefined,
+        errors: [completion.error].filter(Boolean) as TLinkedApiActionError[],
+      };
     }
     if (completion.data) {
       return this.mapThenFromResponse(completion.data as TWorkflowSingleData);
     }
 
-    throw LinkedApiWorkflowError.unknownError();
+    throw LinkedApiError.unknownError();
   }
 
-  private mapThenFromResponse(data: TWorkflowSingleData): TResult {
+  private mapThenFromResponse(
+    data: TWorkflowSingleData,
+  ): TMappedResponse<TResult> {
     const result = { ...data };
     const thenActions = data.then;
+    const errors: TLinkedApiActionError[] = [];
 
     if (!thenActions) {
-      return result as TResult;
+      return {
+        data: result as TResult,
+        errors: [],
+      };
     }
 
     for (const mapping of this.responseMappings) {
@@ -101,18 +113,27 @@ export abstract class ThenWorkflowMapper<
         if (thenAction) {
           (result as Record<string, unknown>)[mapping.targetProperty] =
             thenAction.data;
+          if (thenAction.error) {
+            errors.push(thenAction.error);
+          }
         }
         continue;
       }
 
-      if ((thenActions as TActionResponse).actionType === mapping.actionType) {
-        (result as Record<string, unknown>)[mapping.targetProperty] = (
-          thenActions as TActionResponse
-        ).data;
+      const thenAction = thenActions as TActionResponse;
+      if (thenAction.actionType === mapping.actionType) {
+        (result as Record<string, unknown>)[mapping.targetProperty] =
+          thenAction.data;
+        if (thenAction.error) {
+          errors.push(thenAction.error);
+        }
       }
     }
     delete (result as Record<string, unknown>)["then"];
-    return result as TResult;
+    return {
+      data: result as TResult,
+      errors,
+    };
   }
 
   private buildThenForRequest(params: TParams): unknown[] {

@@ -1,5 +1,4 @@
 export * from "./company";
-export * from "./company.sales-navigator";
 export * from "./connection";
 export * from "./message";
 export * from "./person";

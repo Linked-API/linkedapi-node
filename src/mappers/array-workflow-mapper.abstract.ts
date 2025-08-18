@@ -1,10 +1,10 @@
-import { LinkedApiWorkflowError } from "../types/errors";
+import { TLinkedApiActionError } from "../types/errors";
 import type { TBaseActionParams } from "../types/params";
 import type {
   TWorkflowDefinition,
   TWorkflowResponse,
 } from "../types/workflows";
-import type { BaseMapper } from "./base-mapper.abstract";
+import { BaseMapper, TMappedResponse } from "./base-mapper.abstract";
 
 export interface TDefaultParameters {
   [key: string]: unknown;
@@ -13,11 +13,11 @@ export interface TDefaultParameters {
 export abstract class ArrayWorkflowMapper<
   TParams extends TBaseActionParams,
   TResult,
-> implements BaseMapper<TParams, TResult[]>
-{
+> extends BaseMapper<TParams, TResult[]> {
   private readonly baseActionType: string;
 
   constructor({ baseActionType }: { baseActionType: string }) {
+    super();
     this.baseActionType = baseActionType;
   }
 
@@ -28,27 +28,37 @@ export abstract class ArrayWorkflowMapper<
     } as unknown as TWorkflowDefinition;
   }
 
-  public mapResponse(response: TWorkflowResponse): TResult[] {
-    if (!response.completion) {
-      const { failure } = response;
-      if (failure) {
-        throw new LinkedApiWorkflowError(failure.reason, failure.message);
-      }
-      throw LinkedApiWorkflowError.unknownError();
-    }
-
-    const completion = response.completion;
+  public mapResponse(response: TWorkflowResponse): TMappedResponse<TResult[]> {
+    const completion = this.getCompletion(response);
 
     if (Array.isArray(completion)) {
-      return completion.map((item) => item.data) as TResult[];
+      return {
+        data: completion.map((item) => item.data) as TResult[],
+        errors: completion
+          .map((item) => item.error)
+          .filter(Boolean) as TLinkedApiActionError[],
+      };
+    }
+
+    if (completion.error) {
+      return {
+        data: undefined,
+        errors: [completion.error].filter(Boolean) as TLinkedApiActionError[],
+      };
     }
 
     const data = completion.data;
 
     if (Array.isArray(data)) {
-      return data as TResult[];
+      return {
+        data: data as TResult[],
+        errors: [],
+      };
     }
 
-    return [data] as TResult[];
+    return {
+      data: [data] as TResult[],
+      errors: [],
+    };
   }
 }

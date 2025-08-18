@@ -1,6 +1,8 @@
 import type { TBaseFetchPersonParamsWide } from "../types/actions/person";
-import type { TBaseFetchCompanyParamsWide } from "../types/actions/company";
-import type { TNvBaseFetchCompanyParamsWide } from "../types/actions/company.sales-navigator";
+import type {
+  TBaseFetchCompanyParamsWide,
+  TNvBaseFetchCompanyParamsWide,
+} from "../types/actions/company";
 import type { TWorkflowResponse } from "../types/workflows";
 import type { BaseMapper } from "../mappers/base-mapper.abstract";
 

@@ -1,5 +1,8 @@
 import type { TBaseActionParams } from "../types/params";
-import type { BaseMapper } from "../mappers/base-mapper.abstract";
+import type {
+  BaseMapper,
+  TMappedResponse,
+} from "../mappers/base-mapper.abstract";
 import type { TWorkflowResponse } from "../types/workflows";
 import type {
   WaitForCompletionOptions,
@@ -18,7 +21,7 @@ export class WorkflowHandler<TResult = TWorkflowResponse> {
 
   public async result(
     options: WaitForCompletionOptions = {},
-  ): Promise<TResult> {
+  ): Promise<TMappedResponse<TResult>> {
     try {
       const rawResult = await this.workflowExecutor.result(
         this.workflowId,
@@ -26,7 +29,10 @@ export class WorkflowHandler<TResult = TWorkflowResponse> {
       );
 
       if (!this.mapper) {
-        return rawResult as TResult;
+        return {
+          data: rawResult as TResult,
+          errors: [],
+        };
       }
 
       return this.mapper.mapResponse(rawResult);

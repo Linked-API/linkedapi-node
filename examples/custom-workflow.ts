@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from 'linkedapi-node';
 
 async function customWorkflowExample(): Promise<void> {
 
@@ -27,7 +27,7 @@ async function customWorkflowExample(): Promise<void> {
       }
     });
     console.log('🔍 Workflow started: ', customWorkflow.workflowId);
-    const result = await customWorkflow.result();
+    const result = (await customWorkflow.result()).data!;
 
     console.log('✅ Custom workflow executed successfully');
     console.log('🔍 Result: ', result.completion);
@@ -35,9 +35,6 @@ async function customWorkflowExample(): Promise<void> {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApiWorkflowError) {
-      console.error('🚨 Linked API Workflow Error:', error.message);
-      console.error('🔍 Reason:', error.reason);
     } else {
       console.error('💥 Unknown error:', error);
     }

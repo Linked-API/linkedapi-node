@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from 'linkedapi-node';
 
 async function postActionsExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -14,9 +14,6 @@ async function postActionsExample(): Promise<void> {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApiWorkflowError) {
-      console.error('🚨 Linked API Workflow Error:', error.message);
-      console.error('🔍 Reason:', error.reason);
     } else {
       console.error('💥 Unknown error:', error);  
     }
@@ -34,8 +31,12 @@ async function reactToPost(linkedapi: LinkedApi): Promise<void> {
   const reactionWorkflow = await linkedapi.reactToPost(reactionParams);
   console.log('👍 React to post workflow started:', reactionWorkflow.workflowId);
 
-  await reactionWorkflow.result();
-  console.log('✅ Post reaction added successfully');
+  const reactionResult = await reactionWorkflow.result();
+  if (reactionResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(reactionResult.errors, null, 2));
+  } else {
+    console.log('✅ Post reaction added successfully');
+  }
 }
 
 async function commentOnPost(linkedapi: LinkedApi): Promise<void> {
@@ -49,8 +50,12 @@ async function commentOnPost(linkedapi: LinkedApi): Promise<void> {
   const commentWorkflow = await linkedapi.commentOnPost(commentParams);
   console.log('💬 Comment on post workflow started:', commentWorkflow.workflowId);
 
-  await commentWorkflow.result();
-  console.log('✅ Comment added successfully');
+  const commentResult = await commentWorkflow.result();
+  if (commentResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(commentResult.errors, null, 2));
+  } else {
+    console.log('✅ Comment added successfully');
+  }
 }
 
 if (require.main === module) {

@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, LinkedApiWorkflowError, TYearsOfExperience } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, TYearsOfExperience } from 'linkedapi-node';
 
 async function searchPeopleExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -15,9 +15,6 @@ async function searchPeopleExample(): Promise<void> {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApiWorkflowError) {
-      console.error('🚨 Linked API Workflow Error:', error.message);
-      console.error('🔍 Reason:', error.reason);
     } else {
       console.error('💥 Unknown error:', error);
     }
@@ -41,16 +38,22 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
   console.log('🔍 Searching people with Linked API...');
   const searchWorkflow = await linkedapi.searchPeople(searchParams);
   console.log('🔍 Workflow started:', searchWorkflow.workflowId);
-  const results = await searchWorkflow.result();
+  const searchResult = await searchWorkflow.result();
 
-  console.log('✅ People search completed');
-  console.log(`📊 Found ${results.length} people`);
-  results.forEach((person, index) => {
+  if (searchResult.data) {
+    const results = searchResult.data;
+    console.log('✅ People search completed');
+    console.log(`📊 Found ${results.length} people`);
+    results.forEach((person, index) => {
     console.log(`  ${index + 1}. ${person.name}`);
     console.log(`     Headline: ${person.headline}`);
-    console.log(`     Location: ${person.location}`);
-    console.log(`     URL: ${person.publicUrl}`);
-  });
+      console.log(`     Location: ${person.location}`);
+      console.log(`     URL: ${person.publicUrl}`);
+    });
+  }
+  if (searchResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(searchResult.errors, null, 2));
+  }
 }
 
 async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
@@ -71,14 +74,20 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   console.log('🔍 Sales Navigator workflow started:', nvSearchWorkflow.workflowId);
   const nvResults = await nvSearchWorkflow.result();
 
-  console.log('✅ Sales Navigator people search completed');
-  console.log(`📊 Found ${nvResults.length} people`);
-  nvResults.forEach((person, index) => {
+  if (nvResults.data) {
+    const results = nvResults.data;
+    console.log('✅ Sales Navigator people search completed');
+    console.log(`📊 Found ${results.length} people`);
+    results.forEach((person, index) => {
     console.log(`  ${index + 1}. ${person.name}`);
     console.log(`     Position: ${person.position}`);
-    console.log(`     Location: ${person.location}`);
-    console.log(`     URL: ${person.hashedUrl}`);
-  });
+      console.log(`     Location: ${person.location}`);
+      console.log(`     URL: ${person.hashedUrl}`);
+    });
+  }
+  if (nvResults.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(nvResults.errors, null, 2));
+  }
 }
 
 if (require.main === module) {

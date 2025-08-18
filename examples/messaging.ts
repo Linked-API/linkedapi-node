@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from 'linkedapi-node';
 
 async function messagingExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -24,9 +24,6 @@ async function messagingExample(): Promise<void> {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApiWorkflowError) {
-      console.error('🚨 Linked API Workflow Error:', error.message);
-      console.error('🔍 Reason:', error.reason);
     } else {
       console.error('💥 Unknown error:', error);
     }
@@ -44,10 +41,14 @@ async function sendMessage(linkedapi: LinkedApi, personUrl: string): Promise<voi
   const messageWorkflow = await linkedapi.sendMessage(messageParams);
   console.log('💬 Send message workflow started:', messageWorkflow.workflowId);
 
-  await messageWorkflow.result();
-  console.log('✅ Message sent successfully');
-  console.log(`   📤 To: ${personUrl}`);
-  console.log(`   💬 Text: "${messageParams.text}"`);
+  const sendMessageResult = await messageWorkflow.result();
+  if (sendMessageResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(sendMessageResult.errors, null, 2));
+  } else {
+    console.log('✅ Message sent successfully');
+    console.log(`   📤 To: ${personUrl}`);
+    console.log(`   💬 Text: "${messageParams.text}"`);
+  }
 }
 
 async function syncConversation(linkedapi: LinkedApi, personUrl: string): Promise<void> {
@@ -60,10 +61,14 @@ async function syncConversation(linkedapi: LinkedApi, personUrl: string): Promis
   const syncWorkflow = await linkedapi.syncConversation(syncParams);
   console.log('🔄 Sync conversation workflow started:', syncWorkflow.workflowId);
 
-  await syncWorkflow.result();
-  console.log('✅ Conversation synced successfully');
-  console.log(`   👤 Person: ${personUrl}`);
-  console.log('   📥 Conversation is now ready for polling');
+  const syncResult = await syncWorkflow.result();
+  if (syncResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(syncResult.errors, null, 2));
+  } else {
+    console.log('✅ Conversation synced successfully');
+    console.log(`   👤 Person: ${personUrl}`);
+    console.log('   📥 Conversation is now ready for polling');
+  }
 }
 
 async function salesNavigatorSendMessage(linkedapi: LinkedApi, personUrl: string): Promise<void> {
@@ -78,10 +83,14 @@ async function salesNavigatorSendMessage(linkedapi: LinkedApi, personUrl: string
   const nvMessageWorkflow = await linkedapi.salesNavigatorSendMessage(nvMessageParams);
   console.log('🎯 Sales Navigator send message workflow started:', nvMessageWorkflow.workflowId);
 
-  await nvMessageWorkflow.result();
-  console.log('✅ Sales Navigator message sent successfully');
-  console.log(`   📤 To: ${personUrl}`);
-  console.log(`   💬 Text: "${nvMessageParams.text}"`);
+  const nvMessageResult = await nvMessageWorkflow.result();
+  if (nvMessageResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(nvMessageResult.errors, null, 2));
+  } else {
+    console.log('✅ Sales Navigator message sent successfully');
+    console.log(`   📤 To: ${personUrl}`);
+    console.log(`   💬 Text: "${nvMessageParams.text}"`);
+  }
 }
 
 async function salesNavigatorSyncConversation(linkedapi: LinkedApi, personUrl: string): Promise<void> {
@@ -94,10 +103,14 @@ async function salesNavigatorSyncConversation(linkedapi: LinkedApi, personUrl: s
   const nvSyncWorkflow = await linkedapi.salesNavigatorSyncConversation(nvSyncParams);
   console.log('🎯 Sales Navigator sync conversation workflow started:', nvSyncWorkflow.workflowId);
 
-  await nvSyncWorkflow.result();
-  console.log('✅ Sales Navigator conversation synced successfully');
-  console.log(`   👤 Person: ${personUrl}`);
-  console.log('   📥 Sales Navigator conversation is now ready for polling');
+  const nvSyncResult = await nvSyncWorkflow.result();
+  if (nvSyncResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(nvSyncResult.errors, null, 2));
+  } else {
+    console.log('✅ Sales Navigator conversation synced successfully');
+    console.log(`   👤 Person: ${personUrl}`);
+    console.log('   📥 Sales Navigator conversation is now ready for polling');
+  }
 }
 
 async function pollConversations(linkedapi: LinkedApi, standardPersonUrl: string, nvPersonUrl: string): Promise<void> {

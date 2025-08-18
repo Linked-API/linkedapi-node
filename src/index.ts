@@ -1,15 +1,13 @@
 import type { TLinkedApiConfig } from "./types/config";
-import {
-  LinkedApiError,
-  LinkedApiWorkflowError,
-  LinkedApiWorkflowTimeoutError,
-} from "./types/errors";
 import type { TWorkflowDefinition, TWorkflowResponse } from "./types/workflows";
 import type { TLinkedApiResponse } from "./types/responses";
 import { HttpClient } from "./core/http-client";
 import { WorkflowExecutor } from "./core/workflow-executor";
 import { WorkflowHandler } from "./core/workflow-handler";
-import type { BaseMapper } from "./mappers/base-mapper.abstract";
+import type {
+  TMappedResponse,
+  BaseMapper,
+} from "./mappers/base-mapper.abstract";
 
 import {
   FetchCompanyMapper,
@@ -102,7 +100,7 @@ import {
  *   retrievePosts: true,
  *   postsRetrievalConfig: { limit: 10 }
  * });
- * const personData = await personWorkflow.result();
+ * const personResult = await personWorkflow.result();
  * ```
  */
 class LinkedApi {
@@ -222,7 +220,7 @@ class LinkedApi {
    * ```typescript
    * // Restore a person fetching workflow with full type safety
    * const personHandler = await linkedapi.restoreWorkflow("workflow-id-123", "fetchPerson");
-   * const personData = await personHandler.result();
+   * const personResult = await personHandler.result();
    *
    * const statusHandler = await linkedapi.restoreWorkflow("workflow-id-456", "checkConnectionStatus");
    * const statusResult = await statusHandler.result();
@@ -231,7 +229,7 @@ class LinkedApi {
    */
   public async restoreWorkflow<TFunctionName extends TSupportedFunctionName>(
     workflowId: string,
-    functionName = "executeCustomWorkflow" as TFunctionName,
+    functionName: TFunctionName,
   ): Promise<WorkflowHandler<TRestoreResultType<TFunctionName>>> {
     const mapper = createMapperFromFunctionName(functionName);
 
@@ -513,11 +511,13 @@ class LinkedApi {
    *   }
    * });
    *
-   * const personData = await personWorkflow.result();
-   * console.log("Person name:", personData.name);
-   * console.log("Headline:", personData.headline);
-   * console.log("Experience:", personData.experiences); // TypeScript knows this exists
-   * console.log("Posts:", personData.posts); // TypeScript knows this exists
+   * const personResult = await personWorkflow.result();
+   * if (personResult.data) {
+   *   console.log("Person name:", personResult.data.name);
+   *   console.log("Headline:", personResult.data.headline);
+   *   console.log("Experience:", personResult.data.experiences); // TypeScript knows this exists
+   *   console.log("Posts:", personResult.data.posts); // TypeScript knows this exists
+   * }
    * ```
    *
    * @example
@@ -527,9 +527,10 @@ class LinkedApi {
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * const basicData = await basicPersonWorkflow.result();
-   * console.log("Basic info:", basicData.name, basicData.headline);
-   * // personData.experiences is undefined (and TypeScript knows this)
+   * const basicResult = await basicPersonWorkflow.result();
+   * if (basicResult.data) {
+   *   console.log("Basic info:", basicResult.data.name, basicResult.data.headline);
+   * }
    * ```
    */
   public async fetchPerson<TParams extends TBaseFetchPersonParams>(
@@ -565,8 +566,8 @@ class LinkedApi {
    *   personHashedUrl: "https://www.linkedin.com/in/ABC123",
    * });
    *
-   * const personData = await nvPersonWorkflow.result();
-   * console.log("Sales Navigator data:", personData);
+   * const personResult = await nvPersonWorkflow.result();
+   * console.log("Sales Navigator data:", personResult.data);
    * ```
    */
   public async salesNavigatorFetchPerson(
@@ -621,10 +622,12 @@ class LinkedApi {
    *   dmsRetrievalConfig: { limit: 3 }
    * });
    *
-   * const companyData = await companyWorkflow.result();
-   * console.log("Company name:", companyData.name);
-   * console.log("Employee count:", companyData.employees?.length);
-   * console.log("Posts:", companyData.posts?.length);
+   * const companyResult = await companyWorkflow.result();
+   * if (companyResult.data) {
+   *   console.log("Company name:", companyResult.data.name);
+   *   console.log("Employee count:", companyResult.data.employees?.length);
+   *   console.log("Posts:", companyResult.data.posts?.length);
+   * }
    * ```
    */
   public async fetchCompany<TParams extends TBaseFetchCompanyParams>(
@@ -676,10 +679,12 @@ class LinkedApi {
    *   },
    * });
    *
-   * const companyData = await nvCompanyWorkflow.result();
-   * console.log("Company name:", companyData.name);
-   * console.log("Employees:", companyData.employees?.length);
-   * console.log("Decision makers:", companyData.dms?.length);
+   * const companyResult = await nvCompanyWorkflow.result();
+   * if (companyResult.data) {
+   *   console.log("Company name:", companyResult.data.name);
+   *   console.log("Employees:", companyResult.data.employees?.length);
+   *   console.log("Decision makers:", companyResult.data.dms?.length);
+   * }
    * ```
    */
   public async salesNavigatorFetchCompany<
@@ -716,10 +721,12 @@ class LinkedApi {
    *   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789"
    * });
    *
-   * const postData = await postWorkflow.result();
-   * console.log("Post content:", postData.text);
-   * console.log("Author:", postData.author);
-   * console.log("Reactions:", postData.reactions);
+   * const postResult = await postWorkflow.result();
+   * if (postResult.data) {
+   *   console.log("Post content:", postResult.data.text);
+   *   console.log("Author:", postResult.data.author);
+   *   console.log("Reactions:", postResult.data.reactions);
+   * }
    * ```
    */
   public async fetchPost(
@@ -768,8 +775,10 @@ class LinkedApi {
    *   limit: 25
    * });
    *
-   * const companies = await companySearchWorkflow.result();
-   * console.log("Found companies:", companies.length);
+   * const companiesResult = await companySearchWorkflow.result();
+   * if (companiesResult.data) {
+   *   console.log("Found companies:", companiesResult.data.length);
+   * }
    * ```
    */
   public async searchCompanies(
@@ -814,8 +823,10 @@ class LinkedApi {
    *   limit: 50
    * });
    *
-   * const companies = await nvCompanySearchWorkflow.result();
-   * console.log("Sales Navigator companies:", companies.length);
+   * const companiesResult = await nvCompanySearchWorkflow.result();
+   * if (companiesResult.data) {
+   *   console.log("Sales Navigator companies:", companiesResult.data.length);
+   * }
    * ```
    */
   public async salesNavigatorSearchCompanies(
@@ -857,8 +868,10 @@ class LinkedApi {
    *   limit: 50
    * });
    *
-   * const people = await peopleSearchWorkflow.result();
-   * console.log("Found professionals:", people.length);
+   * const peopleResult = await peopleSearchWorkflow.result();
+   * if (peopleResult.data) {
+   *   console.log("Found professionals:", peopleResult.data.length);
+   * }
    * ```
    */
   public async searchPeople(
@@ -899,8 +912,10 @@ class LinkedApi {
    *   limit: 25
    * });
    *
-   * const prospects = await nvPeopleSearchWorkflow.result();
-   * console.log("Sales Navigator prospects:", prospects.length);
+   * const prospectsResult = await nvPeopleSearchWorkflow.result();
+   * if (prospectsResult.data) {
+   *   console.log("Sales Navigator prospects:", prospectsResult.data.length);
+   * }
    * ```
    */
   public async salesNavigatorSearchPeople(
@@ -978,8 +993,10 @@ class LinkedApi {
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * const status = await statusWorkflow.result();
-   * console.log("Connection status:", status.connectionStatus);
+   * const statusResult = await statusWorkflow.result();
+   * if (statusResult.data) {
+   *   console.log("Connection status:", statusResult.data.connectionStatus);
+   * }
    * ```
    */
   public async checkConnectionStatus(
@@ -1058,13 +1075,15 @@ class LinkedApi {
    * ```typescript
    * const pendingWorkflow = await linkedapi.retrievePendingRequests();
    *
-   * const pendingRequests = await pendingWorkflow.result();
-   * console.log("Pending requests:", pendingRequests.length);
+   * const pendingResult = await pendingWorkflow.result();
+   * if (pendingResult.data) {
+   *   console.log("Pending requests:", pendingResult.data.length);
    *
-   * pendingRequests.forEach(request => {
+   * pendingResult.data.forEach(request => {
    *   console.log(`${request.name}: ${request.headline}`);
    *   console.log(`Profile: ${request.publicUrl}`);
    * });
+   * }
    * ```
    */
   public async retrievePendingRequests(): Promise<
@@ -1106,8 +1125,10 @@ class LinkedApi {
    *   limit: 50
    * });
    *
-   * const connections = await connectionsWorkflow.result();
-   * console.log("Filtered connections:", connections.length);
+   * const connectionsResult = await connectionsWorkflow.result();
+   * if (connectionsResult.data) {
+   *   console.log("Filtered connections:", connectionsResult.data.length);
+   * }
    * ```
    */
   public async retrieveConnections(
@@ -1259,10 +1280,12 @@ class LinkedApi {
    * ```typescript
    * const ssiWorkflow = await linkedapi.retrieveSSI();
    *
-   * const ssiData = await ssiWorkflow.result();
-   * console.log("SSI Score:", ssiData.ssi);
-   * console.log("Industry Ranking:", ssiData.industryTop);
-   * console.log("Network Ranking:", ssiData.networkTop);
+   * const ssiResult = await ssiWorkflow.result();
+   * if (ssiResult.data) {
+   *   console.log("SSI Score:", ssiResult.data.ssi);
+   *   console.log("Industry Ranking:", ssiResult.data.industryTop);
+   *   console.log("Network Ranking:", ssiResult.data.networkTop);
+   * }
    * ```
    */
   public async retrieveSSI(): Promise<WorkflowHandler<TRetrieveSSIResult>> {
@@ -1298,10 +1321,12 @@ class LinkedApi {
    * ```typescript
    * const performanceWorkflow = await linkedapi.retrievePerformance();
    *
-   * const performanceData = await performanceWorkflow.result();
-   * console.log("Profile views:", performanceData.profileViews);
-   * console.log("Search appearances:", performanceData.searchAppearances);
-   * console.log("Post impressions:", performanceData.postImpressions);
+   * const performanceResult = await performanceWorkflow.result();
+   * if (performanceResult.data) {
+   *   console.log("Profile views:", performanceResult.data.profileViews);
+   *   console.log("Search appearances:", performanceResult.data.searchAppearances);
+   *   console.log("Post impressions:", performanceResult.data.postImpressions);
+   * }
    * ```
    */
   public async retrievePerformance(): Promise<
@@ -1380,19 +1405,15 @@ class LinkedApi {
 
 export default LinkedApi;
 
-export {
-  LinkedApi,
-  LinkedApiError,
-  LinkedApiWorkflowError,
-  LinkedApiWorkflowTimeoutError,
-  WorkflowHandler,
-};
+export { LinkedApi, WorkflowHandler };
 
 export type {
   TLinkedApiConfig,
   TLinkedApiResponse,
   TWorkflowDefinition,
   TWorkflowResponse,
+  TMappedResponse,
 };
 
 export * from "./types";
+export * from "./core/workflow-restoration";

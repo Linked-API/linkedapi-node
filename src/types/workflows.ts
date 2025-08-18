@@ -1,3 +1,5 @@
+import { TLinkedApiActionError } from "../types/errors";
+
 export interface TSingleActionWorkflowDefinition {
   actionType: string;
   [key: string]: unknown;
@@ -18,16 +20,12 @@ export interface TWorkflowCompletionSingleAction<
   TResult extends TWorkflowData = TWorkflowData,
 > {
   data?: TResult;
-  error?: TWorkflowActionError;
+  error?: TLinkedApiActionError;
   actionType: string;
   success: boolean;
   label?: string;
 }
 
-export interface TWorkflowActionError {
-  type: string;
-  message: string;
-}
 export interface TWorkflowFailure {
   reason: string;
   message: string;
@@ -53,7 +51,7 @@ export interface TSingleActionResponse<
   TResult extends TWorkflowData = TWorkflowData,
 > {
   data?: TResult;
-  error?: TWorkflowActionError;
+  error?: TLinkedApiActionError;
   actionType: string;
   success: boolean;
   label?: string;

@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from 'linkedapi-node';
 
 async function connectionsExample(): Promise<void> {
 
@@ -24,9 +24,6 @@ async function connectionsExample(): Promise<void> {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApiWorkflowError) {
-      console.error('🚨 Linked API Workflow Error:', error.message);
-      console.error('🔍 Reason:', error.reason);
     } else {
       console.error('💥 Unknown error:', error);
     }
@@ -44,8 +41,13 @@ async function checkConnectionStatus(linkedapi: LinkedApi, personUrl: string): P
   console.log('🔍 Connection status workflow started:', statusWorkflow.workflowId);
 
   const statusResult = await statusWorkflow.result();
-  console.log('✅ Connection status check completed');
-  console.log(`📊 Connection status: ${statusResult.connectionStatus}`);
+  if (statusResult.data) {
+    console.log('✅ Connection status check completed');
+    console.log(`📊 Connection status: ${statusResult.data.connectionStatus}`);
+  }
+  if (statusResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(statusResult.errors, null, 2));
+  }
 }
 
 async function sendConnectionRequest(linkedapi: LinkedApi, personUrl: string): Promise<void> {
@@ -60,9 +62,13 @@ async function sendConnectionRequest(linkedapi: LinkedApi, personUrl: string): P
   const requestWorkflow = await linkedapi.sendConnectionRequest(requestParams);
   console.log('📤 Send connection request workflow started:', requestWorkflow.workflowId);
 
-  await requestWorkflow.result();
-  console.log('✅ Connection request sent successfully');
-  console.log('   📝 Note included in the request');
+  const requestResult = await requestWorkflow.result();
+  if (requestResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(requestResult.errors, null, 2));
+  } else {
+    console.log('✅ Connection request sent successfully');
+    console.log('   📝 Note included in the request');
+  }
 }
 
 async function retrievePendingRequests(linkedapi: LinkedApi): Promise<void> {
@@ -72,14 +78,19 @@ async function retrievePendingRequests(linkedapi: LinkedApi): Promise<void> {
   console.log('📋 Retrieve pending requests workflow started:', pendingWorkflow.workflowId);
 
   const pendingResults = await pendingWorkflow.result();
-  console.log('✅ Pending requests retrieval completed');
-  console.log(`📊 Found ${pendingResults.length} pending requests`);
-
-  pendingResults.forEach((request, index) => {
-    console.log(`  ${index + 1}. ${request.name}`);
-    console.log(`     Profile: ${request.publicUrl}`);
-    console.log(`     Headline: ${request.headline}`);
-  });
+  if (pendingResults.data) {
+    const pendingRequests = pendingResults.data;
+    console.log('✅ Pending requests retrieval completed');
+    console.log(`📊 Found ${pendingRequests.length} pending requests`);
+    pendingRequests.forEach((request, index) => {
+      console.log(`  ${index + 1}. ${request.name}`);
+      console.log(`     Profile: ${request.publicUrl}`);
+      console.log(`     Headline: ${request.headline}`);
+    });
+  }
+  if (pendingResults.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(pendingResults.errors, null, 2));
+  }
 }
 
 async function withdrawConnectionRequest(linkedapi: LinkedApi, personUrl: string): Promise<void> {
@@ -93,9 +104,13 @@ async function withdrawConnectionRequest(linkedapi: LinkedApi, personUrl: string
   const withdrawWorkflow = await linkedapi.withdrawConnectionRequest(withdrawParams);
   console.log('🔙 Withdraw connection request workflow started:', withdrawWorkflow.workflowId);
 
-  await withdrawWorkflow.result();
-  console.log('✅ Connection request withdrawn successfully');
-  console.log('   🚶 Also unfollowed the person');
+  const withdrawResult = await withdrawWorkflow.result();
+  if (withdrawResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(withdrawResult.errors, null, 2));
+  } else {
+    console.log('✅ Connection request withdrawn successfully');
+    console.log('   🚶 Also unfollowed the person');
+  }
 }
 
 async function retrieveConnections(linkedapi: LinkedApi): Promise<void> {
@@ -113,15 +128,21 @@ async function retrieveConnections(linkedapi: LinkedApi): Promise<void> {
   console.log('👥 Retrieve connections workflow started:', connectionsWorkflow.workflowId);
 
   const connectionsResults = await connectionsWorkflow.result();
-  console.log('✅ Connections retrieval completed');
-  console.log(`📊 Found ${connectionsResults.length} connections`);
 
-  connectionsResults.forEach((connection, index) => {
-    console.log(`  ${index + 1}. ${connection.name}`);
-    console.log(`     Profile: ${connection.publicUrl}`);
-    console.log(`     Headline: ${connection.headline}`);
-    console.log(`     Location: ${connection.location}`);
-  });
+  if (connectionsResults.data) {
+    const connections = connectionsResults.data;
+    console.log('✅ Connections retrieval completed');
+    console.log(`📊 Found ${connections.length} connections`);
+    connections.forEach((connection, index) => {
+      console.log(`  ${index + 1}. ${connection.name}`);
+      console.log(`     Profile: ${connection.publicUrl}`);
+      console.log(`     Headline: ${connection.headline}`);
+      console.log(`     Location: ${connection.location}`);
+    });
+  }
+  if (connectionsResults.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(connectionsResults.errors, null, 2));
+  }
 }
 
 async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promise<void> {
@@ -134,9 +155,13 @@ async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promis
   const removeWorkflow = await linkedapi.removeConnection(removeParams);
   console.log('❌ Remove connection workflow started:', removeWorkflow.workflowId);
 
-  await removeWorkflow.result();
-  console.log('✅ Connection removed successfully');
-  console.log('   🔗 No longer connected with this person');
+  const removeResult = await removeWorkflow.result();
+  if (removeResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(removeResult.errors, null, 2));
+  } else {
+    console.log('✅ Connection removed successfully');
+    console.log('   🔗 No longer connected with this person');
+  }
 }
 
 if (require.main === module) {

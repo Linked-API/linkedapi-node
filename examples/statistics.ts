@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, LinkedApiWorkflowError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from 'linkedapi-node';
 
 async function statisticsExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -17,9 +17,6 @@ async function statisticsExample(): Promise<void> {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
-    } else if (error instanceof LinkedApiWorkflowError) {
-      console.error('🚨 Linked API Workflow Error:', error.message);
-      console.error('🔍 Reason:', error.reason);
     } else {
       console.error('💥 Unknown error:', error);
     }
@@ -32,7 +29,7 @@ async function retrieveSSI(linkedapi: LinkedApi): Promise<void> {
   const ssiWorkflow = await linkedapi.retrieveSSI();
   console.log('📊 Retrieve SSI workflow started:', ssiWorkflow.workflowId);
 
-  const ssiResult = await ssiWorkflow.result();
+  const ssiResult = (await ssiWorkflow.result()).data!;
   console.log('✅ SSI retrieval completed');
   console.log(`📈 SSI Score: ${ssiResult.ssi}/100`);
   console.log(`🏆 Industry Top: ${ssiResult.industryTop}%`);
@@ -52,7 +49,7 @@ async function retrievePerformance(linkedapi: LinkedApi): Promise<void> {
   const performanceWorkflow = await linkedapi.retrievePerformance();
   console.log('📈 Retrieve performance workflow started:', performanceWorkflow.workflowId);
 
-  const performanceResult = await performanceWorkflow.result();
+  const performanceResult = (await performanceWorkflow.result()).data!;
   console.log('✅ Performance retrieval completed');
   console.log(`👥 Followers: ${performanceResult.followersCount.toLocaleString()}`);
   console.log(`👀 Post Views (Last 7 Days): ${performanceResult.postViewsLast7Days.toLocaleString()}`);

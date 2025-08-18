@@ -93,8 +93,8 @@ export class WorkflowExecutor {
     }
     if (!response.result) {
       throw new LinkedApiError(
-        "No result. Please contact support.",
         "noResult",
+        "No result. Please contact support.",
       );
     }
     return response.result;

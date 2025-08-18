@@ -1,10 +1,10 @@
 export interface TLinkedApiResponse<TResult = unknown> {
   success: boolean;
   result?: TResult;
-  error?: TRequestError;
+  error?: TLinkedApiRequestError;
 }
 
-export interface TRequestError {
+export interface TLinkedApiRequestError {
   type: string;
   message: string;
 }

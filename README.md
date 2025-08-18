@@ -16,6 +16,8 @@ npm install linkedapi-node
 
 ## ⚡ Quick Start
 
+> **⚠️ Note:** This package is currently in beta. Features and APIs are subject to change.
+
 This official Linked API package simplifies interaction with LinkedIn's functionalities by wrapping the [Linked API](https://linkedapi.io), making it easier to build applications without dealing with complex API calls.
 
 You can find various examples in the `/examples` folder to help you get started.
@@ -50,7 +52,7 @@ const searchCompaniesWorkflow = await linkedapi.searchCompanies({
     industries: ["Software Development", "Robotics Engineering"],
   },
 });
-const companies = await searchCompaniesWorkflow.result();
+const companiesResult = await searchCompaniesWorkflow.result();
 
 // Retrieving company basic info, employees
 const companyWorkflow = await linkedapi.fetchCompany({
@@ -62,7 +64,7 @@ const companyWorkflow = await linkedapi.fetchCompany({
     },
   },
 });
-const company = await companyWorkflow.result();
+const companyResult = await companyWorkflow.result();
 ```
 
 ---
@@ -104,6 +106,7 @@ const workflow = await linkedapi.executeCustomWorkflow({
   term: "Tech Inc",
   then: { actionType: "st.doForCompanies", ... }
 });
+const result = await workflow.result();
 ```
 
 ---
@@ -139,14 +142,14 @@ const personHandler = await linkedapi.restoreWorkflow(
   "workflow-id-123",
   "fetchPerson"
 );
-const personData = await personHandler.result();
+const personResult = await personHandler.result();
 
 // Restore a company fetching workflow
 const companyHandler = await linkedapi.restoreWorkflow(
   "workflow-id-456",
   "fetchCompany"
 );
-const companyData = await companyHandler.result();
+const companyResult = await companyHandler.result();
 ```
 
 ---
@@ -181,7 +184,7 @@ const personWorkflow = await linkedapi.fetchPerson({
     since: "2024-01-01", // Retrieve reactions since this date
   },
 });
-const personData = await personWorkflow.result();
+const personResult = await personWorkflow.result();
 ```
 
 ---
@@ -197,6 +200,7 @@ Retrieve person data through Sales Navigator for enhanced prospecting capabiliti
 const nvPersonWorkflow = await linkedapi.salesNavigatorFetchPerson({
   personHashedUrl: "https://www.linkedin.com/in/ABC123",
 });
+const personResult = await nvPersonWorkflow.result();
 ```
 
 ---
@@ -235,7 +239,7 @@ const companyWorkflow = await linkedapi.fetchCompany({
     limit: 5, // Maximum number of decision makers to retrieve
   },
 });
-const companyData = await companyWorkflow.result();
+const companyResult = await companyWorkflow.result();
 ```
 
 ---
@@ -268,7 +272,7 @@ const nvCompanyWorkflow = await linkedapi.salesNavigatorFetchCompany({
     limit: 10, // Maximum number of decision makers to retrieve (1-20)
   },
 });
-const companyData = await nvCompanyWorkflow.result();
+const companyResult = await nvCompanyWorkflow.result();
 ```
 
 ---
@@ -284,6 +288,7 @@ Retrieve detailed information about a LinkedIn post including content, engagemen
 const postWorkflow = await linkedapi.fetchPost({
   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789",
 });
+const postResult = await postWorkflow.result();
 ```
 
 ---
@@ -305,6 +310,7 @@ const companySearchWorkflow = await linkedapi.searchCompanies({
   },
   limit: 50, // Maximum number of results to return (1-100, default: 10)
 });
+const companiesResult = await companySearchWorkflow.result();
 ```
 
 ---
@@ -330,6 +336,7 @@ const nvCompanySearch = await linkedapi.salesNavigatorSearchCompanies({
   },
   limit: 75, // Maximum number of results to return (1-100)
 });
+const companiesResult = await nvCompanySearch.result();
 ```
 
 ---
@@ -356,6 +363,7 @@ const peopleSearchWorkflow = await linkedapi.searchPeople({
   },
   limit: 20, // Maximum number of results to return (1-100, default: 10)
 });
+const peopleResult = await peopleSearchWorkflow.result();
 ```
 
 ---
@@ -383,6 +391,7 @@ const nvPeopleSearch = await linkedapi.salesNavigatorSearchPeople({
     yearsOfExperience: ["lessThanOne", "oneToTwo", "threeToFive"],
   },
 });
+const prospectsResult = await nvPeopleSearch.result();
 ```
 
 ---
@@ -414,8 +423,7 @@ Check the current connection status with a LinkedIn user.
 const statusWorkflow = await linkedapi.checkConnectionStatus({
   personUrl: "https://www.linkedin.com/in/john-doe",
 });
-const status = await statusWorkflow.result();
-console.log("Connection status:", status.connectionStatus); // 'connected', 'pending', 'not_connected'
+const statusResult = await statusWorkflow.result();
 ```
 
 ---
@@ -444,8 +452,8 @@ Retrieve all pending connection requests sent by your account.
 
 ```typescript
 const pendingWorkflow = await linkedapi.retrievePendingRequests();
-const pending = await pendingWorkflow.result();
-console.log("Pending requests:", pending.requests);
+const pendingResult = await pendingWorkflow.result();
+console.log("Pending requests:", pendingResult.data.length);
 ```
 
 ---
@@ -526,8 +534,7 @@ Retrieve your LinkedIn Social Selling Index (SSI) score and rankings.
 
 ```typescript
 const ssiWorkflow = await linkedapi.retrieveSSI();
-const ssi = await ssiWorkflow.result();
-console.log("SSI Score:", ssi.ssi, "Industry Top:", ssi.industryTop);
+const ssiResult = await ssiWorkflow.result();
 ```
 
 ---
@@ -541,9 +548,7 @@ Retrieve LinkedIn account performance metrics including profile views and post e
 
 ```typescript
 const performanceWorkflow = await linkedapi.retrievePerformance();
-const metrics = await performanceWorkflow.result();
-console.log("Profile views:", metrics.profileViewsLast90Days);
-console.log("Post views:", metrics.postViewsLast7Days);
+const performanceResult = await performanceWorkflow.result();
 ```
 
 ---
@@ -788,6 +793,7 @@ try {
 #### Retrieving Results After App Restart
 
 If your application restarts or you need to check workflow status later, you can:
+
 - Restore a `WorkflowHandler` using `restoreWorkflow(workflowId, functionName)` with full type safety
 
 ```typescript
@@ -797,8 +803,10 @@ const rawHandler = await linkedapi.restoreWorkflow(savedWorkflowId);
 // 2) Streamlined restoration with function name (wide result type with full type safety)
 const handler = await linkedapi.restoreWorkflow(savedWorkflowId, "fetchPerson");
 const result = await handler.result();
-console.log("Person name:", result.name);
-console.log("Experience count:", result.experiences?.length);
+if (result.data) {
+  console.log("Person name:", result.data.name);
+  console.log("Experience count:", result.data.experiences?.length);
+}
 ```
 
 See `examples/restore-workflow.ts` for a full example.
@@ -807,28 +815,46 @@ See `examples/restore-workflow.ts` for a full example.
 
 ## 🚨 Error Handling
 
-Linked API provides structured error handling for different failure scenarios.
+Linked API provides structured error handling for different failure scenarios. There are two types of errors to handle:
+
+### 1. Exceptions (try/catch)
 
 - **`LinkedApiError`** - throws if a [common error](https://linkedapi.io/docs/making-requests/#common-errors) occurs
-- **`LinkedApiWorkflowError`** - throws in case of the [workflow execution](https://linkedapi.io/docs/actions-overview/#result-options) error (like invalid URL or messaging not allowed)
 - **`LinkedApiWorkflowTimeoutError`** - throws in case of timeout. Contains `workflowId` and `functionName` for future restoration
 
+### 2. Action Errors (errors array)
+
+- **Partial failures** - when some actions in a workflow succeed but others fail
+- **Action-specific errors** - errors from individual actions within a workflow that don't cause the entire workflow to fail
+
 ```typescript
-import LinkedApi from "linkedapi-node";
+import LinkedApi, { LinkedApiError } from 'linkedapi-node';
 
 try {
-  const result = await linkedapi.fetchPerson({
+  const workflow = await linkedapi.fetchPerson({
     personUrl: "https://www.linkedin.com/in/invalid-profile",
   });
-  const data = await result.result();
+  const result = await workflow.result();
+
+  // Check for partial errors in the response
+  if (result.errors && result.errors.length > 0) {
+    console.warn("Workflow completed with errors:");
+    result.errors.forEach((error) => {
+      console.warn(`- ${error.type}: ${error.message}`);
+    });
+  }
+
+  // Access the data (may be undefined if workflow failed completely)
+  if (result.data) {
+    console.log("Person data:", result.data);
+  } else {
+    console.log("No data returned");
+  }
 } catch (error) {
-  if (error instanceof LinkedApi.LinkedApiError) {
+  if (error instanceof LinkedApiError) {
     console.error("Linked API Error:", error.message);
     console.error("Error Type:", error.type);
     console.error("Details:", error.details);
-  } else if (error instanceof LinkedApi.LinkedApiWorkflowError) {
-    console.error("Linked API Workflow Error:", error.message);
-    console.error("Reason:", error.reason);
   } else {
     console.error("Unexpected error:", error);
   }
@@ -843,6 +869,28 @@ try {
 - **`invalidIdentificationToken`** - Invalid Identification Token
 - **`subscriptionRequired`** - No purchased subscription seats available for this LinkedIn account.
 - **`invalidRequestPayload`** - Invalid request body/parameters: {validation_message}.
+- **`invalidWorkflow`** - Workflow configuration is not valid due to violated action constraints or invalid action parameters: {validation_details}.
+- **`plusPlanRequired`** - Some actions in this workflow require the Plus plan.
+- **`linkedinAccountSignedOut`** - Your LinkedIn account has been signed out in our cloud browser. This occasionally happens as LinkedIn may sign out accounts after an extended period. You'll need to visit our platform and reconnect your account.
+- **`languageNotSupported`** -  Your LinkedIn account uses a language other than English, which is currently the only supported option.
+- **`timeout`** - Local execution timeout. Contains `workflowId` and `functionName` for future restoration.
+
+### Common Action Error Types
+
+- **`personNotFound`** - Provided URL is not an existing LinkedIn person. (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, fetchPerson, salesNavigatorSendMessage, salesNavigatorSyncConversation, salesNavigatorFetchPerson)
+- **`messagingNotAllowed`** - Sending a message to the person is not allowed. (sendMessage, salesNavigatorSendMessage)
+- **`alreadyPending`** - Connection request to this person has already been sent and is still pending.(sendConnectionRequest)
+- **`alreadyConnected`** - Your LinkedIn account is already connected with this person. (sendConnectionRequest)
+- **`emailRequired`** - Person requires an email address to send a connection request. (sendConnectionRequest)
+- **`requestNotAllowed`** - LinkedIn has restricted sending a connection request to this person. (sendConnectionRequest)
+- **`notPending`** - There is no pending connection request to this person. (withdrawConnectionRequest)
+- **`connectionNotFound`** - Person is not in your connections. (removeConnection)
+- **`searchingNotAllowed`** - LinkedIn has blocked performing the search due to exceeding limits or other restrictions. (searchCompanies, searchPeople, salesNavigatorSearchCompanies, salesNavigatorSearchPeople)
+- **`companyNotFound`** - Provided URL is not an existing LinkedIn company. (fetchCompany, salesNavigatorFetchCompany)
+- **`retrievingNotAllowed`** - LinkedIn has blocked performing the retrieval due to exceeding limits or other restrictions. (retrieveConnections, fetchCompany, salesNavigatorFetchCompany)
+- **`postNotFound`** - Provided URL is not an existing LinkedIn post. (fetchPost, reactToPost, commentOnPost)
+- **`commentingNotAllowed`** - Commenting is not allowed on this post. This could be due to the post author's privacy settings, LinkedIn restrictions on commenting, or because the post type does not support comments. (commentOnPost)
+- **`noSalesNavigator`** - Your account does not have Sales Navigator subscription. (salesNavigatorSendMessage, salesNavigatorSyncConversation, salesNavigatorSearchCompanies, salesNavigatorSearchPeople, salesNavigatorFetchCompany, salesNavigatorFetchPerson)
 
 ---
 

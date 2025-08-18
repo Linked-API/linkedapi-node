@@ -1,4 +1,4 @@
-import LinkedApi from '../src';
+import LinkedApi from 'linkedapi-node';
 
 async function example(): Promise<void> {
   // First run
@@ -25,20 +25,26 @@ async function example(): Promise<void> {
 
   const restoredHandler = await linkedapiAfterRestart.restoreWorkflow(
     savedWorkflowId,
-    "fetchPerson",
+    "fetchPerson" as const,
   );
 
   // Or if you want to restore a raw workflow (for executeCustomWorkflow)
   const rawHandler = await linkedapiAfterRestart.restoreWorkflow(
     savedWorkflowId,
+    "executeCustomWorkflow" as const,
   );
 
   console.log("Restoration started: ", restoredHandler.workflowId);
 
   const result = await restoredHandler.result();
-  console.log("👤 Restored name:", result.name);
-  console.log("💼 Restored experience:", result.experiences?.length);
-  console.log("Restored result:", JSON.stringify(result, null, 2));
+  if (result.data) {
+    console.log("👤 Restored name:", result.data.name);
+    console.log("💼 Restored experience:", result.data.experiences?.length);
+    console.log("Restored result:", JSON.stringify(result, null, 2));
+  }
+  if (result.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
+  }
 
   const rawResult = await rawHandler.result();
   console.log("Raw result:", JSON.stringify(rawResult, null, 2));

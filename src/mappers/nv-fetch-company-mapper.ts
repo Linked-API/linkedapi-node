@@ -1,7 +1,7 @@
 import type {
   TNvBaseFetchCompanyParams,
   TNvFetchCompanyResult,
-} from "../types/actions/company.sales-navigator";
+} from "../types/actions/company";
 import {
   ThenWorkflowMapper,
   type TActionConfig,
