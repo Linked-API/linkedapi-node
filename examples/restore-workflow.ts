@@ -1,4 +1,4 @@
-import LinkedApi from 'linkedapi-node';
+import LinkedApi, { FUNCTION_NAME } from 'linkedapi-node';
 
 async function example(): Promise<void> {
   // First run
@@ -25,13 +25,13 @@ async function example(): Promise<void> {
 
   const restoredHandler = await linkedapiAfterRestart.restoreWorkflow(
     savedWorkflowId,
-    "fetchPerson" as const,
+    FUNCTION_NAME.fetchPerson,
   );
 
   // Or if you want to restore a raw workflow (for executeCustomWorkflow)
   const rawHandler = await linkedapiAfterRestart.restoreWorkflow(
     savedWorkflowId,
-    "executeCustomWorkflow" as const,
+    FUNCTION_NAME.executeCustomWorkflow,
   );
 
   console.log("Restoration started: ", restoredHandler.workflowId);

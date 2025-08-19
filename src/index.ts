@@ -1,7 +1,7 @@
 import type { TLinkedApiConfig } from "./types/config";
 import type { TWorkflowDefinition, TWorkflowResponse } from "./types/workflows";
 import type { TLinkedApiResponse } from "./types/responses";
-import { LinkedApiHttpClient } from "./core/linked-api-http-client";
+import { buildLinkedApiHttpClient } from "./core/linked-api-http-client";
 import { WorkflowExecutor } from "./core/workflow-executor";
 import { WorkflowHandler } from "./core/workflow-handler";
 import type {
@@ -119,25 +119,14 @@ class LinkedApi {
   constructor(configOrClient: TLinkedApiConfig | HttpClient) {
     if (configOrClient instanceof HttpClient) {
       this.httpClient = configOrClient;
-      this.workflowExecutor = new WorkflowExecutor({
-        httpClient: this.httpClient,
-        apiPath: "/workflows",
-        workflowTimeout: 24 * 60 * 60 * 1000,
-      });
     } else {
-      const config = configOrClient as TLinkedApiConfig;
-      this.httpClient = new LinkedApiHttpClient({
-        headers: {
-          "linked-api-token": config.linkedApiToken,
-          "identification-token": config.identificationToken,
-        },
-      });
-      this.workflowExecutor = new WorkflowExecutor({
-        httpClient: this.httpClient,
-        apiPath: "/workflows",
-        workflowTimeout: config.workflowTimeout ?? 24 * 60 * 60 * 1000,
-      });
+      this.httpClient = buildLinkedApiHttpClient(configOrClient);
     }
+    this.workflowExecutor = new WorkflowExecutor({
+      httpClient: this.httpClient,
+      apiPath: "/workflows",
+      workflowTimeout: 24 * 60 * 60 * 1000,
+    });
   }
 
   /**
@@ -189,34 +178,6 @@ class LinkedApi {
       "executeCustomWorkflow",
       this.workflowExecutor,
     );
-  }
-
-  /**
-   * Get the result of a workflow by its ID.
-   *
-   * This method retrieves the result of a previously started workflow using its workflow ID.
-   * Useful for checking workflow status and retrieving results asynchronously.
-   *
-   * @param workflowId - The unique identifier of the workflow
-   * @returns Promise resolving to the workflow response containing completion data or failure information
-   *
-   * @see {@link https://linkedapi.io/docs/executing-workflows/ Executing Workflows Documentation}
-   *
-   * @example
-   * ```typescript
-   * const workflowResponse = await linkedapi.getWorkflowResult("workflow-id-123");
-   *
-   * if (workflowResponse.completion) {
-   *   console.log("Workflow completed:", workflowResponse.completion.data);
-   * } else if (workflowResponse.failure) {
-   *   console.error("Workflow failed:", workflowResponse.failure.message);
-   * }
-   * ```
-   */
-  public async getWorkflowResult(
-    workflowId: string,
-  ): Promise<TWorkflowResponse> {
-    return this.workflowExecutor.getWorkflowResult(workflowId);
   }
 
   /**

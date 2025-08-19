@@ -1,18 +1,25 @@
-import { TLinkedApiResponse, LinkedApiError, HttpClient } from "../types";
+import {
+  TLinkedApiResponse,
+  LinkedApiError,
+  HttpClient,
+  TLinkedApiConfig,
+} from "../types";
 
-export interface HttpClientConfig {
-  headers: Record<string, string>;
+export function buildLinkedApiHttpClient(config: TLinkedApiConfig): HttpClient {
+  return new LinkedApiHttpClient(config);
 }
-export class LinkedApiHttpClient extends HttpClient {
+
+class LinkedApiHttpClient extends HttpClient {
   private readonly baseUrl: string;
   private readonly headers: Record<string, string>;
 
-  constructor(config: HttpClientConfig) {
+  constructor(config: TLinkedApiConfig) {
     super();
     this.baseUrl = "https://api.linkedapi.io";
     this.headers = {
       "Content-Type": "application/json",
-      ...config.headers,
+      "linked-api-token": config.linkedApiToken,
+      "identification-token": config.identificationToken,
     };
   }
 

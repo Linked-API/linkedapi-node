@@ -111,20 +111,6 @@ const result = await workflow.result();
 
 ---
 
-### `getWorkflowResult(workflowId)`
-
-Retrieve the result of a previously started workflow by its ID.
-
-- **Parameters:** `string` - Workflow ID
-- **Returns:** `Promise<TWorkflowResponse>` - Workflow response with completion data
-- **Documentation:** [Executing Workflows](https://linkedapi.io/docs/executing-workflows/)
-
-```typescript
-const result = await linkedapi.getWorkflowResult("workflow-id-123");
-```
-
----
-
 ### `restoreWorkflow(workflowId, functionName)`
 
 Restore a WorkflowHandler for a previously started workflow using its ID and function name with type safety.
