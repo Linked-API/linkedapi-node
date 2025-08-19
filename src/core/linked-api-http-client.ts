@@ -73,13 +73,9 @@ class LinkedApiHttpClient extends HttpClient {
     );
   }
 
-  public async get<T>(
-    url: string,
-    config?: RequestInit,
-  ): Promise<TLinkedApiResponse<T>> {
+  public async get<T>(url: string): Promise<TLinkedApiResponse<T>> {
     try {
       const response = await fetch(`${this.baseUrl}${url}`, {
-        ...config,
         method: "GET",
         headers: this.headers,
       });
@@ -92,11 +88,9 @@ class LinkedApiHttpClient extends HttpClient {
   public async post<T>(
     url: string,
     data?: unknown,
-    config?: RequestInit,
   ): Promise<TLinkedApiResponse<T>> {
     try {
       const response = await fetch(`${this.baseUrl}${url}`, {
-        ...config,
         method: "POST",
         headers: this.headers,
         body: data ? JSON.stringify(data) : null,
