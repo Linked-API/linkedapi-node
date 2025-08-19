@@ -114,19 +114,30 @@ class LinkedApi {
    * @param config - Configuration object containing API tokens and optional settings
    * @returns LinkedApi instance with access to LinkedIn automation features
    */
-
-  constructor(config: TLinkedApiConfig) {
-    this.httpClient = new LinkedApiHttpClient({
-      headers: {
-        "linked-api-token": config.linkedApiToken,
-        "identification-token": config.identificationToken,
-      },
-    });
-    this.workflowExecutor = new WorkflowExecutor({
-      httpClient: this.httpClient,
-      apiPath: "/workflows",
-      workflowTimeout: config.workflowTimeout ?? 24 * 60 * 60 * 1000,
-    });
+  constructor(config: TLinkedApiConfig);
+  constructor(httpClient: HttpClient);
+  constructor(configOrClient: TLinkedApiConfig | HttpClient) {
+    if (configOrClient instanceof HttpClient) {
+      this.httpClient = configOrClient;
+      this.workflowExecutor = new WorkflowExecutor({
+        httpClient: this.httpClient,
+        apiPath: "/workflows",
+        workflowTimeout: 24 * 60 * 60 * 1000,
+      });
+    } else {
+      const config = configOrClient as TLinkedApiConfig;
+      this.httpClient = new LinkedApiHttpClient({
+        headers: {
+          "linked-api-token": config.linkedApiToken,
+          "identification-token": config.identificationToken,
+        },
+      });
+      this.workflowExecutor = new WorkflowExecutor({
+        httpClient: this.httpClient,
+        apiPath: "/workflows",
+        workflowTimeout: config.workflowTimeout ?? 24 * 60 * 60 * 1000,
+      });
+    }
   }
 
   /**

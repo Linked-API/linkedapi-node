@@ -25,23 +25,11 @@ export class LinkedApiHttpClient extends HttpClient {
 
     try {
       const errorData = await response.json();
-      if (errorData?.error) {
-        throw new LinkedApiError(
-          errorData.error.type,
-          errorData.error.message,
-          errorData,
-        );
-      } else {
-        throw new LinkedApiError(
-          `HTTP ${response.status}: ${response.statusText}`,
-          "HTTP_ERROR",
-          {
-            status: response.status,
-            statusText: response.statusText,
-            url: response.url,
-          },
-        );
-      }
+      throw new LinkedApiError(
+        `HTTP ${response.status}: ${response.statusText}`,
+        "HTTP_ERROR",
+        errorData,
+      );
     } catch (e) {
       if (e instanceof LinkedApiError) {
         throw e;
