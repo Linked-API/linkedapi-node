@@ -1,7 +1,7 @@
 import type { TLinkedApiConfig } from "./types/config";
 import type { TWorkflowDefinition, TWorkflowResponse } from "./types/workflows";
 import type { TLinkedApiResponse } from "./types/responses";
-import { HttpClient } from "./core/http-client";
+import { LinkedApiHttpClient } from "./core/linked-api-http-client";
 import { WorkflowExecutor } from "./core/workflow-executor";
 import { WorkflowHandler } from "./core/workflow-handler";
 import type {
@@ -68,6 +68,7 @@ import {
   TApiUsageStatsParams,
   TApiUsageStatsResponse,
   TApiUsageAction,
+  HttpClient,
 } from "./types";
 import {
   TRestoreResultType,
@@ -106,6 +107,7 @@ import {
 class LinkedApi {
   private readonly httpClient: HttpClient;
   private readonly workflowExecutor: WorkflowExecutor;
+
   /**
    * Initialize LinkedApi client with your API tokens.
    *
@@ -114,7 +116,7 @@ class LinkedApi {
    */
 
   constructor(config: TLinkedApiConfig) {
-    this.httpClient = new HttpClient({
+    this.httpClient = new LinkedApiHttpClient({
       headers: {
         "linked-api-token": config.linkedApiToken,
         "identification-token": config.identificationToken,

@@ -1,4 +1,4 @@
-import type { HttpClient } from "./http-client";
+import type { HttpClient } from "../types";
 import type {
   TWorkflowDefinition,
   TWorkflowResponse,
