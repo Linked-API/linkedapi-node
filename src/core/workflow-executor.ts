@@ -4,6 +4,7 @@ import type {
   TWorkflowResponse,
 } from "../types/workflows";
 import { LinkedApiError } from "../types/errors";
+import { setTimeout as sleep } from "node:timers/promises";
 
 /**
  * Options for waiting for a workflow to complete.
@@ -73,7 +74,7 @@ export class WorkflowExecutor {
         return result;
       }
 
-      await this.delay(pollInterval);
+      await sleep(pollInterval);
     }
 
     throw new LinkedApiError(
@@ -98,9 +99,5 @@ export class WorkflowExecutor {
       throw LinkedApiError.unknownError();
     }
     return response.result;
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
