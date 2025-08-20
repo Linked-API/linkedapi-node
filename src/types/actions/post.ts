@@ -13,7 +13,11 @@ export interface TPost {
   commentCount: number;
 }
 
-export type TPostType = "original" | "repost";
+export const POST_TYPE = {
+  original: "original",
+  repost: "repost",
+} as const;
+export type TPostType = (typeof POST_TYPE)[keyof typeof POST_TYPE];
 
 export interface TFetchPostParams extends TBaseActionParams {
   postUrl: string;
@@ -27,13 +31,15 @@ export interface TReaction {
   reactionType: TReactionType;
 }
 
-export type TReactionType =
-  | "like"
-  | "celebrate"
-  | "support"
-  | "love"
-  | "insightful"
-  | "funny";
+export const REACTION_TYPE = {
+  like: "like",
+  celebrate: "celebrate",
+  support: "support",
+  love: "love",
+  insightful: "insightful",
+  funny: "funny",
+} as const;
+export type TReactionType = (typeof REACTION_TYPE)[keyof typeof REACTION_TYPE];
 
 export interface TComment {
   postUrl: string;

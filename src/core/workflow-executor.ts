@@ -1,4 +1,4 @@
-import type { HttpClient } from "../types";
+import type { HttpClient, TLinkedApiErrorType } from "../types";
 import type {
   TWorkflowDefinition,
   TWorkflowResponse,
@@ -42,13 +42,13 @@ export class WorkflowExecutor {
       request,
     );
     if (response.error) {
-      throw new LinkedApiError(response.error.type, response.error.message);
+      throw new LinkedApiError(
+        response.error.type as TLinkedApiErrorType,
+        response.error.message,
+      );
     }
     if (!response.result) {
-      throw new LinkedApiError(
-        "No result. Please contact support.",
-        "noResult",
-      );
+      throw LinkedApiError.unknownError();
     }
     return response.result;
   }
@@ -77,7 +77,7 @@ export class WorkflowExecutor {
     }
 
     throw new LinkedApiError(
-      "timeout",
+      "workflowTimeout",
       `Workflow ${workflowId} did not complete within ${timeout}ms`,
     );
   }
@@ -89,13 +89,13 @@ export class WorkflowExecutor {
       `${this.apiPath}/${workflowId}`,
     );
     if (response.error) {
-      throw new LinkedApiError(response.error.type, response.error.message);
+      throw new LinkedApiError(
+        response.error.type as TLinkedApiErrorType,
+        response.error.message,
+      );
     }
     if (!response.result) {
-      throw new LinkedApiError(
-        "noResult",
-        "No result. Please contact support.",
-      );
+      throw LinkedApiError.unknownError();
     }
     return response.result;
   }

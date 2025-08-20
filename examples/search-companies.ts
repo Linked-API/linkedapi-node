@@ -14,6 +14,7 @@ async function searchCompaniesExample(): Promise<void> {
 
   } catch (error) {
     if (error instanceof LinkedApiError) {
+      console.error('🚨 Linked API Error Type:', error.type);
       console.error('🚨 Linked API Error:', error.message);
       console.error('📝 Details:', error.details);
     } else {

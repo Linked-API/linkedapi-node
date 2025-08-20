@@ -115,16 +115,25 @@ export interface TPersonExperience {
   location: string;
 }
 
+export const EMPLOYMENT_TYPE = {
+  fullTime: "fullTime",
+  partTime: "partTime",
+  selfEmployed: "selfEmployed",
+  freelance: "freelance",
+  contract: "contract",
+  internship: "internship",
+  apprenticeship: "apprenticeship",
+  seasonal: "seasonal",
+} as const;
 export type TEmploymentType =
-  | "fullTime"
-  | "partTime"
-  | "selfEmployed"
-  | "freelance"
-  | "contract"
-  | "internship"
-  | "apprenticeship"
-  | "seasonal";
-export type TLocationType = "onSite" | "remote" | "hybrid";
+  (typeof EMPLOYMENT_TYPE)[keyof typeof EMPLOYMENT_TYPE];
+
+export const LOCATION_TYPE = {
+  onSite: "onSite",
+  remote: "remote",
+  hybrid: "hybrid",
+} as const;
+export type TLocationType = (typeof LOCATION_TYPE)[keyof typeof LOCATION_TYPE];
 
 export interface TPersonEducation {
   schoolName: string;
@@ -141,16 +150,22 @@ export interface TPersonLanguage {
   proficiency: TLanguageProficiency;
 }
 
+export const LANGUAGE_PROFICIENCY = {
+  elementary: "elementary",
+  limitedWorking: "limitedWorking",
+  professionalWorking: "professionalWorking",
+  fullProfessional: "fullProfessional",
+  nativeOrBilingual: "nativeOrBilingual",
+} as const;
 export type TLanguageProficiency =
-  | "elementary"
-  | "limitedWorking"
-  | "professionalWorking"
-  | "fullProfessional"
-  | "nativeOrBilingual";
+  (typeof LANGUAGE_PROFICIENCY)[keyof typeof LANGUAGE_PROFICIENCY];
 
+export const YEARS_OF_EXPERIENCE = {
+  lessThanOne: "lessThanOne",
+  oneToTwo: "oneToTwo",
+  threeToFive: "threeToFive",
+  sixToTen: "sixToTen",
+  moreThanTen: "moreThanTen",
+} as const;
 export type TYearsOfExperience =
-  | "lessThanOne"
-  | "oneToTwo"
-  | "threeToFive"
-  | "sixToTen"
-  | "moreThanTen";
+  (typeof YEARS_OF_EXPERIENCE)[keyof typeof YEARS_OF_EXPERIENCE];

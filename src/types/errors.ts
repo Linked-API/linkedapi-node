@@ -11,18 +11,36 @@ import { TSupportedFunctionName } from "../core/workflow-restoration";
  * - alreadyConnected (sendConnectionRequest)
  * - emailRequired (sendConnectionRequest)
  * - requestNotAllowed (sendConnectionRequest)
- * - notPending (withdrawConnectionRequest)
- * - retrievingNotAllowed (retrieveConnections)
+ * - notPending (withdrawConnectionRequest))
+ * - retrievingNotAllowed (retrieveConnections, fetchCompany, salesNavigatorFetchCompany)
  * - connectionNotFound (removeConnection)
  * - searchingNotAllowed (searchCompanies, searchPeople, salesNavigatorSearchCompanies, salesNavigatorSearchPeople)
  * - companyNotFound (fetchCompany, salesNavigatorFetchCompany)
- * - retrievingNotAllowed (fetchCompany, salesNavigatorFetchCompany)
  * - postNotFound (fetchPost, reactToPost, commentOnPost)
  * - commentingNotAllowed (commentOnPost)
  * - noSalesNavigator (salesNavigatorSendMessage, salesNavigatorSyncConversation, salesNavigatorSearchCompanies, salesNavigatorSearchPeople, salesNavigatorFetchCompany, salesNavigatorFetchPerson)
  */
+export const LINKED_API_ACTION_ERROR = {
+  personNotFound: "personNotFound",
+  messagingNotAllowed: "messagingNotAllowed",
+  alreadyPending: "alreadyPending",
+  alreadyConnected: "alreadyConnected",
+  emailRequired: "emailRequired",
+  requestNotAllowed: "requestNotAllowed",
+  notPending: "notPending",
+  retrievingNotAllowed: "retrievingNotAllowed",
+  connectionNotFound: "connectionNotFound",
+  searchingNotAllowed: "searchingNotAllowed",
+  companyNotFound: "companyNotFound",
+  postNotFound: "postNotFound",
+  commentingNotAllowed: "commentingNotAllowed",
+  noSalesNavigator: "noSalesNavigator",
+} as const;
+export type TLinkedApiActionErrorType =
+  (typeof LINKED_API_ACTION_ERROR)[keyof typeof LINKED_API_ACTION_ERROR];
+
 export interface TLinkedApiActionError {
-  type: string;
+  type: TLinkedApiActionErrorType;
   message: string;
 }
 
@@ -30,40 +48,43 @@ export interface TLinkedApiActionError {
  * This error is thrown when a request fails.
  * @see {@link https://linkedapi.io/docs/making-requests/#common-errors}
  */
+export const LINKED_API_ERROR = {
+  linkedApiTokenRequired: "linkedApiTokenRequired",
+  invalidLinkedApiToken: "invalidLinkedApiToken",
+  identificationTokenRequired: "identificationTokenRequired",
+  invalidIdentificationToken: "invalidIdentificationToken",
+  subscriptionRequired: "subscriptionRequired",
+  invalidRequestPayload: "invalidRequestPayload",
+  invalidWorkflow: "invalidWorkflow",
+  plusPlanRequired: "plusPlanRequired",
+  linkedinAccountSignedOut: "linkedinAccountSignedOut",
+  languageNotSupported: "languageNotSupported",
+  workflowTimeout: "workflowTimeout",
+} as const;
+export type TLinkedApiErrorType =
+  (typeof LINKED_API_ERROR)[keyof typeof LINKED_API_ERROR];
 export class LinkedApiError extends Error {
-  /**
-   * The type of the error.
-   * Common types:
-   * - linkedApiTokenRequired
-   * - invalidLinkedApiToken
-   * - identificationTokenRequired
-   * - invalidIdentificationToken
-   * - subscriptionRequired
-   * - invalidRequestPayload
-   * - invalidWorkflow
-   * - plusPlanRequired
-   * - linkedinAccountSignedOut
-   * - languageNotSupported
-   * - timeout
-   */
-  public type: string;
+  public type: TLinkedApiErrorType;
   public override message: string;
   public details?: unknown;
 
-  constructor(type: string, message: string, details?: unknown) {
+  constructor(type: TLinkedApiErrorType, message: string, details?: unknown) {
     super(message);
     this.type = type;
     this.message = message;
     this.details = details;
   }
 
-  public static unknownError(message: string = ""): LinkedApiError {
-    return new LinkedApiError("unknownError", message);
+  public static unknownError(
+    message: string = "Unknown error. Please contact support.",
+  ): LinkedApiError {
+    return new LinkedApiError("unknownError" as TLinkedApiErrorType, message);
   }
 }
 
 /**
  * This error is thrown when a workflow times out.
+ * Contains workflowId and functionName to restore the workflow.
  */
 export class LinkedApiWorkflowTimeoutError extends LinkedApiError {
   public readonly workflowId: string;

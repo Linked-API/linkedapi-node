@@ -37,7 +37,7 @@ export class WorkflowHandler<TResult = TWorkflowResponse> {
 
       return this.mapper.mapResponse(rawResult);
     } catch (error) {
-      if (error instanceof LinkedApiError && error.type === "timeout") {
+      if (error instanceof LinkedApiError && error.type === "workflowTimeout") {
         throw new LinkedApiWorkflowTimeoutError(
           this.workflowId,
           this.functionName,

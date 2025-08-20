@@ -1,4 +1,8 @@
-import { LinkedApiError, type TLinkedApiActionError } from "../types/errors";
+import {
+  LinkedApiError,
+  TLinkedApiErrorType,
+  type TLinkedApiActionError,
+} from "../types/errors";
 import type { TBaseActionParams } from "../types/params";
 import type {
   TWorkflowCompletion,
@@ -14,7 +18,10 @@ export abstract class BaseMapper<TParams extends TBaseActionParams, TResult> {
     if (!response.completion) {
       const { failure } = response;
       if (failure) {
-        throw new LinkedApiError(failure.reason, failure.message);
+        throw new LinkedApiError(
+          failure.reason as TLinkedApiErrorType,
+          failure.message,
+        );
       }
       throw LinkedApiError.unknownError();
     }

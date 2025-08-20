@@ -3,6 +3,7 @@ import {
   LinkedApiError,
   HttpClient,
   TLinkedApiConfig,
+  TLinkedApiErrorType,
 } from "../types";
 
 export function buildLinkedApiHttpClient(config: TLinkedApiConfig): HttpClient {
@@ -33,8 +34,8 @@ class LinkedApiHttpClient extends HttpClient {
     try {
       const errorData = await response.json();
       throw new LinkedApiError(
-        `HTTP ${response.status}: ${response.statusText}`,
-        "HTTP_ERROR",
+        errorData.error.type as TLinkedApiErrorType,
+        errorData.error.message,
         errorData,
       );
     } catch (e) {
@@ -42,8 +43,8 @@ class LinkedApiHttpClient extends HttpClient {
         throw e;
       }
       throw new LinkedApiError(
+        "httpError" as TLinkedApiErrorType,
         `HTTP ${response.status}: ${response.statusText}`,
-        "HTTP_ERROR",
         {
           status: response.status,
           statusText: response.statusText,
@@ -58,18 +59,10 @@ class LinkedApiHttpClient extends HttpClient {
       throw error;
     }
 
-    if (error instanceof TypeError && error.message === "Failed to fetch") {
-      throw new LinkedApiError(
-        "Network error: No response received",
-        "NETWORK_ERROR",
-        error,
-      );
-    }
-
     throw new LinkedApiError(
+      "httpError" as TLinkedApiErrorType,
       `Request error: ${(error as Error).message}`,
-      "REQUEST_ERROR",
-      { message: (error as Error).message },
+      { error },
     );
   }
 
