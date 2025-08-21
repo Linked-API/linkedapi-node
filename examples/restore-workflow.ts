@@ -7,13 +7,11 @@ async function example(): Promise<void> {
     identificationToken: process.env.IDENTIFICATION_TOKEN!,
   });
 
-  const startHandler = await linkedapi.fetchPerson({
+  const savedWorkflowId = await linkedapi.fetchPerson.execute({
     personUrl: 'https://www.linkedin.com/in/example-person/',
     retrieveExperience: true,
     retrieveEducation: true,
   });
-
-  const savedWorkflowId = startHandler.workflowId;
 
   // ... App stops here
 
@@ -31,7 +29,7 @@ async function example(): Promise<void> {
   // Or if you want to restore a raw workflow (for executeCustomWorkflow)
   const rawHandler = await linkedapiAfterRestart.restoreWorkflow(
     savedWorkflowId,
-    FUNCTION_NAME.executeCustomWorkflow,
+    FUNCTION_NAME.customWorkflow,
   );
 
   console.log("Restoration started: ", restoredHandler.workflowId);

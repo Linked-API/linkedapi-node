@@ -35,9 +35,9 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
   };
 
   console.log('🔍 Searching companies with Linked API...');
-  const searchWorkflow = await linkedapi.searchCompanies(searchParams);
-  console.log('🔍 Workflow started:', searchWorkflow.workflowId);
-  const result = await searchWorkflow.result();
+  const workflowId = await linkedapi.searchCompanies.execute(searchParams);
+  console.log('🔍 Workflow started:', workflowId);
+  const result = await linkedapi.searchCompanies.result(workflowId);
   if (result.data) {
     const results = result.data;
     console.log('✅ Company search completed');
@@ -70,9 +70,9 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   };
 
   console.log('\n🎯 Searching companies with Sales Navigator...');
-  const nvSearchWorkflow = await linkedapi.salesNavigatorSearchCompanies(nvSearchParams);
-  console.log('🔍 Sales Navigator workflow started:', nvSearchWorkflow.workflowId);
-  const nvResults = await nvSearchWorkflow.result();
+  const workflowId = await linkedapi.salesNavigatorSearchCompanies.execute(nvSearchParams);
+  console.log('🔍 Sales Navigator workflow started:', workflowId);
+  const nvResults = await linkedapi.salesNavigatorSearchCompanies.result(workflowId);
 
   if (nvResults.data) {
     const results = nvResults.data;

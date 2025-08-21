@@ -1,4 +1,4 @@
-import { TBaseActionParams, TLimitParams } from "../params";
+import { TBaseActionParams, TLimitParams } from '../params';
 
 // Base connection interfaces
 export interface TConnectionPerson {
@@ -24,12 +24,11 @@ export interface TCheckConnectionStatusResult {
 }
 
 export const CONNECTION_STATUS = {
-  connected: "connected",
-  pending: "pending",
-  notConnected: "notConnected",
+  connected: 'connected',
+  pending: 'pending',
+  notConnected: 'notConnected',
 } as const;
-export type TConnectionStatus =
-  (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS];
+export type TConnectionStatus = (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS];
 
 export interface TWithdrawConnectionRequestParams extends TBaseActionParams {
   personUrl: string;

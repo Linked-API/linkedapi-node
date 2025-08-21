@@ -1,4 +1,4 @@
-import { TSupportedFunctionName } from "../core/workflow-restoration";
+import { TSupportedFunctionName } from '../core/workflow-restoration';
 
 /**
  * This error is exposed when a workflow action fails to complete.
@@ -21,20 +21,20 @@ import { TSupportedFunctionName } from "../core/workflow-restoration";
  * - noSalesNavigator (salesNavigatorSendMessage, salesNavigatorSyncConversation, salesNavigatorSearchCompanies, salesNavigatorSearchPeople, salesNavigatorFetchCompany, salesNavigatorFetchPerson)
  */
 export const LINKED_API_ACTION_ERROR = {
-  personNotFound: "personNotFound",
-  messagingNotAllowed: "messagingNotAllowed",
-  alreadyPending: "alreadyPending",
-  alreadyConnected: "alreadyConnected",
-  emailRequired: "emailRequired",
-  requestNotAllowed: "requestNotAllowed",
-  notPending: "notPending",
-  retrievingNotAllowed: "retrievingNotAllowed",
-  connectionNotFound: "connectionNotFound",
-  searchingNotAllowed: "searchingNotAllowed",
-  companyNotFound: "companyNotFound",
-  postNotFound: "postNotFound",
-  commentingNotAllowed: "commentingNotAllowed",
-  noSalesNavigator: "noSalesNavigator",
+  personNotFound: 'personNotFound',
+  messagingNotAllowed: 'messagingNotAllowed',
+  alreadyPending: 'alreadyPending',
+  alreadyConnected: 'alreadyConnected',
+  emailRequired: 'emailRequired',
+  requestNotAllowed: 'requestNotAllowed',
+  notPending: 'notPending',
+  retrievingNotAllowed: 'retrievingNotAllowed',
+  connectionNotFound: 'connectionNotFound',
+  searchingNotAllowed: 'searchingNotAllowed',
+  companyNotFound: 'companyNotFound',
+  postNotFound: 'postNotFound',
+  commentingNotAllowed: 'commentingNotAllowed',
+  noSalesNavigator: 'noSalesNavigator',
 } as const;
 export type TLinkedApiActionErrorType =
   (typeof LINKED_API_ACTION_ERROR)[keyof typeof LINKED_API_ACTION_ERROR];
@@ -49,20 +49,19 @@ export interface TLinkedApiActionError {
  * @see {@link https://linkedapi.io/docs/making-requests/#common-errors}
  */
 export const LINKED_API_ERROR = {
-  linkedApiTokenRequired: "linkedApiTokenRequired",
-  invalidLinkedApiToken: "invalidLinkedApiToken",
-  identificationTokenRequired: "identificationTokenRequired",
-  invalidIdentificationToken: "invalidIdentificationToken",
-  subscriptionRequired: "subscriptionRequired",
-  invalidRequestPayload: "invalidRequestPayload",
-  invalidWorkflow: "invalidWorkflow",
-  plusPlanRequired: "plusPlanRequired",
-  linkedinAccountSignedOut: "linkedinAccountSignedOut",
-  languageNotSupported: "languageNotSupported",
-  workflowTimeout: "workflowTimeout",
+  linkedApiTokenRequired: 'linkedApiTokenRequired',
+  invalidLinkedApiToken: 'invalidLinkedApiToken',
+  identificationTokenRequired: 'identificationTokenRequired',
+  invalidIdentificationToken: 'invalidIdentificationToken',
+  subscriptionRequired: 'subscriptionRequired',
+  invalidRequestPayload: 'invalidRequestPayload',
+  invalidWorkflow: 'invalidWorkflow',
+  plusPlanRequired: 'plusPlanRequired',
+  linkedinAccountSignedOut: 'linkedinAccountSignedOut',
+  languageNotSupported: 'languageNotSupported',
+  workflowTimeout: 'workflowTimeout',
 } as const;
-export type TLinkedApiErrorType =
-  (typeof LINKED_API_ERROR)[keyof typeof LINKED_API_ERROR];
+export type TLinkedApiErrorType = (typeof LINKED_API_ERROR)[keyof typeof LINKED_API_ERROR];
 export class LinkedApiError extends Error {
   public type: TLinkedApiErrorType;
   public override message: string;
@@ -76,9 +75,9 @@ export class LinkedApiError extends Error {
   }
 
   public static unknownError(
-    message: string = "Unknown error. Please contact support.",
+    message: string = 'Unknown error. Please contact support.',
   ): LinkedApiError {
-    return new LinkedApiError("unknownError" as TLinkedApiErrorType, message);
+    return new LinkedApiError('unknownError' as TLinkedApiErrorType, message);
   }
 }
 
@@ -92,7 +91,7 @@ export class LinkedApiWorkflowTimeoutError extends LinkedApiError {
 
   constructor(workflowId: string, functionName: TSupportedFunctionName) {
     super(
-      "workflowTimeout",
+      'workflowTimeout',
       `Workflow ${workflowId} timed out. Use restoreWorkflow(${workflowId}, ${functionName}) to restore the workflow.`,
       {
         workflowId,

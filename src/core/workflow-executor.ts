@@ -1,10 +1,8 @@
-import type { HttpClient, TLinkedApiErrorType } from "../types";
-import type {
-  TWorkflowDefinition,
-  TWorkflowResponse,
-} from "../types/workflows";
-import { LinkedApiError } from "../types/errors";
-import { setTimeout as sleep } from "node:timers/promises";
+import { setTimeout as sleep } from 'node:timers/promises';
+
+import type { HttpClient, TLinkedApiErrorType } from '../types';
+import { LinkedApiError } from '../types/errors';
+import type { TWorkflowDefinition, TWorkflowResponse } from '../types/workflows';
 
 /**
  * Options for waiting for a workflow to complete.
@@ -35,18 +33,10 @@ export class WorkflowExecutor {
     this.workflowTimeout = workflowTimeout;
   }
 
-  public async startWorkflow(
-    request: TWorkflowDefinition,
-  ): Promise<TWorkflowResponse> {
-    const response = await this.httpClient.post<TWorkflowResponse>(
-      `${this.apiPath}`,
-      request,
-    );
+  public async startWorkflow(request: TWorkflowDefinition): Promise<TWorkflowResponse> {
+    const response = await this.httpClient.post<TWorkflowResponse>(`${this.apiPath}`, request);
     if (response.error) {
-      throw new LinkedApiError(
-        response.error.type as TLinkedApiErrorType,
-        response.error.message,
-      );
+      throw new LinkedApiError(response.error.type as TLinkedApiErrorType, response.error.message);
     }
     if (!response.result) {
       throw LinkedApiError.unknownError();
@@ -58,19 +48,13 @@ export class WorkflowExecutor {
     workflowId: string,
     options: WaitForCompletionOptions,
   ): Promise<TWorkflowResponse> {
-    const {
-      pollInterval = 5000,
-      timeout = this.workflowTimeout ?? 24 * 60 * 60 * 1000,
-    } = options;
+    const { pollInterval = 5000, timeout = this.workflowTimeout ?? 24 * 60 * 60 * 1000 } = options;
     const startTime = Date.now();
 
     while (Date.now() - startTime < timeout) {
       const result = await this.getWorkflowResult(workflowId);
 
-      if (
-        result.workflowStatus === "completed" ||
-        result.workflowStatus === "failed"
-      ) {
+      if (result.workflowStatus === 'completed' || result.workflowStatus === 'failed') {
         return result;
       }
 
@@ -78,22 +62,15 @@ export class WorkflowExecutor {
     }
 
     throw new LinkedApiError(
-      "workflowTimeout",
+      'workflowTimeout',
       `Workflow ${workflowId} did not complete within ${timeout}ms`,
     );
   }
 
-  public async getWorkflowResult(
-    workflowId: string,
-  ): Promise<TWorkflowResponse> {
-    const response = await this.httpClient.get<TWorkflowResponse>(
-      `${this.apiPath}/${workflowId}`,
-    );
+  public async getWorkflowResult(workflowId: string): Promise<TWorkflowResponse> {
+    const response = await this.httpClient.get<TWorkflowResponse>(`${this.apiPath}/${workflowId}`);
     if (response.error) {
-      throw new LinkedApiError(
-        response.error.type as TLinkedApiErrorType,
-        response.error.message,
-      );
+      throw new LinkedApiError(response.error.type as TLinkedApiErrorType, response.error.message);
     }
     if (!response.result) {
       throw LinkedApiError.unknownError();

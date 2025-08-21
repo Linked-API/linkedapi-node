@@ -26,10 +26,10 @@ async function statisticsExample(): Promise<void> {
 async function retrieveSSI(linkedapi: LinkedApi): Promise<void> {
   console.log('\n📊 Retrieving SSI (Social Selling Index)...');
 
-  const ssiWorkflow = await linkedapi.retrieveSSI();
-  console.log('📊 Retrieve SSI workflow started:', ssiWorkflow.workflowId);
+  const workflowId = await linkedapi.retrieveSSI.execute();
+  console.log('📊 Retrieve SSI workflow started:', workflowId);
 
-  const ssiResult = (await ssiWorkflow.result()).data!;
+  const ssiResult = (await linkedapi.retrieveSSI.result(workflowId)).data!;
   console.log('✅ SSI retrieval completed');
   console.log(`📈 SSI Score: ${ssiResult.ssi}/100`);
   console.log(`🏆 Industry Top: ${ssiResult.industryTop}%`);
@@ -46,10 +46,10 @@ async function retrieveSSI(linkedapi: LinkedApi): Promise<void> {
 async function retrievePerformance(linkedapi: LinkedApi): Promise<void> {
   console.log('\n📈 Retrieving Performance Statistics...');
 
-  const performanceWorkflow = await linkedapi.retrievePerformance();
-  console.log('📈 Retrieve performance workflow started:', performanceWorkflow.workflowId);
+  const workflowId = await linkedapi.retrievePerformance.execute();
+  console.log('📈 Retrieve performance workflow started:', workflowId);
 
-  const performanceResult = (await performanceWorkflow.result()).data!;
+  const performanceResult = (await linkedapi.retrievePerformance.result(workflowId)).data!;
   console.log('✅ Performance retrieval completed');
   console.log(`👥 Followers: ${performanceResult.followersCount.toLocaleString()}`);
   console.log(`👀 Post Views (Last 7 Days): ${performanceResult.postViewsLast7Days.toLocaleString()}`);

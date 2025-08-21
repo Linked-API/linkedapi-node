@@ -1,16 +1,13 @@
-import { LinkedApiError, TLinkedApiActionError } from "../types/errors";
-import type { TBaseActionParams } from "../types/params";
+import { LinkedApiError, TLinkedApiActionError } from '../types/errors';
+import type { TBaseActionParams } from '../types/params';
 import type {
   TActionResponse,
-  TWorkflowSingleData,
   TWorkflowDefinition,
   TWorkflowResponse,
-} from "../types/workflows";
-import {
-  BaseMapper,
-  TDefaultParameters,
-  TMappedResponse,
-} from "./base-mapper.abstract";
+  TWorkflowSingleData,
+} from '../types/workflows';
+
+import { BaseMapper, TDefaultParameters, TMappedResponse } from './base-mapper.abstract';
 
 export interface TActionConfig {
   paramName: string;
@@ -62,19 +59,13 @@ export abstract class ThenWorkflowMapper<
     } as unknown as TWorkflowDefinition;
   }
 
-  public override mapResponse(
-    response: TWorkflowResponse,
-  ): TMappedResponse<TResult> {
+  public override mapResponse(response: TWorkflowResponse): TMappedResponse<TResult> {
     const completion = this.getCompletion(response);
 
     if (Array.isArray(completion)) {
       return {
-        data: completion
-          .map((action) => action.data)
-          .filter(Boolean) as TResult,
-        errors: completion
-          .map((action) => action.error)
-          .filter(Boolean) as TLinkedApiActionError[],
+        data: completion.map((action) => action.data).filter(Boolean) as TResult,
+        errors: completion.map((action) => action.error).filter(Boolean) as TLinkedApiActionError[],
       };
     }
 
@@ -91,9 +82,7 @@ export abstract class ThenWorkflowMapper<
     throw LinkedApiError.unknownError();
   }
 
-  private mapThenFromResponse(
-    data: TWorkflowSingleData,
-  ): TMappedResponse<TResult> {
+  private mapThenFromResponse(data: TWorkflowSingleData): TMappedResponse<TResult> {
     const result = { ...data };
     const thenActions = data.then;
     const errors: TLinkedApiActionError[] = [];
@@ -111,8 +100,7 @@ export abstract class ThenWorkflowMapper<
           (action: TActionResponse) => action.actionType === mapping.actionType,
         );
         if (thenAction) {
-          (result as Record<string, unknown>)[mapping.targetProperty] =
-            thenAction.data;
+          (result as Record<string, unknown>)[mapping.targetProperty] = thenAction.data;
           if (thenAction.error) {
             errors.push(thenAction.error);
           }
@@ -122,14 +110,13 @@ export abstract class ThenWorkflowMapper<
 
       const thenAction = thenActions as TActionResponse;
       if (thenAction.actionType === mapping.actionType) {
-        (result as Record<string, unknown>)[mapping.targetProperty] =
-          thenAction.data;
+        (result as Record<string, unknown>)[mapping.targetProperty] = thenAction.data;
         if (thenAction.error) {
           errors.push(thenAction.error);
         }
       }
     }
-    delete (result as Record<string, unknown>)["then"];
+    delete (result as Record<string, unknown>)['then'];
     return {
       data: result as TResult,
       errors,
@@ -156,25 +143,16 @@ export abstract class ThenWorkflowMapper<
     return cleanedParams;
   }
 
-  private shouldIncludeActionToRequest(
-    params: TParams,
-    config: TActionConfig,
-  ): boolean {
+  private shouldIncludeActionToRequest(params: TParams, config: TActionConfig): boolean {
     const paramValue = params[config.paramName as keyof TParams];
     return paramValue === true;
   }
 
-  private buildRequestAction(
-    params: TParams,
-    config: TActionConfig,
-  ): Record<string, unknown> {
+  private buildRequestAction(params: TParams, config: TActionConfig): Record<string, unknown> {
     return {
       actionType: config.actionType,
       ...(config.configSource
-        ? (params[config.configSource as keyof TParams] as Record<
-            string,
-            unknown
-          >)
+        ? (params[config.configSource as keyof TParams] as Record<string, unknown>)
         : {}),
     };
   }

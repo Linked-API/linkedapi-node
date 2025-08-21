@@ -1,15 +1,10 @@
-import type { TBaseActionParams } from "../types/params";
-import type {
-  BaseMapper,
-  TMappedResponse,
-} from "../mappers/base-mapper.abstract";
-import type { TWorkflowResponse } from "../types/workflows";
-import type {
-  WaitForCompletionOptions,
-  WorkflowExecutor,
-} from "./workflow-executor";
-import { TSupportedFunctionName } from "../core/workflow-restoration";
-import { LinkedApiError, LinkedApiWorkflowTimeoutError } from "../types";
+import { TSupportedFunctionName } from '../core/workflow-restoration';
+import type { BaseMapper, TMappedResponse } from '../mappers/base-mapper.abstract';
+import { LinkedApiError, LinkedApiWorkflowTimeoutError } from '../types';
+import type { TBaseActionParams } from '../types/params';
+import type { TWorkflowResponse } from '../types/workflows';
+
+import type { WaitForCompletionOptions, WorkflowExecutor } from './workflow-executor';
 
 export class WorkflowHandler<TResult = TWorkflowResponse> {
   constructor(
@@ -19,14 +14,9 @@ export class WorkflowHandler<TResult = TWorkflowResponse> {
     private readonly mapper?: BaseMapper<TBaseActionParams, TResult>,
   ) {}
 
-  public async result(
-    options: WaitForCompletionOptions = {},
-  ): Promise<TMappedResponse<TResult>> {
+  public async result(options: WaitForCompletionOptions = {}): Promise<TMappedResponse<TResult>> {
     try {
-      const rawResult = await this.workflowExecutor.result(
-        this.workflowId,
-        options,
-      );
+      const rawResult = await this.workflowExecutor.result(this.workflowId, options);
 
       if (!this.mapper) {
         return {
@@ -37,11 +27,8 @@ export class WorkflowHandler<TResult = TWorkflowResponse> {
 
       return this.mapper.mapResponse(rawResult);
     } catch (error) {
-      if (error instanceof LinkedApiError && error.type === "workflowTimeout") {
-        throw new LinkedApiWorkflowTimeoutError(
-          this.workflowId,
-          this.functionName,
-        );
+      if (error instanceof LinkedApiError && error.type === 'workflowTimeout') {
+        throw new LinkedApiWorkflowTimeoutError(this.workflowId, this.functionName);
       }
       throw error;
     }

@@ -1,4 +1,4 @@
-import { TBaseActionParams } from "../params";
+import { TBaseActionParams } from '../params';
 
 export interface TPost {
   url: string;
@@ -14,8 +14,8 @@ export interface TPost {
 }
 
 export const POST_TYPE = {
-  original: "original",
-  repost: "repost",
+  original: 'original',
+  repost: 'repost',
 } as const;
 export type TPostType = (typeof POST_TYPE)[keyof typeof POST_TYPE];
 
@@ -32,12 +32,12 @@ export interface TReaction {
 }
 
 export const REACTION_TYPE = {
-  like: "like",
-  celebrate: "celebrate",
-  support: "support",
-  love: "love",
-  insightful: "insightful",
-  funny: "funny",
+  like: 'like',
+  celebrate: 'celebrate',
+  support: 'support',
+  love: 'love',
+  insightful: 'insightful',
+  funny: 'funny',
 } as const;
 export type TReactionType = (typeof REACTION_TYPE)[keyof typeof REACTION_TYPE];
 

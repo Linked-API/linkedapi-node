@@ -1,10 +1,10 @@
 import {
-  TLinkedApiResponse,
-  LinkedApiError,
   HttpClient,
+  LinkedApiError,
   TLinkedApiConfig,
   TLinkedApiErrorType,
-} from "../types";
+  TLinkedApiResponse,
+} from '../types';
 
 export function buildLinkedApiHttpClient(config: TLinkedApiConfig): HttpClient {
   return new LinkedApiHttpClient(config);
@@ -16,17 +16,15 @@ class LinkedApiHttpClient extends HttpClient {
 
   constructor(config: TLinkedApiConfig) {
     super();
-    this.baseUrl = "https://api.linkedapi.io";
+    this.baseUrl = 'https://api.linkedapi.io';
     this.headers = {
-      "Content-Type": "application/json",
-      "linked-api-token": config.linkedApiToken,
-      "identification-token": config.identificationToken,
+      'Content-Type': 'application/json',
+      'linked-api-token': config.linkedApiToken,
+      'identification-token': config.identificationToken,
     };
   }
 
-  private async handleResponse<T>(
-    response: Response,
-  ): Promise<TLinkedApiResponse<T>> {
+  private async handleResponse<T>(response: Response): Promise<TLinkedApiResponse<T>> {
     if (response.ok) {
       return (await response.json()) as TLinkedApiResponse<T>;
     }
@@ -43,7 +41,7 @@ class LinkedApiHttpClient extends HttpClient {
         throw e;
       }
       throw new LinkedApiError(
-        "httpError" as TLinkedApiErrorType,
+        'httpError' as TLinkedApiErrorType,
         `HTTP ${response.status}: ${response.statusText}`,
         {
           status: response.status,
@@ -60,7 +58,7 @@ class LinkedApiHttpClient extends HttpClient {
     }
 
     throw new LinkedApiError(
-      "httpError" as TLinkedApiErrorType,
+      'httpError' as TLinkedApiErrorType,
       `Request error: ${(error as Error).message}`,
       { error },
     );
@@ -69,7 +67,7 @@ class LinkedApiHttpClient extends HttpClient {
   public async get<T>(url: string): Promise<TLinkedApiResponse<T>> {
     try {
       const response = await fetch(`${this.baseUrl}${url}`, {
-        method: "GET",
+        method: 'GET',
         headers: this.headers,
       });
       return this.handleResponse<T>(response);
@@ -78,13 +76,10 @@ class LinkedApiHttpClient extends HttpClient {
     }
   }
 
-  public async post<T>(
-    url: string,
-    data?: unknown,
-  ): Promise<TLinkedApiResponse<T>> {
+  public async post<T>(url: string, data?: unknown): Promise<TLinkedApiResponse<T>> {
     try {
       const response = await fetch(`${this.baseUrl}${url}`, {
-        method: "POST",
+        method: 'POST',
         headers: this.headers,
         body: data ? JSON.stringify(data) : null,
       });

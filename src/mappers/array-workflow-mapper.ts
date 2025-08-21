@@ -1,22 +1,12 @@
-import { TLinkedApiActionError } from "../types/errors";
-import type { TBaseActionParams } from "../types/params";
-import type {
-  TWorkflowDefinition,
-  TWorkflowResponse,
-} from "../types/workflows";
-import { BaseMapper, TMappedResponse } from "./base-mapper.abstract";
+import { TLinkedApiActionError } from '../types/errors';
+import type { TWorkflowDefinition, TWorkflowResponse } from '../types/workflows';
 
-export interface TDefaultParameters {
-  [key: string]: unknown;
-}
+import { BaseMapper, TMappedResponse } from './base-mapper.abstract';
 
-export abstract class ArrayWorkflowMapper<
-  TParams extends TBaseActionParams,
-  TResult,
-> extends BaseMapper<TParams, TResult[]> {
+export class ArrayWorkflowMapper<TParams, TResult> extends BaseMapper<TParams, TResult[]> {
   private readonly baseActionType: string;
 
-  constructor({ baseActionType }: { baseActionType: string }) {
+  constructor(baseActionType: string) {
     super();
     this.baseActionType = baseActionType;
   }
@@ -34,9 +24,7 @@ export abstract class ArrayWorkflowMapper<
     if (Array.isArray(completion)) {
       return {
         data: completion.map((item) => item.data) as TResult[],
-        errors: completion
-          .map((item) => item.error)
-          .filter(Boolean) as TLinkedApiActionError[],
+        errors: completion.map((item) => item.error).filter(Boolean) as TLinkedApiActionError[],
       };
     }
 

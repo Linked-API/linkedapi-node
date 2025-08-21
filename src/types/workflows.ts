@@ -1,4 +1,4 @@
-import { TLinkedApiActionError } from "../types/errors";
+import { TLinkedApiActionError } from '../types/errors';
 
 export interface TSingleActionWorkflowDefinition {
   actionType: string;
@@ -9,16 +9,13 @@ export type TWorkflowDefinition =
   | TSingleActionWorkflowDefinition
   | TSingleActionWorkflowDefinition[];
 
-export type TWorkflowStatus = "running" | "completed" | "failed";
+export type TWorkflowStatus = 'running' | 'completed' | 'failed';
 
 export type TWorkflowCompletion<TResult extends TWorkflowData = TWorkflowData> =
+  | TWorkflowCompletionSingleAction<TResult>
+  | TWorkflowCompletionSingleAction<TResult>[];
 
-    | TWorkflowCompletionSingleAction<TResult>
-    | TWorkflowCompletionSingleAction<TResult>[];
-
-export interface TWorkflowCompletionSingleAction<
-  TResult extends TWorkflowData = TWorkflowData,
-> {
+export interface TWorkflowCompletionSingleAction<TResult extends TWorkflowData = TWorkflowData> {
   data?: TResult;
   error?: TLinkedApiActionError;
   actionType: string;
@@ -31,9 +28,7 @@ export interface TWorkflowFailure {
   message: string;
 }
 
-export interface TWorkflowResponse<
-  TResult extends TWorkflowData = TWorkflowData,
-> {
+export interface TWorkflowResponse<TResult extends TWorkflowData = TWorkflowData> {
   workflowId: string;
   workflowStatus: TWorkflowStatus;
   completion?: TWorkflowCompletion<TResult>;
@@ -47,9 +42,7 @@ export interface TWorkflowSingleData {
 
 export type TWorkflowData = TWorkflowSingleData | TWorkflowSingleData[];
 
-export interface TSingleActionResponse<
-  TResult extends TWorkflowData = TWorkflowData,
-> {
+export interface TSingleActionResponse<TResult extends TWorkflowData = TWorkflowData> {
   data?: TResult;
   error?: TLinkedApiActionError;
   actionType: string;
