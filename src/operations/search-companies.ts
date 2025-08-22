@@ -1,5 +1,4 @@
-import { TSupportedFunctionName } from '../core';
-import { PredefinedOperation } from '../core/base-operation.abstract';
+import { PredefinedOperation, TOperationName } from '../core';
 import { ArrayWorkflowMapper } from '../mappers/array-workflow-mapper';
 import { TSearchCompaniesParams, TSearchCompanyResult } from '../types';
 
@@ -7,7 +6,7 @@ export class SearchCompanies extends PredefinedOperation<
   TSearchCompaniesParams,
   TSearchCompanyResult[]
 > {
-  protected override readonly functionName: TSupportedFunctionName = 'searchCompanies';
+  protected override readonly functionName: TOperationName = 'searchCompanies';
   protected override readonly mapper = new ArrayWorkflowMapper<
     TSearchCompaniesParams,
     TSearchCompanyResult

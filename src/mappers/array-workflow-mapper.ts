@@ -1,5 +1,5 @@
 import { TLinkedApiActionError } from '../types/errors';
-import type { TWorkflowDefinition, TWorkflowResponse } from '../types/workflows';
+import type { TWorkflowCompletion, TWorkflowDefinition } from '../types/workflows';
 
 import { BaseMapper, TMappedResponse } from './base-mapper.abstract';
 
@@ -18,9 +18,7 @@ export class ArrayWorkflowMapper<TParams, TResult> extends BaseMapper<TParams, T
     } as unknown as TWorkflowDefinition;
   }
 
-  public mapResponse(response: TWorkflowResponse): TMappedResponse<TResult[]> {
-    const completion = this.getCompletion(response);
-
+  public mapResponse(completion: TWorkflowCompletion): TMappedResponse<TResult[]> {
     if (Array.isArray(completion)) {
       return {
         data: completion.map((item) => item.data) as TResult[],

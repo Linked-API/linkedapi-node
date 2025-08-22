@@ -1,10 +1,9 @@
-import { TSupportedFunctionName } from '../core';
-import { PredefinedOperation } from '../core/base-operation.abstract';
+import { PredefinedOperation, TOperationName } from '../core';
 import { TActionConfig, ThenWorkflowMapper } from '../mappers/then-workflow-mapper.abstract';
 import { TBaseFetchPersonParams, TFetchPersonParams, TFetchPersonResult } from '../types';
 
 export class FetchPerson extends PredefinedOperation<TBaseFetchPersonParams, TFetchPersonResult> {
-  protected override readonly functionName: TSupportedFunctionName = 'fetchPerson';
+  protected override readonly functionName: TOperationName = 'fetchPerson';
   protected override readonly mapper = new FetchPersonMapper();
 
   public override async execute<TParams extends TBaseFetchPersonParams>(

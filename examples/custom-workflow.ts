@@ -9,9 +9,10 @@ async function customWorkflowExample(): Promise<void> {
 
   try {
     console.log('🚀 Linked API custom workflow example starting...');
-    const customWorkflow = await linkedapi.executeCustomWorkflow({
+    const workflowId = await linkedapi.customWorkflow.execute({
       actionType: 'st.searchPeople',
-      limit: 5,
+      term: "John",
+      limit: 3,
       filter: {
         locations: ["San Francisco"],
       },
@@ -26,11 +27,11 @@ async function customWorkflowExample(): Promise<void> {
         }
       }
     });
-    console.log('🔍 Workflow started: ', customWorkflow.workflowId);
-    const result = (await customWorkflow.result()).data!;
+    console.log('🔍 Workflow started: ', workflowId);
+    const result = await linkedapi.customWorkflow.result(workflowId);
 
     console.log('✅ Custom workflow executed successfully');
-    console.log('🔍 Result: ', result.completion);
+    console.log('🔍 Result: ', JSON.stringify(result, null, 2));
   } catch (error) {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);

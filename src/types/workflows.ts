@@ -28,9 +28,13 @@ export interface TWorkflowFailure {
   message: string;
 }
 
-export interface TWorkflowResponse<TResult extends TWorkflowData = TWorkflowData> {
+export interface TWorkflowStatusResponse {
   workflowId: string;
   workflowStatus: TWorkflowStatus;
+}
+
+export interface TWorkflowResponse<TResult extends TWorkflowData = TWorkflowData>
+  extends TWorkflowStatusResponse {
   completion?: TWorkflowCompletion<TResult>;
   failure?: TWorkflowFailure;
 }

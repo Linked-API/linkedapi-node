@@ -1,5 +1,4 @@
-import { TSupportedFunctionName } from '../core';
-import { PredefinedOperation } from '../core/base-operation.abstract';
+import { PredefinedOperation, TOperationName } from '../core';
 import { ThenWorkflowMapper } from '../mappers';
 import { TNvOpenPersonPageParams, TNvOpenPersonPageResult } from '../types';
 
@@ -7,7 +6,7 @@ export class SalesNavigatorFetchPerson extends PredefinedOperation<
   TNvOpenPersonPageParams,
   TNvOpenPersonPageResult
 > {
-  protected override readonly functionName: TSupportedFunctionName = 'salesNavigatorFetchPerson';
+  protected override readonly functionName: TOperationName = 'salesNavigatorFetchPerson';
   protected override readonly mapper = new NvFetchPersonMapper();
 }
 

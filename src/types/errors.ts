@@ -1,4 +1,4 @@
-import { TSupportedFunctionName } from '../core/workflow-restoration';
+import { TOperationName } from '../core';
 
 /**
  * This error is exposed when a workflow action fails to complete.
@@ -87,9 +87,9 @@ export class LinkedApiError extends Error {
  */
 export class LinkedApiWorkflowTimeoutError extends LinkedApiError {
   public readonly workflowId: string;
-  public readonly functionName: TSupportedFunctionName;
+  public readonly functionName: TOperationName;
 
-  constructor(workflowId: string, functionName: TSupportedFunctionName) {
+  constructor(workflowId: string, functionName: TOperationName) {
     super(
       'workflowTimeout',
       `Workflow ${workflowId} timed out. Use restoreWorkflow(${workflowId}, ${functionName}) to restore the workflow.`,

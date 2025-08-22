@@ -1,5 +1,4 @@
-import { TSupportedFunctionName } from '../core';
-import { PredefinedOperation } from '../core/base-operation.abstract';
+import { PredefinedOperation, TOperationName } from '../core';
 import { SimpleWorkflowMapper } from '../mappers';
 import { TCheckConnectionStatusParams, TCheckConnectionStatusResult } from '../types';
 
@@ -7,7 +6,7 @@ export class CheckConnectionStatus extends PredefinedOperation<
   TCheckConnectionStatusParams,
   TCheckConnectionStatusResult
 > {
-  protected override readonly functionName: TSupportedFunctionName = 'checkConnectionStatus';
+  protected override readonly functionName: TOperationName = 'checkConnectionStatus';
   protected override readonly mapper = new SimpleWorkflowMapper<
     TCheckConnectionStatusParams,
     TCheckConnectionStatusResult

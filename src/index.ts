@@ -1,15 +1,9 @@
 import { buildLinkedApiHttpClient } from './core/linked-api-http-client';
-import { WorkflowExecutor } from './core/workflow-executor';
-import { WorkflowHandler } from './core/workflow-handler';
-import {
-  createMapperFromFunctionName,
-  TRestoreResultType,
-  TSupportedFunctionName,
-} from './core/workflow-restoration';
-import type { BaseMapper, TMappedResponse } from './mappers/base-mapper.abstract';
+import type { TMappedResponse } from './mappers/base-mapper.abstract';
 import {
   CheckConnectionStatus,
   CommentOnPost,
+  CustomWorkflow,
   FetchCompany,
   FetchPerson,
   FetchPost,
@@ -37,7 +31,6 @@ import {
   TApiUsageAction,
   TApiUsageStatsParams,
   TApiUsageStatsResponse,
-  TBaseActionParams,
   TConversationPollRequest,
   TConversationPollResponse,
   TConversationPollResult,
@@ -76,7 +69,6 @@ import type { TWorkflowDefinition, TWorkflowResponse } from './types/workflows';
  */
 class LinkedApi {
   private readonly httpClient: HttpClient;
-  private readonly workflowExecutor: WorkflowExecutor;
 
   /**
    * Initialize LinkedApi client with your API tokens.
@@ -86,12 +78,8 @@ class LinkedApi {
    */
   constructor(config: TLinkedApiConfig) {
     this.httpClient = buildLinkedApiHttpClient(config);
-    this.workflowExecutor = new WorkflowExecutor({
-      httpClient: this.httpClient,
-      apiPath: '/workflows',
-      workflowTimeout: 24 * 60 * 60 * 1000,
-    });
 
+    this.customWorkflow = new CustomWorkflow(this.httpClient);
     this.fetchPerson = new FetchPerson(this.httpClient);
     this.searchCompanies = new SearchCompanies(this.httpClient);
     this.fetchCompany = new FetchCompany(this.httpClient);
@@ -133,7 +121,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflow = await linkedapi.executeCustomWorkflow({
+   * const workflowId = await linkedapi.customWorkflow.execute({
    *   actionType: "st.searchCompanies",
    *   term: "Tech Inc",
    *   filter: {
@@ -154,13 +142,10 @@ class LinkedApi {
    *   }
    * });
    *
-   * const result = await workflow.result();
+   * const result = await linkedapi.customWorkflow.result(workflowId);
    * ```
    */
-  public async executeCustomWorkflow(params: TWorkflowDefinition): Promise<WorkflowHandler> {
-    const workflow = await this.workflowExecutor.startWorkflow(params);
-    return new WorkflowHandler(workflow.workflowId, 'customWorkflow', this.workflowExecutor);
-  }
+  public customWorkflow: CustomWorkflow;
 
   /**
    * Restore a WorkflowHandler for a previously started workflow using its ID and function name.
@@ -183,27 +168,27 @@ class LinkedApi {
    * // TypeScript knows exact type: TCheckConnectionStatusResult
    * ```
    */
-  public async restoreWorkflow<TFunctionName extends TSupportedFunctionName>(
-    workflowId: string,
-    functionName: TFunctionName,
-  ): Promise<WorkflowHandler<TRestoreResultType<TFunctionName>>> {
-    const mapper = createMapperFromFunctionName(functionName);
+  // public async restoreWorkflow<TFunctionName extends TOperationName>(
+  //   workflowId: string,
+  //   functionName: TFunctionName,
+  // ): Promise<WorkflowHandler<TRestoreResultType<TFunctionName>>> {
+  //   const mapper = createMapperFromFunctionName(functionName);
 
-    if (mapper === null) {
-      return new WorkflowHandler(
-        workflowId,
-        functionName,
-        this.workflowExecutor,
-      ) as WorkflowHandler<TRestoreResultType<TFunctionName>>;
-    }
+  //   if (mapper === null) {
+  //     return new WorkflowHandler(
+  //       workflowId,
+  //       functionName,
+  //       this.workflowExecutor,
+  //     ) as WorkflowHandler<TRestoreResultType<TFunctionName>>;
+  //   }
 
-    return new WorkflowHandler(
-      workflowId,
-      functionName,
-      this.workflowExecutor,
-      mapper as BaseMapper<TBaseActionParams, unknown>,
-    ) as WorkflowHandler<TRestoreResultType<TFunctionName>>;
-  }
+  //   return new WorkflowHandler(
+  //     workflowId,
+  //     functionName,
+  //     this.workflowExecutor,
+  //     mapper as BaseMapper<TBaseActionParams, unknown>,
+  //   ) as WorkflowHandler<TRestoreResultType<TFunctionName>>;
+  // }
 
   // Mapper descriptor based restoration was removed in favor of restoreMapper(functionName, parameters)
 
@@ -1017,7 +1002,7 @@ class LinkedApi {
 
 export default LinkedApi;
 
-export { LinkedApi, WorkflowHandler };
+export { LinkedApi };
 
 export type {
   TLinkedApiConfig,
@@ -1028,5 +1013,5 @@ export type {
 };
 
 export * from './types';
-export * from './core/workflow-restoration';
 export * from './operations';
+export * from './core/operation';

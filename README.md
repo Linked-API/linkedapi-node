@@ -117,7 +117,7 @@ Restore a WorkflowHandler for a previously started workflow using its ID and fun
 
 - **Parameters:**
   - `workflowId: string` - The unique identifier of the workflow to restore
-  - `functionName: TSupportedFunctionName` - The name of the function that was used to create the workflow
+  - `functionName: TOperationName` - The name of the function that was used to create the workflow
 - **Returns:** `Promise<WorkflowHandler<TRestoreResultType<TFunction>>>` - WorkflowHandler with exact result type based on the function name
 - **Type Safety:** Full TypeScript inference for exact return types based on the function name
 - **Documentation:** [Executing Workflows](https://linkedapi.io/docs/executing-workflows/)
@@ -126,14 +126,14 @@ Restore a WorkflowHandler for a previously started workflow using its ID and fun
 // Restore a person fetching workflow with full type safety
 const personHandler = await linkedapi.restoreWorkflow(
   "workflow-id-123",
-  "fetchPerson"
+  "fetchPerson",
 );
 const personResult = await personHandler.result();
 
 // Restore a company fetching workflow
 const companyHandler = await linkedapi.restoreWorkflow(
   "workflow-id-456",
-  "fetchCompany"
+  "fetchCompany",
 );
 const companyResult = await companyHandler.result();
 ```
@@ -560,7 +560,7 @@ if (statsResponse.success) {
   console.log("Total actions:", statsResponse.result?.length);
   statsResponse.result?.forEach((action) => {
     console.log(
-      `${action.actionType}: ${action.success ? "SUCCESS" : "FAILED"}`
+      `${action.actionType}: ${action.success ? "SUCCESS" : "FAILED"}`,
     );
   });
 }
@@ -654,7 +654,7 @@ if (response.success) {
   response.result?.forEach((conversation) => {
     console.log(
       `Messages from ${conversation.personUrl}:`,
-      conversation.messages
+      conversation.messages,
     );
   });
 }
@@ -814,7 +814,7 @@ Linked API provides structured error handling for different failure scenarios. T
 - **Action-specific errors** - errors from individual actions within a workflow that don't cause the entire workflow to fail
 
 ```typescript
-import LinkedApi, { LinkedApiError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from "linkedapi-node";
 
 try {
   const workflow = await linkedapi.fetchPerson({
@@ -858,7 +858,7 @@ try {
 - **`invalidWorkflow`** - Workflow configuration is not valid due to violated action constraints or invalid action parameters: {validation_details}.
 - **`plusPlanRequired`** - Some actions in this workflow require the Plus plan.
 - **`linkedinAccountSignedOut`** - Your LinkedIn account has been signed out in our cloud browser. This occasionally happens as LinkedIn may sign out accounts after an extended period. You'll need to visit our platform and reconnect your account.
-- **`languageNotSupported`** -  Your LinkedIn account uses a language other than English, which is currently the only supported option.
+- **`languageNotSupported`** - Your LinkedIn account uses a language other than English, which is currently the only supported option.
 - **`timeout`** - Local execution timeout. Contains `workflowId` and `functionName` for future restoration.
 
 ### Common Action Error Types

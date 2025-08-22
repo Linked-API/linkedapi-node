@@ -2,8 +2,8 @@ import { LinkedApiError, TLinkedApiActionError } from '../types/errors';
 import type { TBaseActionParams } from '../types/params';
 import type {
   TActionResponse,
+  TWorkflowCompletion,
   TWorkflowDefinition,
-  TWorkflowResponse,
   TWorkflowSingleData,
 } from '../types/workflows';
 
@@ -59,9 +59,7 @@ export abstract class ThenWorkflowMapper<
     } as unknown as TWorkflowDefinition;
   }
 
-  public override mapResponse(response: TWorkflowResponse): TMappedResponse<TResult> {
-    const completion = this.getCompletion(response);
-
+  public override mapResponse(completion: TWorkflowCompletion): TMappedResponse<TResult> {
     if (Array.isArray(completion)) {
       return {
         data: completion.map((action) => action.data).filter(Boolean) as TResult,

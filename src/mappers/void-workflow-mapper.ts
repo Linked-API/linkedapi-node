@@ -1,6 +1,6 @@
 import { TLinkedApiActionError } from '../types/errors';
 import type { TBaseActionParams } from '../types/params';
-import type { TWorkflowDefinition, TWorkflowResponse } from '../types/workflows';
+import type { TWorkflowCompletion, TWorkflowDefinition } from '../types/workflows';
 
 import { BaseMapper, TMappedResponse } from './base-mapper.abstract';
 
@@ -22,9 +22,7 @@ export class VoidWorkflowMapper<TParams extends TBaseActionParams> extends BaseM
     } as unknown as TWorkflowDefinition;
   }
 
-  public mapResponse(response: TWorkflowResponse): TMappedResponse<void> {
-    const completion = this.getCompletion(response);
-
+  public mapResponse(completion: TWorkflowCompletion): TMappedResponse<void> {
     if (Array.isArray(completion)) {
       return {
         data: undefined,
