@@ -1,0 +1,15 @@
+import { PredefinedOperation, TOperationName } from '../core';
+import { SimpleWorkflowMapper } from '../mappers';
+import { TFetchPostParams, TFetchPostResult } from '../types';
+
+export class FetchPost extends PredefinedOperation<TFetchPostParams, TFetchPostResult> {
+  protected override readonly operationName: TOperationName = 'fetchPost';
+  protected override readonly mapper = new SimpleWorkflowMapper<TFetchPostParams, TFetchPostResult>(
+    {
+      actionType: 'st.openPost',
+      defaultParams: {
+        basicInfo: true,
+      },
+    },
+  );
+}

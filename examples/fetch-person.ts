@@ -23,7 +23,7 @@ async function fetchPersonExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const personHandler = await linkedapi.fetchPerson({
+  const workflowId = await linkedapi.fetchPerson.execute({
     personUrl: 'https://www.linkedin.com/in/example-person/',
     retrieveExperience: true,
     retrieveEducation: true,
@@ -43,8 +43,8 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
       limit: 5,
     },
   });
-  console.log('🔍 Workflow started: ', personHandler.workflowId);
-  const personResult = await personHandler.result();
+  console.log('🔍 Workflow started: ', workflowId);
+  const personResult = await linkedapi.fetchPerson.result(workflowId);
   if (personResult.data) {
     const person = personResult.data;
     console.log('✅ Person page opened successfully');
@@ -64,9 +64,9 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     personHashedUrl: 'https://www.linkedin.com/in/abc123',
   };
 
-  const personHandler = await linkedapi.salesNavigatorFetchPerson(fetchParams);
-  console.log('🔍 Workflow started: ', personHandler.workflowId);
-  const personResult = await personHandler.result();
+  const workflowId = await linkedapi.salesNavigatorFetchPerson.execute(fetchParams);
+  console.log('🔍 Workflow started: ', workflowId);
+  const personResult = await linkedapi.salesNavigatorFetchPerson.result(workflowId);
   if (personResult.data) {
     const person = personResult.data;
     console.log('✅ Person page opened successfully');

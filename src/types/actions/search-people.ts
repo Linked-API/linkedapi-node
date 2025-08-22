@@ -1,5 +1,6 @@
-import { TYearsOfExperience } from "./person";
-import { TBaseActionParams } from "../params";
+import { TBaseActionParams } from '../params';
+
+import { TYearsOfExperience } from './person';
 
 export interface TSearchPeopleParams extends TBaseActionParams {
   term?: string;

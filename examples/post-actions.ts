@@ -28,10 +28,10 @@ async function reactToPost(linkedapi: LinkedApi): Promise<void> {
     type: 'like' as const,
   };
 
-  const reactionWorkflow = await linkedapi.reactToPost(reactionParams);
-  console.log('👍 React to post workflow started:', reactionWorkflow.workflowId);
+  const workflowId = await linkedapi.reactToPost.execute(reactionParams);
+  console.log('👍 React to post workflow started:', workflowId);
 
-  const reactionResult = await reactionWorkflow.result();
+  const reactionResult = await linkedapi.reactToPost.result(workflowId);
   if (reactionResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(reactionResult.errors, null, 2));
   } else {
@@ -47,10 +47,10 @@ async function commentOnPost(linkedapi: LinkedApi): Promise<void> {
     text: 'Great post! Thanks for sharing this valuable insight. Looking forward to more content like this.',
   };
 
-  const commentWorkflow = await linkedapi.commentOnPost(commentParams);
-  console.log('💬 Comment on post workflow started:', commentWorkflow.workflowId);
+  const workflowId = await linkedapi.commentOnPost.execute(commentParams);
+  console.log('💬 Comment on post workflow started:', workflowId);
 
-  const commentResult = await commentWorkflow.result();
+  const commentResult = await linkedapi.commentOnPost.result(workflowId);
   if (commentResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(commentResult.errors, null, 2));
   } else {

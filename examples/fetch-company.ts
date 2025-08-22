@@ -22,7 +22,7 @@ async function fetchCompanyExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const fetchCompanyWorkflow = await linkedapi.fetchCompany({
+  const workflowId = await linkedapi.fetchCompany.execute({
     companyUrl: 'https://www.linkedin.com/company/linkedin/',
     retrieveEmployees: true,
     retrieveDMs: true,
@@ -43,10 +43,10 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
     },
   });
 
-  console.log('🔍 Company workflow started: ', fetchCompanyWorkflow.workflowId);
-  const companyHandler = await fetchCompanyWorkflow.result();
-  if (companyHandler.data) {
-    const company = companyHandler.data;
+  console.log('🔍 Company workflow started: ', workflowId);
+  const companyData = await linkedapi.fetchCompany.result(workflowId);
+  if (companyData.data) {
+    const company = companyData.data;
     console.log('✅ Company page opened successfully');
     console.log(`🏢 Company: ${company.name}`);
     console.log(`📖 Description: ${company.description}`);
@@ -57,13 +57,13 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
     console.log(`👨‍💼 Employees Retrieved: ${company.employees?.length || 0}`);
     console.log(`📝 Posts Retrieved: ${company.posts?.length || 0}`);
   }
-  if (companyHandler.errors.length > 0) {
-    console.error('🚨 Errors:', JSON.stringify(companyHandler.errors, null, 2));
+  if (companyData.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(companyData.errors, null, 2));
   }
 }
 
 async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
-  const nvCompanyResult = await linkedapi.salesNavigatorFetchCompany({
+  const workflowId = await linkedapi.salesNavigatorFetchCompany.execute({
     companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
     retrieveEmployees: true,
     retrieveDMs: true,
@@ -78,10 +78,10 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     },
   });
 
-  console.log('🔍 Sales Navigator workflow started: ', nvCompanyResult.workflowId);
-  const nvCompanyHandler = await nvCompanyResult.result();
-  if (nvCompanyHandler.data) {
-    const nvCompany = nvCompanyHandler.data;
+  console.log('🔍 Sales Navigator workflow started: ', workflowId);
+  const nvCompanyData = await linkedapi.salesNavigatorFetchCompany.result(workflowId);
+  if (nvCompanyData.data) {
+    const nvCompany = nvCompanyData.data;
     console.log('✅ Sales Navigator company page opened successfully');
     console.log(`🏢 Company: ${nvCompany.name}`);
     console.log(`📖 Description: ${nvCompany.description}`);
@@ -93,8 +93,8 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     console.log(`👨‍💼 Employees Retrieved: ${nvCompany.employees?.length || 0}`);
     console.log(`🎯 Decision Makers Retrieved: ${nvCompany.dms?.length || 0}`);
   }
-  if (nvCompanyHandler.errors.length > 0) {
-    console.error('🚨 Errors:', JSON.stringify(nvCompanyHandler.errors, null, 2));
+  if (nvCompanyData.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(nvCompanyData.errors, null, 2));
   }
 }
 

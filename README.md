@@ -32,39 +32,42 @@ const linkedapi = new LinkedApi({
 });
 
 // Use Linked API for your LinkedIn account automation
-const connectionWorkflow = await linkedapi.sendConnectionRequest({
+const connectionWorkflowId = await linkedapi.sendConnectionRequest.execute({
   personUrl: "https://www.linkedin.com/in/person1",
   message: "It would be great to add you to my network!",
 });
-await connectionWorkflow.result();
+await linkedapi.sendConnectionRequest.result(connectionWorkflowId);
 
-const commentWorkflow = await linkedapi.commentOnPost({
+const commentWorkflowId = await linkedapi.commentOnPost.execute({
   postUrl: "https://www.linkedin.com/posts/post1",
   text: "Great post! Thanks for sharing.",
 });
-await commentWorkflow.result();
+await linkedapi.commentOnPost.result(commentWorkflowId);
 
 // Search companies
-const searchCompaniesWorkflow = await linkedapi.searchCompanies({
+const searchWorkflowId = await linkedapi.searchCompanies.execute({
+  term: "software development", // Search term for company name or description
   filter: {
-    sizes: ["11-50", "51-200", "201-500", "501-1000"],
-    locations: ["California", "Wyoming", "Texas"],
-    industries: ["Software Development", "Robotics Engineering"],
+    locations: ["San Francisco", "New York", "Seattle"],
+    industries: ["Technology", "Software", "Artificial Intelligence"],
+    sizes: ["51-200", "201-500", "501-1000"],
   },
+  limit: 50, // Maximum number of results to return (1-100, default: 10)
 });
-const companiesResult = await searchCompaniesWorkflow.result();
+const companiesResult =
+  await linkedapi.searchCompanies.result(searchWorkflowId);
 
 // Retrieving company basic info, employees
-const companyWorkflow = await linkedapi.fetchCompany({
-  companyUrl: "https://www.linkedin.com/company/company1",
-  retrieveEmployees: true,
+const companyWorkflowId = await linkedapi.fetchCompany.execute({
+  companyUrl: "https://www.linkedin.com/company/microsoft",
+  retrieveEmployees: true, // Get company employees with their profiles
   employeesRetrievalConfig: {
     filter: {
       schools: ["Harvard University", "Stanford University"],
     },
   },
 });
-const companyResult = await companyWorkflow.result();
+const companyResult = await linkedapi.fetchCompany.result(companyWorkflowId);
 ```
 
 ---
@@ -92,77 +95,34 @@ You can obtain these tokens through [Linked API Platform](https://app.linkedapi.
 
 ---
 
-### `executeCustomWorkflow(params)`
+### `customWorkflow`
 
 Execute custom LinkedIn automation workflows with raw workflow definitions.
 
 - **Parameters:** `TWorkflowDefinition` - Custom workflow definition
-- **Returns:** `Promise<WorkflowHandler>` - Workflow handler for result management
+- **Result:** `TWorkflowCompletion` - Workflow completion object
 - **Documentation:** [Building Workflows](https://linkedapi.io/docs/building-workflows/) | [Executing Workflows](https://linkedapi.io/docs/executing-workflows/) | [Actions Overview](https://linkedapi.io/docs/actions-overview/)
 
 ```typescript
-const workflow = await linkedapi.executeCustomWorkflow({
+const workflowId = await linkedapi.customWorkflow.execute({
   actionType: "st.searchCompanies",
   term: "Tech Inc",
   then: { actionType: "st.doForCompanies", ... }
 });
-const result = await workflow.result();
+const result = await linkedapi.customWorkflow.result(workflowId);
 ```
 
 ---
 
-### `getWorkflowResult(workflowId)`
-
-Retrieve the result of a previously started workflow by its ID.
-
-- **Parameters:** `string` - Workflow ID
-- **Returns:** `Promise<TWorkflowResponse>` - Workflow response with completion data
-- **Documentation:** [Executing Workflows](https://linkedapi.io/docs/executing-workflows/)
-
-```typescript
-const result = await linkedapi.getWorkflowResult("workflow-id-123");
-```
-
----
-
-### `restoreWorkflow(workflowId, functionName)`
-
-Restore a WorkflowHandler for a previously started workflow using its ID and function name with type safety.
-
-- **Parameters:**
-  - `workflowId: string` - The unique identifier of the workflow to restore
-  - `functionName: TSupportedFunctionName` - The name of the function that was used to create the workflow
-- **Returns:** `Promise<WorkflowHandler<TRestoreResultType<TFunction>>>` - WorkflowHandler with exact result type based on the function name
-- **Type Safety:** Full TypeScript inference for exact return types based on the function name
-- **Documentation:** [Executing Workflows](https://linkedapi.io/docs/executing-workflows/)
-
-```typescript
-// Restore a person fetching workflow with full type safety
-const personHandler = await linkedapi.restoreWorkflow(
-  "workflow-id-123",
-  "fetchPerson"
-);
-const personResult = await personHandler.result();
-
-// Restore a company fetching workflow
-const companyHandler = await linkedapi.restoreWorkflow(
-  "workflow-id-456",
-  "fetchCompany"
-);
-const companyResult = await companyHandler.result();
-```
-
----
-
-### `fetchPerson(params)`
+### `fetchPerson`
 
 Retrieve comprehensive LinkedIn person profile data including experience, education, skills, and posts.
 
 - **Parameters:** `TBaseFetchPersonParams` - Person URL and data retrieval options
-- **Returns:** `Promise<WorkflowHandler<TFetchPersonResult>>` - Person profile data
+- **Result:** `TMappedResponse<TFetchPersonResult>` - Person profile data
 
 ```typescript
-const personWorkflow = await linkedapi.fetchPerson({
+const personWorkflowId = await linkedapi.fetchPerson.execute({
   personUrl: "https://www.linkedin.com/in/john-doe",
   retrieveExperience: true, // Get work experience and job history
   retrieveEducation: true, // Get educational background and degrees
@@ -184,36 +144,37 @@ const personWorkflow = await linkedapi.fetchPerson({
     since: "2024-01-01", // Retrieve reactions since this date
   },
 });
-const personResult = await personWorkflow.result();
+const personResult = await linkedapi.fetchPerson.result(personWorkflowId);
 ```
 
 ---
 
-### `salesNavigatorFetchPerson(params)`
+### `salesNavigatorFetchPerson`
 
 Retrieve person data through Sales Navigator for enhanced prospecting capabilities.
 
 - **Parameters:** `TNvOpenPersonPageParams` - Sales Navigator person parameters
-- **Returns:** `Promise<WorkflowHandler<TNvOpenPersonPageResult>>` - Enhanced person data
+- **Result:** `TMappedResponse<TNvOpenPersonPageResult>` - Person data from Sales Navigator
 
 ```typescript
-const nvPersonWorkflow = await linkedapi.salesNavigatorFetchPerson({
+const nvPersonWorkflowId = await linkedapi.salesNavigatorFetchPerson.execute({
   personHashedUrl: "https://www.linkedin.com/in/ABC123",
 });
-const personResult = await nvPersonWorkflow.result();
+const personResult =
+  await linkedapi.salesNavigatorFetchPerson.result(nvPersonWorkflowId);
 ```
 
 ---
 
-### `fetchCompany(params)`
+### `fetchCompany`
 
 Retrieve detailed LinkedIn company profile data including employees, posts, and direct messages.
 
 - **Parameters:** `TBaseFetchCompanyParams` - Company URL and data retrieval options
-- **Returns:** `Promise<WorkflowHandler<TFetchCompanyResult>>` - Company profile data
+- **Result:** `TMappedResponse<TFetchCompanyResult>` - Company profile data
 
 ```typescript
-const companyWorkflow = await linkedapi.fetchCompany({
+const companyWorkflowId = await linkedapi.fetchCompany.execute({
   companyUrl: "https://www.linkedin.com/company/microsoft",
   retrieveEmployees: true, // Get company employees with their profiles
   retrievePosts: true, // Get recent company posts and updates
@@ -239,20 +200,20 @@ const companyWorkflow = await linkedapi.fetchCompany({
     limit: 5, // Maximum number of decision makers to retrieve
   },
 });
-const companyResult = await companyWorkflow.result();
+const companyResult = await linkedapi.fetchCompany.result(companyWorkflowId);
 ```
 
 ---
 
-### `salesNavigatorFetchCompany(params)`
+### `salesNavigatorFetchCompany`
 
 Retrieve company data through Sales Navigator with advanced filtering and prospecting features.
 
 - **Parameters:** `TNvBaseFetchCompanyParams` - Sales Navigator company parameters
-- **Returns:** `Promise<WorkflowHandler<TNvFetchCompanyResult>>` - Enhanced company data
+- **Result:** `TMappedResponse<TNvFetchCompanyResult>` - Company data from Sales Navigator
 
 ```typescript
-const nvCompanyWorkflow = await linkedapi.salesNavigatorFetchCompany({
+const nvCompanyWorkflowId = await linkedapi.salesNavigatorFetchCompany.execute({
   companyHashedUrl: "https://www.linkedin.com/sales/company/1035",
   retrieveEmployees: true, // Get company employees with Sales Navigator
   retrieveDMs: true, // Get decision makers
@@ -272,36 +233,37 @@ const nvCompanyWorkflow = await linkedapi.salesNavigatorFetchCompany({
     limit: 10, // Maximum number of decision makers to retrieve (1-20)
   },
 });
-const companyResult = await nvCompanyWorkflow.result();
+const companyResult =
+  await linkedapi.salesNavigatorFetchCompany.result(nvCompanyWorkflowId);
 ```
 
 ---
 
-### `fetchPost(params)`
+### `fetchPost`
 
 Retrieve detailed information about a LinkedIn post including content, engagement, and comments.
 
 - **Parameters:** `TFetchPostParams` - Post URL
-- **Returns:** `Promise<WorkflowHandler<TFetchPostResult>>` - Post data and metrics
+- **Result:** `TMappedResponse<TFetchPostResult>` - Post data
 
 ```typescript
-const postWorkflow = await linkedapi.fetchPost({
+const postWorkflowId = await linkedapi.fetchPost.execute({
   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789",
 });
-const postResult = await postWorkflow.result();
+const postResult = await linkedapi.fetchPost.result(postWorkflowId);
 ```
 
 ---
 
-### `searchCompanies(params)`
+### `searchCompanies`
 
 Search for companies on LinkedIn using standard search with advanced filtering options.
 
 - **Parameters:** `TSearchCompanyParams` - Search term, filters, and pagination
-- **Returns:** `Promise<WorkflowHandler<TSearchCompanyResult[]>>` - Array of company search results
+- **Result:** `TMappedResponse<TSearchCompanyResult[]>` - Array of company search results
 
 ```typescript
-const companySearchWorkflow = await linkedapi.searchCompanies({
+const companySearchWorkflowId = await linkedapi.searchCompanies.execute({
   term: "software development", // Search term/keywords for company name or description
   filter: {
     locations: ["San Francisco", "New York", "Seattle"],
@@ -310,46 +272,51 @@ const companySearchWorkflow = await linkedapi.searchCompanies({
   },
   limit: 50, // Maximum number of results to return (1-100, default: 10)
 });
-const companiesResult = await companySearchWorkflow.result();
+const companiesResult = await linkedapi.searchCompanies.result(
+  companySearchWorkflowId,
+);
 ```
 
 ---
 
-### `salesNavigatorSearchCompanies(params)`
+### `salesNavigatorSearchCompanies`
 
 Search for companies using Sales Navigator with advanced prospecting filters.
 
 - **Parameters:** `TNvSearchCompanyParams` - Enhanced search parameters for Sales Navigator
-- **Returns:** `Promise<WorkflowHandler<TNvSearchCompanyResult[]>>` - Enhanced company search results
+- **Result:** `TMappedResponse<TNvSearchCompanyResult[]>` - Company search results from Sales Navigator
 
 ```typescript
-const nvCompanySearch = await linkedapi.salesNavigatorSearchCompanies({
-  term: "enterprise software", // Search term for company name, description, or keywords
-  filter: {
-    locations: ["San Francisco", "New York", "London"],
-    industries: ["Software Development", "Enterprise Software", "SaaS"],
-    sizes: ["201-500", "501-1000", "1001-5000"],
-    annualRevenue: {
-      min: "10", // Minimum annual revenue in millions USD
-      max: "500", // Maximum annual revenue in millions USD
+const nvCompanySearchId = await linkedapi.salesNavigatorSearchCompanies.execute(
+  {
+    term: "enterprise software", // Search term for company name, description, or keywords
+    filter: {
+      locations: ["San Francisco", "New York", "London"],
+      industries: ["Software Development", "Enterprise Software", "SaaS"],
+      sizes: ["201-500", "501-1000", "1001-5000"],
+      annualRevenue: {
+        min: "10", // Minimum annual revenue in millions USD
+        max: "500", // Maximum annual revenue in millions USD
+      },
     },
+    limit: 75, // Maximum number of results to return (1-100)
   },
-  limit: 75, // Maximum number of results to return (1-100)
-});
-const companiesResult = await nvCompanySearch.result();
+);
+const companiesResult =
+  await linkedapi.salesNavigatorSearchCompanies.result(nvCompanySearchId);
 ```
 
 ---
 
-### `searchPeople(params)`
+### `searchPeople`
 
 Search for people on LinkedIn using standard search with location, experience, and company filters.
 
 - **Parameters:** `TSearchPeopleParams` - Search term, filters, and pagination
-- **Returns:** `Promise<WorkflowHandler<TSearchPeopleResult[]>>` - Array of people search results
+- **Result:** `TMappedResponse<TSearchPeopleResult[]>` - Array of people search results
 
 ```typescript
-const peopleSearchWorkflow = await linkedapi.searchPeople({
+const peopleSearchWorkflowId = await linkedapi.searchPeople.execute({
   term: "product manager", // Search term
   filter: {
     firstName: "John",
@@ -363,20 +330,22 @@ const peopleSearchWorkflow = await linkedapi.searchPeople({
   },
   limit: 20, // Maximum number of results to return (1-100, default: 10)
 });
-const peopleResult = await peopleSearchWorkflow.result();
+const peopleResult = await linkedapi.searchPeople.result(
+  peopleSearchWorkflowId,
+);
 ```
 
 ---
 
-### `salesNavigatorSearchPeople(params)`
+### `salesNavigatorSearchPeople`
 
 Search for people using Sales Navigator with advanced prospecting and lead generation filters.
 
 - **Parameters:** `TNvSearchPeopleParams` - Enhanced search parameters for Sales Navigator
-- **Returns:** `Promise<WorkflowHandler<TNvSearchPeopleResult[]>>` - Enhanced people search results
+- **Result:** `TMappedResponse<TNvSearchPeopleResult[]>` - People search results from Sales Navigator
 
 ```typescript
-const nvPeopleSearch = await linkedapi.salesNavigatorSearchPeople({
+const nvPeopleSearchId = await linkedapi.salesNavigatorSearchPeople.execute({
   term: "VP Engineering",
   limit: 20, // Maximum number of results to return (1-100, default: 10)
   filter: {
@@ -391,82 +360,87 @@ const nvPeopleSearch = await linkedapi.salesNavigatorSearchPeople({
     yearsOfExperience: ["lessThanOne", "oneToTwo", "threeToFive"],
   },
 });
-const prospectsResult = await nvPeopleSearch.result();
+const prospectsResult =
+  await linkedapi.salesNavigatorSearchPeople.result(nvPeopleSearchId);
 ```
 
 ---
 
-### `sendConnectionRequest(params)`
+### `sendConnectionRequest`
 
 Send connection requests to LinkedIn users with optional personalized messages.
 
 - **Parameters:** `TSendConnectionRequestParams` - Person URL and optional message
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Connection request sent successfully
 
 ```typescript
-await linkedapi.sendConnectionRequest({
+const workflowId = await linkedapi.sendConnectionRequest.execute({
   personUrl: "https://www.linkedin.com/in/john-doe",
   note: "Hello! I'd love to connect and discuss opportunities.",
 });
+await linkedapi.sendConnectionRequest.result(workflowId);
 ```
 
 ---
 
-### `checkConnectionStatus(params)`
+### `checkConnectionStatus`
 
 Check the current connection status with a LinkedIn user.
 
 - **Parameters:** `TCheckConnectionStatusParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<TCheckConnectionStatusResult>>` - Connection status information
+- **Result:** `TMappedResponse<TCheckConnectionStatusResult>` - Connection status information
 
 ```typescript
-const statusWorkflow = await linkedapi.checkConnectionStatus({
+const statusWorkflowId = await linkedapi.checkConnectionStatus.execute({
   personUrl: "https://www.linkedin.com/in/john-doe",
 });
-const statusResult = await statusWorkflow.result();
+const statusResult =
+  await linkedapi.checkConnectionStatus.result(statusWorkflowId);
 ```
 
 ---
 
-### `withdrawConnectionRequest(params)`
+### `withdrawConnectionRequest`
 
 Withdraw previously sent connection requests.
 
 - **Parameters:** `TWithdrawConnectionRequestParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Connection request withdrawn successfully
 
 ```typescript
-await linkedapi.withdrawConnectionRequest({
+const workflowId = await linkedapi.withdrawConnectionRequest.execute({
   personUrl: "https://www.linkedin.com/in/john-doe",
 });
+await linkedapi.withdrawConnectionRequest.result(workflowId);
 ```
 
 ---
 
-### `retrievePendingRequests()`
+### `retrievePendingRequests`
 
 Retrieve all pending connection requests sent by your account.
 
 - **Parameters:** None
-- **Returns:** `Promise<WorkflowHandler<TRetrievePendingRequestsResult>>` - List of pending requests
+- **Result:** `TMappedResponse<TRetrievePendingRequestsResult[]>` - List of pending connection requests
 
 ```typescript
-const pendingWorkflow = await linkedapi.retrievePendingRequests();
-const pendingResult = await pendingWorkflow.result();
+const pendingWorkflowId = await linkedapi.retrievePendingRequests.execute();
+const pendingResult =
+  await linkedapi.retrievePendingRequests.result(pendingWorkflowId);
 console.log("Pending requests:", pendingResult.data.length);
 ```
 
 ---
 
-### `retrieveConnections(params)`
+### `retrieveConnections`
 
 Retrieve existing connections with advanced filtering options.
 
 - **Parameters:** `TRetrieveConnectionsParams` - Filter and pagination options
-- **Returns:** `Promise<WorkflowHandler<TRetrieveConnectionsResult>>` - List of connections
+- **Result:** `TMappedResponse<TRetrieveConnectionsResult[]>` - List of connections
 
 ```typescript
-const connectionsWorkflow = await linkedapi.retrieveConnections({
+const connectionsWorkflowId = await linkedapi.retrieveConnections.execute({
   filter: {
     firstName: "John",
     positions: ["Engineer", "Manager"],
@@ -474,86 +448,94 @@ const connectionsWorkflow = await linkedapi.retrieveConnections({
   },
   limit: 100,
 });
+const connectionsResult = await linkedapi.retrieveConnections.result(
+  connectionsWorkflowId,
+);
 ```
 
 ---
 
-### `removeConnection(params)`
+### `removeConnection`
 
 Remove existing connections from your LinkedIn network.
 
 - **Parameters:** `TRemoveConnectionParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Connection removed successfully
 
 ```typescript
-await linkedapi.removeConnection({
+const workflowId = await linkedapi.removeConnection.execute({
   personUrl: "https://www.linkedin.com/in/former-colleague",
 });
+await linkedapi.removeConnection.result(workflowId);
 ```
 
 ---
 
-### `reactToPost(params)`
+### `reactToPost`
 
 React to LinkedIn posts with various reaction types (like, love, support, etc.).
 
 - **Parameters:** `TReactToPostParams` - Post URL and reaction type
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Reaction applied successfully
 
 ```typescript
-await linkedapi.reactToPost({
+const workflowId = await linkedapi.reactToPost.execute({
   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789",
   reactionType: "like",
 });
+await linkedapi.reactToPost.result(workflowId);
 ```
 
 ---
 
-### `commentOnPost(params)`
+### `commentOnPost`
 
 Comment on LinkedIn posts to engage with your network.
 
 - **Parameters:** `TCommentOnPostParams` - Post URL and comment text
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Comment posted successfully
 
 ```typescript
-await linkedapi.commentOnPost({
+const workflowId = await linkedapi.commentOnPost.execute({
   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789",
   text: "Great insight! Thanks for sharing.",
 });
+await linkedapi.commentOnPost.result(workflowId);
 ```
 
 ---
 
-### `retrieveSSI()`
+### `retrieveSSI`
 
 Retrieve your LinkedIn Social Selling Index (SSI) score and rankings.
 
 - **Parameters:** None
-- **Returns:** `Promise<WorkflowHandler<TRetrieveSSIResult>>` - SSI score and industry/network rankings
+- **Result:** `TMappedResponse<TRetrieveSSIResult>` - SSI score and industry/network rankings
 
 ```typescript
-const ssiWorkflow = await linkedapi.retrieveSSI();
-const ssiResult = await ssiWorkflow.result();
+const ssiWorkflowId = await linkedapi.retrieveSSI.execute();
+const ssiResult = await linkedapi.retrieveSSI.result(ssiWorkflowId);
 ```
 
 ---
 
-### `retrievePerformance()`
+### `retrievePerformance`
 
 Retrieve LinkedIn account performance metrics including profile views and post engagement.
 
 - **Parameters:** None
-- **Returns:** `Promise<WorkflowHandler<TRetrievePerformanceResult>>` - Performance metrics
+- **Result:** `TMappedResponse<TRetrievePerformanceResult>` - Performance metrics and analytics
 
 ```typescript
-const performanceWorkflow = await linkedapi.retrievePerformance();
-const performanceResult = await performanceWorkflow.result();
+const performanceWorkflowId = await linkedapi.retrievePerformance.execute();
+const performanceResult = await linkedapi.retrievePerformance.result(
+  performanceWorkflowId,
+);
 ```
 
 ---
 
-### `getApiUsageStats(params)`
+### `getApiUsageStats`
 
 Retrieve Linked API usage statistics for monitoring and optimization.
 
@@ -574,7 +556,7 @@ if (statsResponse.success) {
   console.log("Total actions:", statsResponse.result?.length);
   statsResponse.result?.forEach((action) => {
     console.log(
-      `${action.actionType}: ${action.success ? "SUCCESS" : "FAILED"}`
+      `${action.actionType}: ${action.success ? "SUCCESS" : "FAILED"}`,
     );
   });
 }
@@ -582,66 +564,70 @@ if (statsResponse.success) {
 
 ---
 
-### `sendMessage(params)`
+### `sendMessage`
 
 Send messages to LinkedIn users through standard LinkedIn messaging.
 
 - **Parameters:** `TSendMessageParams` - Person URL and message text
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Message sent successfully
 
 ```typescript
-await linkedapi.sendMessage({
+const workflowId = await linkedapi.sendMessage.execute({
   personUrl: "https://www.linkedin.com/in/john-doe",
   text: "Hello! I saw your post about AI and wanted to connect.",
 });
+await linkedapi.sendMessage.result(workflowId);
 ```
 
 ---
 
-### `syncConversation(params)`
+### `syncConversation`
 
 Sync conversation history with a LinkedIn user for message polling.
 
 - **Parameters:** `TSyncConversationParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Conversation synced successfully
 - **Related Methods:** Use with `pollConversations()` to retrieve message history
 
 ```typescript
-await linkedapi.syncConversation({
+const workflowId = await linkedapi.syncConversation.execute({
   personUrl: "https://www.linkedin.com/in/john-doe",
 });
+await linkedapi.syncConversation.result(workflowId);
 ```
 
 ---
 
-### `salesNavigatorSendMessage(params)`
+### `salesNavigatorSendMessage`
 
 Send messages through Sales Navigator with enhanced messaging capabilities.
 
 - **Parameters:** `TNvSendMessageParams` - Person URL, message text, and optional subject
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Sales Navigator message sent successfully
 
 ```typescript
-await linkedapi.salesNavigatorSendMessage({
+const workflowId = await linkedapi.salesNavigatorSendMessage.execute({
   personUrl: "https://www.linkedin.com/sales/people/ABC123",
   subject: "Partnership Opportunity",
   text: "Hi! I'd love to discuss potential collaboration opportunities.",
 });
+await linkedapi.salesNavigatorSendMessage.result(workflowId);
 ```
 
 ---
 
-### `salesNavigatorSyncConversation(params)`
+### `salesNavigatorSyncConversation`
 
 Sync Sales Navigator conversation for message polling.
 
 - **Parameters:** `TNvSyncConversationParams` - Person URL
-- **Returns:** `Promise<WorkflowHandler<void>>` - Workflow handler (void)
+- **Result:** `TMappedResponse<void>` - Sales Navigator conversation synced successfully
 
 ```typescript
-await linkedapi.salesNavigatorSyncConversation({
+const workflowId = await linkedapi.salesNavigatorSyncConversation.execute({
   personUrl: "https://www.linkedin.com/sales/people/ABC123",
 });
+await linkedapi.salesNavigatorSyncConversation.result(workflowId);
 ```
 
 ---
@@ -668,7 +654,7 @@ if (response.success) {
   response.result?.forEach((conversation) => {
     console.log(
       `Messages from ${conversation.personUrl}:`,
-      conversation.messages
+      conversation.messages,
     );
   });
 }
@@ -690,7 +676,7 @@ For complex multi-step workflows involving multiple actions, it's recommended to
 
 ```typescript
 // ✅ Recommended: Custom workflow for complex operations
-const customWorkflow = await linkedapi.executeCustomWorkflow({
+const customWorkflowId = await linkedapi.customWorkflow.execute({
   actionType: "st.searchCompanies",
   term: "AI startup",
   filter: { locations: ["San Francisco"], sizes: ["11-50", "51-200"] },
@@ -712,8 +698,8 @@ const customWorkflow = await linkedapi.executeCustomWorkflow({
             note: "Hi! I'd love to connect.",
             email: "example@example.com"
           },
+        },
       },
-      }
     },
   },
 });
@@ -721,15 +707,15 @@ const customWorkflow = await linkedapi.executeCustomWorkflow({
 // vs. ❌ Less efficient: Multiple separate API calls
 // (Multiple network requests, no atomicity, complex error handling)
 try {
-  const searchCompaniesWorkflow = await linkedapi.searchCompanies({
+  const searchCompaniesWorkflowId = await linkedapi.searchCompanies.execute({
     term: "AI startup",
     filter: { locations: ["San Francisco"], sizes: ["11-50", "51-200"] },
     limit: 10,
   })
-  const companies = await searchCompaniesWorkflow.result();
+  const companies = (await linkedapi.searchCompanies.result(searchCompaniesWorkflowId)).data!;
   for (company of companies) {
     try {
-      const companyEmployeesWorkflow = await linkedapi.fetchCompany({
+      const companyEmployeesWorkflowId = await linkedapi.fetchCompany.execute({
         retrieveEmployees: true,
         employeesRetrievalConfig: {
           limit: 5,
@@ -738,15 +724,15 @@ try {
           }
         }
       });
-      const employees = await companyEmployeesWorkflow.result();
+      const employees = (await linkedapi.fetchCompany.result(companyEmployeesWorkflowId)).data!;
       for (employee of employees) {
         try {
-          const sendConnectionWorkflow = await linkedapi.sendConnectionRequest({
+          const sendConnectionWorkflowId = await linkedapi.sendConnectionRequest.execute({
             personUrl: employee.publicUrl,
             note: "Hi! I'd love to connect.",
             email: "example@example.com"
           });
-          await sendConnectionWorflow.result();
+          await linkedapi.sendConnectionRequest.result(sendConnectionWorkflowId);
         } catch (sendConnectionError) {
           console.error(sendConnectionError);
         }
@@ -766,52 +752,26 @@ try {
 
 Linked API workflows are designed to be resilient and stateful. Each workflow receives a unique `workflowId` that can be used to retrieve results even if your application restarts or loses connection during execution.
 
-#### Saving Workflow IDs for Later Retrieval
-
 When you start a workflow, you can access its ID immediately and store it for later use:
 
 ```typescript
 // Start a workflow and save the ID
-const personWorkflow = await linkedapi.fetchPerson({
+const personWorkflowId = await linkedapi.fetchPerson.execute({
   personUrl: "https://www.linkedin.com/in/john-doe",
   retrieveExperience: true,
 });
 
 // Save the workflow ID to your database or persistent storage
-const workflowId = personWorkflow.workflowId;
-console.log("Workflow started with ID:", workflowId);
+console.log("Workflow started with ID:", personWorkflowId);
 
 // Store in database/file/memory for later retrieval
-await saveWorkflowToDatabase(workflowId, "fetchPerson");
+await saveWorkflowToDatabase(personWorkflowId);
 try {
-  const person = await personWorkflow.result();
+  const person = await linkedapi.fetchPerson.result(personWorkflowId);
 } finally {
-  await deleteWorkflowFromDatabase(workflowId);
+  await deleteWorkflowFromDatabase(personWorkflowId);
 }
 ```
-
-#### Retrieving Results After App Restart
-
-If your application restarts or you need to check workflow status later, you can:
-
-- Restore a `WorkflowHandler` using `restoreWorkflow(workflowId, functionName)` with full type safety
-
-```typescript
-// 1) Raw handler
-const rawHandler = await linkedapi.restoreWorkflow(savedWorkflowId);
-
-// 2) Streamlined restoration with function name (wide result type with full type safety)
-const handler = await linkedapi.restoreWorkflow(savedWorkflowId, "fetchPerson");
-const result = await handler.result();
-if (result.data) {
-  console.log("Person name:", result.data.name);
-  console.log("Experience count:", result.data.experiences?.length);
-}
-```
-
-See `examples/restore-workflow.ts` for a full example.
-
----
 
 ## 🚨 Error Handling
 
@@ -820,7 +780,6 @@ Linked API provides structured error handling for different failure scenarios. T
 ### 1. Exceptions (try/catch)
 
 - **`LinkedApiError`** - throws if a [common error](https://linkedapi.io/docs/making-requests/#common-errors) occurs
-- **`LinkedApiWorkflowTimeoutError`** - throws in case of timeout. Contains `workflowId` and `functionName` for future restoration
 
 ### 2. Action Errors (errors array)
 
@@ -828,13 +787,13 @@ Linked API provides structured error handling for different failure scenarios. T
 - **Action-specific errors** - errors from individual actions within a workflow that don't cause the entire workflow to fail
 
 ```typescript
-import LinkedApi, { LinkedApiError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from "linkedapi-node";
 
 try {
-  const workflow = await linkedapi.fetchPerson({
+  const workflowId = await linkedapi.fetchPerson.execute({
     personUrl: "https://www.linkedin.com/in/invalid-profile",
   });
-  const result = await workflow.result();
+  const result = await linkedapi.fetchPerson.result(workflowId);
 
   // Check for partial errors in the response
   if (result.errors && result.errors.length > 0) {
@@ -872,8 +831,7 @@ try {
 - **`invalidWorkflow`** - Workflow configuration is not valid due to violated action constraints or invalid action parameters: {validation_details}.
 - **`plusPlanRequired`** - Some actions in this workflow require the Plus plan.
 - **`linkedinAccountSignedOut`** - Your LinkedIn account has been signed out in our cloud browser. This occasionally happens as LinkedIn may sign out accounts after an extended period. You'll need to visit our platform and reconnect your account.
-- **`languageNotSupported`** -  Your LinkedIn account uses a language other than English, which is currently the only supported option.
-- **`timeout`** - Local execution timeout. Contains `workflowId` and `functionName` for future restoration.
+- **`languageNotSupported`** - Your LinkedIn account uses a language other than English, which is currently the only supported option.
 
 ### Common Action Error Types
 

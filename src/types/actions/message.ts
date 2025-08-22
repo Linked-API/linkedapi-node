@@ -1,4 +1,4 @@
-import { TBaseActionParams } from "../params";
+import { TBaseActionParams } from '../params';
 
 export interface TSendMessageParams extends TBaseActionParams {
   personUrl: string;
@@ -48,5 +48,14 @@ export interface TConversationPollResponse {
   };
 }
 
-export type TConversationType = "st" | "nv";
-export type TMessageSender = "us" | "them";
+export const CONVERSATION_TYPE = {
+  st: 'st',
+  nv: 'nv',
+} as const;
+export type TConversationType = (typeof CONVERSATION_TYPE)[keyof typeof CONVERSATION_TYPE];
+
+export const MESSAGE_SENDER = {
+  us: 'us',
+  them: 'them',
+} as const;
+export type TMessageSender = (typeof MESSAGE_SENDER)[keyof typeof MESSAGE_SENDER];

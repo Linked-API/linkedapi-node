@@ -1,6 +1,6 @@
 {
   "name": "linkedapi-node",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Official TypeScript SDK for Linked API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -39,6 +39,7 @@
     "@eslint/compat": "^1.2.8",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.24.0",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/jest": "^29.5.12",
     "@types/node": "^20.12.12",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
@@ -57,8 +58,5 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0"
-  },
-  "dependencies": {
-    "axios": "^1.6.8"
   }
 }

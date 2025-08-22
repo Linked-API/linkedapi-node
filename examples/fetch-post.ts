@@ -20,11 +20,11 @@ async function fetchPostExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const postWorkflow = await linkedapi.fetchPost({
+  const workflowId = await linkedapi.fetchPost.execute({
     postUrl: 'https://www.linkedin.com/posts/post-url'
   });
-  console.log('🔍 Workflow started:', postWorkflow.workflowId);
-  const postResult = await postWorkflow.result();
+  console.log('🔍 Workflow started:', workflowId);
+  const postResult = await linkedapi.fetchPost.result(workflowId);
   if (postResult.data) {
     const post = postResult.data;
     console.log('✅ Post fetched successfully');
