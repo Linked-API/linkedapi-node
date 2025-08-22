@@ -6,7 +6,7 @@ export class SalesNavigatorSyncConversation extends PredefinedOperation<
   TNvSyncConversationParams,
   void
 > {
-  protected override readonly functionName: TOperationName = 'salesNavigatorSyncConversation';
+  protected override readonly operationName: TOperationName = 'salesNavigatorSyncConversation';
   protected override readonly mapper = new VoidWorkflowMapper<TNvSyncConversationParams>(
     'nv.syncConversation',
   );

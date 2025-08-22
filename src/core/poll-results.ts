@@ -1,10 +1,9 @@
-import { LinkedApiError, TWorkflowCompletion, TWorkflowStatus } from '../types';
+import { LinkedApiError, TWorkflowCompletion, TWorkflowRunningStatus } from '../types';
 
 import { WaitForCompletionOptions } from './operation';
 
 export async function pollWorkflowResult(
-  workflowId: string,
-  workflowResultFn: (workflowId: string) => Promise<TWorkflowStatus | TWorkflowCompletion>,
+  workflowResultFn: () => Promise<TWorkflowRunningStatus | TWorkflowCompletion>,
   options: WaitForCompletionOptions,
 ): Promise<TWorkflowCompletion> {
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -13,16 +12,13 @@ export async function pollWorkflowResult(
   const startTime = Date.now();
 
   while (Date.now() - startTime < timeout) {
-    const result = await workflowResultFn(workflowId);
+    const result = await workflowResultFn();
 
     if (result !== 'running') {
-      return result as TWorkflowCompletion;
+      return result;
     }
 
     await sleep(pollInterval);
   }
-  throw new LinkedApiError(
-    'workflowTimeout',
-    `Workflow ${workflowId} did not complete within ${timeout}ms`,
-  );
+  throw new LinkedApiError('workflowTimeout', `Workflow did not complete within ${timeout}ms`);
 }

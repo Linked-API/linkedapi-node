@@ -6,7 +6,7 @@ export class SalesNavigatorFetchPerson extends PredefinedOperation<
   TNvOpenPersonPageParams,
   TNvOpenPersonPageResult
 > {
-  protected override readonly functionName: TOperationName = 'salesNavigatorFetchPerson';
+  protected override readonly operationName: TOperationName = 'salesNavigatorFetchPerson';
   protected override readonly mapper = new NvFetchPersonMapper();
 }
 

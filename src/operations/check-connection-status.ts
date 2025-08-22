@@ -6,7 +6,7 @@ export class CheckConnectionStatus extends PredefinedOperation<
   TCheckConnectionStatusParams,
   TCheckConnectionStatusResult
 > {
-  protected override readonly functionName: TOperationName = 'checkConnectionStatus';
+  protected override readonly operationName: TOperationName = 'checkConnectionStatus';
   protected override readonly mapper = new SimpleWorkflowMapper<
     TCheckConnectionStatusParams,
     TCheckConnectionStatusResult

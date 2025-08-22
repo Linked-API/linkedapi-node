@@ -7,7 +7,7 @@ import {
   TWorkflowCompletion,
   TWorkflowDefinition,
   TWorkflowResponse,
-  TWorkflowStatus,
+  TWorkflowRunningStatus,
 } from '../types';
 
 import { pollWorkflowResult } from './poll-results';
@@ -46,7 +46,7 @@ export interface WaitForCompletionOptions {
 }
 
 export abstract class PredefinedOperation<TParams, TResult> {
-  protected abstract readonly functionName: TOperationName;
+  protected abstract readonly operationName: TOperationName;
   protected abstract readonly mapper: BaseMapper<TParams, TResult>;
 
   private readonly operation: CustomWorkflowOperation;
@@ -69,20 +69,20 @@ export abstract class PredefinedOperation<TParams, TResult> {
       return this.mapper.mapResponse(rawResult);
     } catch (error) {
       if (error instanceof LinkedApiError && error.type === 'workflowTimeout') {
-        throw new LinkedApiWorkflowTimeoutError(workflowId, this.functionName);
+        throw new LinkedApiWorkflowTimeoutError(workflowId, this.operationName);
       }
       throw error;
     }
   }
 
-  public async immediateResult(
+  public async status(
     workflowId: string,
-  ): Promise<TWorkflowStatus | TMappedResponse<TResult>> {
-    const result = await this.operation.immediateResult(workflowId);
+  ): Promise<TWorkflowRunningStatus | TMappedResponse<TResult>> {
+    const result = await this.operation.status(workflowId);
     if (result === 'running') {
       return result;
     }
-    return this.mapper.mapResponse(result as TWorkflowCompletion);
+    return this.mapper.mapResponse(result);
   }
 }
 
@@ -105,11 +105,7 @@ export class CustomWorkflowOperation {
     options: WaitForCompletionOptions = {},
   ): Promise<TWorkflowCompletion> {
     try {
-      return pollWorkflowResult(
-        workflowId,
-        (workflowId) => this.immediateResult(workflowId),
-        options,
-      );
+      return pollWorkflowResult(() => this.status(workflowId), options);
     } catch (error) {
       if (error instanceof LinkedApiError && error.type === 'workflowTimeout') {
         throw new LinkedApiWorkflowTimeoutError(workflowId, 'customWorkflow');
@@ -118,7 +114,7 @@ export class CustomWorkflowOperation {
     }
   }
 
-  public async immediateResult(workflowId: string): Promise<TWorkflowStatus | TWorkflowCompletion> {
+  public async status(workflowId: string): Promise<TWorkflowRunningStatus | TWorkflowCompletion> {
     const workflowResult = await this.getWorkflowResult(workflowId);
     if (workflowResult.workflowStatus === 'running') {
       return workflowResult.workflowStatus;

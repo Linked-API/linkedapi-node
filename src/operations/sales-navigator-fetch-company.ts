@@ -6,7 +6,7 @@ export class SalesNavigatorFetchCompany extends PredefinedOperation<
   TNvBaseFetchCompanyParams,
   TNvFetchCompanyResult
 > {
-  protected override readonly functionName: TOperationName = 'salesNavigatorFetchCompany';
+  protected override readonly operationName: TOperationName = 'salesNavigatorFetchCompany';
   protected override readonly mapper = new NvFetchCompanyMapper();
 
   public override async execute<TParams extends TNvBaseFetchCompanyParams>(

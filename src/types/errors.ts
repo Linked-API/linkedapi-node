@@ -83,22 +83,22 @@ export class LinkedApiError extends Error {
 
 /**
  * This error is thrown when a workflow times out.
- * Contains workflowId and functionName to restore the workflow.
+ * Contains workflowId and operationName to continue checking the workflow.
  */
 export class LinkedApiWorkflowTimeoutError extends LinkedApiError {
   public readonly workflowId: string;
-  public readonly functionName: TOperationName;
+  public readonly operationName: TOperationName;
 
-  constructor(workflowId: string, functionName: TOperationName) {
+  constructor(workflowId: string, operationName: TOperationName) {
     super(
       'workflowTimeout',
-      `Workflow ${workflowId} timed out. Use restoreWorkflow(${workflowId}, ${functionName}) to restore the workflow.`,
+      `Workflow ${workflowId} timed out. Call .result again to continue checking the workflow.`,
       {
         workflowId,
-        functionName,
+        operationName,
       },
     );
     this.workflowId = workflowId;
-    this.functionName = functionName;
+    this.operationName = operationName;
   }
 }

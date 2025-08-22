@@ -6,7 +6,7 @@ export class RetrievePendingRequests extends PredefinedOperation<
   void,
   TRetrievePendingRequestsResult[]
 > {
-  protected override readonly functionName: TOperationName = 'retrievePendingRequests';
+  protected override readonly operationName: TOperationName = 'retrievePendingRequests';
   protected override readonly mapper = new ArrayWorkflowMapper<
     void,
     TRetrievePendingRequestsResult

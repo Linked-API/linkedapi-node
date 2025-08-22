@@ -76,8 +76,12 @@ class LinkedApi {
    * @param config - Configuration object containing API tokens and optional settings
    * @returns LinkedApi instance with access to LinkedIn automation features
    */
-  constructor(config: TLinkedApiConfig) {
-    this.httpClient = buildLinkedApiHttpClient(config);
+  public constructor(config: TLinkedApiConfig | HttpClient) {
+    if (config instanceof HttpClient) {
+      this.httpClient = config;
+    } else {
+      this.httpClient = buildLinkedApiHttpClient(config);
+    }
 
     this.customWorkflow = new CustomWorkflow(this.httpClient);
     this.fetchPerson = new FetchPerson(this.httpClient);
@@ -112,7 +116,7 @@ class LinkedApi {
    * Use this for advanced use cases when you need to create custom action sequences.
    *
    * @param params - The workflow definition containing action types and parameters
-   * @returns Promise resolving to a WorkflowHandler for managing the workflow execution
+   * @returns Promise resolving to a WorkflowCompletion for managing the workflow execution
    *
    * @see {@link https://linkedapi.io/docs/ Linked API Documentation}
    * @see {@link https://linkedapi.io/docs/executing-workflows/ Executing Workflows Documentation}
@@ -148,58 +152,13 @@ class LinkedApi {
   public customWorkflow: CustomWorkflow;
 
   /**
-   * Restore a WorkflowHandler for a previously started workflow using its ID and function name.
-   * This provides full type safety and exact result types based on the function name.
-   *
-   * @param workflowId - The unique identifier of the workflow to restore
-   * @param functionName - The name of the function that was used to create the workflow
-   * @returns Promise resolving to a WorkflowHandler with exact result type based on the function name
-   *
-   * @see {@link https://linkedapi.io/docs/executing-workflows/ Executing Workflows Documentation}
-   *
-   * @example
-   * ```typescript
-   * // Restore a person fetching workflow with full type safety
-   * const personHandler = await linkedapi.restoreWorkflow("workflow-id-123", "fetchPerson");
-   * const personResult = await personHandler.result();
-   *
-   * const statusHandler = await linkedapi.restoreWorkflow("workflow-id-456", "checkConnectionStatus");
-   * const statusResult = await statusHandler.result();
-   * // TypeScript knows exact type: TCheckConnectionStatusResult
-   * ```
-   */
-  // public async restoreWorkflow<TFunctionName extends TOperationName>(
-  //   workflowId: string,
-  //   functionName: TFunctionName,
-  // ): Promise<WorkflowHandler<TRestoreResultType<TFunctionName>>> {
-  //   const mapper = createMapperFromFunctionName(functionName);
-
-  //   if (mapper === null) {
-  //     return new WorkflowHandler(
-  //       workflowId,
-  //       functionName,
-  //       this.workflowExecutor,
-  //     ) as WorkflowHandler<TRestoreResultType<TFunctionName>>;
-  //   }
-
-  //   return new WorkflowHandler(
-  //     workflowId,
-  //     functionName,
-  //     this.workflowExecutor,
-  //     mapper as BaseMapper<TBaseActionParams, unknown>,
-  //   ) as WorkflowHandler<TRestoreResultType<TFunctionName>>;
-  // }
-
-  // Mapper descriptor based restoration was removed in favor of restoreMapper(functionName, parameters)
-
-  /**
    * Send a message to a LinkedIn user via standard LinkedIn messaging.
    *
    * This method sends a direct message to a person on LinkedIn. The recipient must be a connection
    * or allow messages from anyone. This uses the standard LinkedIn messaging interface.
    *
    * @param params - Parameters including the person's URL and message text
-   * @returns Promise resolving to a WorkflowHandler for the message sending action
+   * @returns Promise resolving to the message sending action
    *
    * @see {@link https://linkedapi.io/docs/sending-message/ Sending Messages Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-send-message/ st.sendMessage Action Documentation}
@@ -225,7 +184,7 @@ class LinkedApi {
    * process that retrieves the conversation history and prepares it for future updates.
    *
    * @param params - Parameters including the person's URL
-   * @returns Promise resolving to a WorkflowHandler for the sync action
+   * @returns Promise resolving to the sync action
    *
    * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-sync-conversation/ st.syncConversation Action Documentation}
@@ -249,7 +208,7 @@ class LinkedApi {
    * Sales Navigator allows messaging people who are not connections and provides enhanced messaging features.
    *
    * @param params - Parameters including the person's URL, message text, and subject line
-   * @returns Promise resolving to a WorkflowHandler for the message sending action
+   * @returns Promise resolving to the message sending action
    *
    * @see {@link https://linkedapi.io/docs/sending-message/ Sending Messages Documentation}
    * @see {@link https://linkedapi.io/docs/action-nv-send-message/ nv.sendMessage Action Documentation}
@@ -276,7 +235,7 @@ class LinkedApi {
    * history from Sales Navigator and prepares it for future updates.
    *
    * @param params - Parameters including the person's URL
-   * @returns Promise resolving to a WorkflowHandler for the sync action
+   * @returns Promise resolving to the sync action
    *
    * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
    * @see {@link https://linkedapi.io/docs/action-nv-sync-conversation/ nv.syncConversation Action Documentation}
@@ -356,7 +315,7 @@ class LinkedApi {
    * including basic information, experience, education, skills, and more based on the specified parameters.
    *
    * @param params - Parameters specifying the person URL and what data to retrieve
-   * @returns Promise resolving to a WorkflowHandler containing the person's profile data
+   * @returns Promise resolving to an object containing the person's profile data
    *
    * @see {@link https://linkedapi.io/docs/visiting-person-page/ Visiting Person Page Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-open-person-page/ st.openPersonPage Action Documentation}
@@ -425,7 +384,7 @@ class LinkedApi {
    * Sales Navigator provides enhanced data and is useful for sales prospecting activities.
    *
    * @param params - Parameters including the person's hashed URL and data options
-   * @returns Promise resolving to a WorkflowHandler containing Sales Navigator person data
+   * @returns Promise resolving to an object containing Sales Navigator person data
    *
    * @see {@link https://linkedapi.io/docs/visiting-person-page/ Visiting Person Page Documentation}
    * @see {@link https://linkedapi.io/docs/action-nv-open-person-page/ nv.openPersonPage Action Documentation}
@@ -449,7 +408,7 @@ class LinkedApi {
    * including basic information, employee data, posts, and more based on the specified parameters.
    *
    * @param params - Parameters specifying the company URL and what data to retrieve
-   * @returns Promise resolving to a WorkflowHandler containing the company's profile data
+   * @returns Promise resolving to an object containing the company's profile data
    *
    * @see {@link https://linkedapi.io/docs/action-st-open-company-page/ st.openCompanyPage Action Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-company-employees/ st.retrieveCompanyEmployees Child Action}
@@ -496,7 +455,7 @@ class LinkedApi {
    * Sales Navigator provides enhanced company data and is useful for B2B sales prospecting.
    *
    * @param params - Parameters including the company's hashed URL and data options
-   * @returns Promise resolving to a WorkflowHandler containing Sales Navigator company data
+   * @returns Promise resolving to an object containing Sales Navigator company data
    *
    * @see {@link https://linkedapi.io/docs/action-nv-open-company-page/ nv.openCompanyPage Action Documentation}
    * @see {@link https://linkedapi.io/docs/action-nv-retrieve-company-employees/ nv.retrieveCompanyEmployees Child Action}
@@ -540,7 +499,7 @@ class LinkedApi {
    * including content, author information, engagement metrics, and comments.
    *
    * @param params - Parameters specifying the post URL
-   * @returns Promise resolving to a WorkflowHandler containing the post data
+   * @returns Promise resolving to an object containing the post data
    *
    * @see {@link https://linkedapi.io/docs/action-st-open-post/ st.openPost Action Documentation}
    *
@@ -567,7 +526,7 @@ class LinkedApi {
    * You can filter by various criteria like location, industry, company size, and more.
    *
    * @param params - Search parameters including keywords, filters, and pagination options
-   * @returns Promise resolving to a WorkflowHandler containing an array of company search results
+   * @returns Promise resolving to an object containing an array of company search results
    *
    * @see {@link https://linkedapi.io/docs/action-st-search-companies/ st.searchCompanies Action Documentation}
    *
@@ -598,7 +557,7 @@ class LinkedApi {
    * Sales Navigator provides more detailed filtering options and enhanced company data.
    *
    * @param params - Sales Navigator search parameters with advanced filtering options
-   * @returns Promise resolving to a WorkflowHandler containing an array of Sales Navigator company results
+   * @returns Promise resolving to an object containing an array of Sales Navigator company results
    *
    * @see {@link https://linkedapi.io/docs/action-nv-search-companies/ nv.searchCompanies Action Documentation}
    *
@@ -633,7 +592,7 @@ class LinkedApi {
    * You can filter by keywords, location, current company, past company, industry, and more.
    *
    * @param params - Search parameters including keywords, filters, and pagination options
-   * @returns Promise resolving to a WorkflowHandler containing an array of people search results
+   * @returns Promise resolving to an object containing an array of people search results
    *
    * @see {@link https://linkedapi.io/docs/action-st-search-people/ st.searchPeople Action Documentation}
    *
@@ -664,7 +623,7 @@ class LinkedApi {
    * Sales Navigator provides more sophisticated filtering options and enhanced prospect data.
    *
    * @param params - Sales Navigator search parameters with advanced filtering options
-   * @returns Promise resolving to a WorkflowHandler containing an array of Sales Navigator people results
+   * @returns Promise resolving to an object containing an array of Sales Navigator people results
    *
    * @see {@link https://linkedapi.io/docs/action-nv-search-people/ nv.searchPeople Action Documentation}
    *
@@ -695,7 +654,7 @@ class LinkedApi {
    * The request will appear in the recipient's connection requests section.
    *
    * @param params - Parameters including the person's URL and optional connection message
-   * @returns Promise resolving to a WorkflowHandler for the connection request action
+   * @returns Promise resolving to the connection request action
    *
    * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-send-connection-request/ st.sendConnectionRequest Action Documentation}
@@ -720,7 +679,7 @@ class LinkedApi {
    * or have no connection with them.
    *
    * @param params - Parameters including the person's URL
-   * @returns Promise resolving to a WorkflowHandler containing the connection status result
+   * @returns Promise resolving to an object containing the connection status result
    *
    * @see {@link https://linkedapi.io/docs/checking-connection-status/ Checking Connection Status Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-check-connection-status/ st.checkConnectionStatus Action Documentation}
@@ -746,7 +705,7 @@ class LinkedApi {
    * The request will be removed from their pending connection requests.
    *
    * @param params - Parameters including the person's URL
-   * @returns Promise resolving to a WorkflowHandler for the withdrawal action
+   * @returns Promise resolving to the withdrawal action
    *
    * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-withdraw-connection-request/ st.withdrawConnectionRequest Action Documentation}
@@ -769,7 +728,7 @@ class LinkedApi {
    * This method fetches a list of all pending connection requests that others have sent to you.
    * You can optionally filter the results by label.
    *
-   * @returns Promise resolving to a WorkflowHandler containing an array of pending requests
+   * @returns Promise resolving to an object containing an array of pending requests
    *
    * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-pending-requests/ st.retrievePendingRequests Action Documentation}
@@ -798,7 +757,7 @@ class LinkedApi {
    * like name, position, location, industry, company, and school.
    *
    * @param params - Parameters including optional filters and pagination options
-   * @returns Promise resolving to a WorkflowHandler containing an array of connections
+   * @returns Promise resolving to an object containing an array of connections
    *
    * @see {@link https://linkedapi.io/docs/managing-existing-connections/ Managing Existing Connections Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-connections/ st.retrieveConnections Action Documentation}
@@ -830,7 +789,7 @@ class LinkedApi {
    * be in your connections list and you will lose the connection relationship.
    *
    * @param params - Parameters including the person's URL
-   * @returns Promise resolving to a WorkflowHandler for the removal action
+   * @returns Promise resolving to the removal action
    *
    * @see {@link https://linkedapi.io/docs/managing-existing-connections/ Managing Existing Connections Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-remove-connection/ st.removeConnection Action Documentation}
@@ -854,7 +813,7 @@ class LinkedApi {
    * You can only have one reaction per post, and adding a new reaction will replace any existing one.
    *
    * @param params - Parameters including the post URL and reaction type
-   * @returns Promise resolving to a WorkflowHandler for the reaction action
+   * @returns Promise resolving to the reaction action
    *
    * @see {@link https://linkedapi.io/docs/reacting-and-commenting/ Reacting and Commenting Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-react-to-post/ st.reactToPost Action Documentation}
@@ -879,7 +838,7 @@ class LinkedApi {
    * and can help increase engagement with the post.
    *
    * @param params - Parameters including the post URL and comment text
-   * @returns Promise resolving to a WorkflowHandler for the comment action
+   * @returns Promise resolving to the comment action
    *
    * @see {@link https://linkedapi.io/docs/reacting-and-commenting/ Reacting and Commenting Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-comment-on-post/ st.commentOnPost Action Documentation}
@@ -904,7 +863,7 @@ class LinkedApi {
    * performance across four key areas: establishing professional brand, finding right people,
    * engaging with insights, and building strong relationships.
    *
-   * @returns Promise resolving to a WorkflowHandler containing SSI data
+   * @returns Promise resolving to an object containing SSI data
    *
    * @see {@link https://linkedapi.io/docs/retrieving-ssi-and-performance/ Retrieving SSI and Performance Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-ssi/ st.retrieveSSI Action Documentation}
@@ -929,7 +888,7 @@ class LinkedApi {
    * This method fetches your LinkedIn performance metrics including profile views,
    * search appearances, post impressions, and other engagement statistics.
    *
-   * @returns Promise resolving to a WorkflowHandler containing performance data
+   * @returns Promise resolving to an object containing performance data
    *
    * @see {@link https://linkedapi.io/docs/retrieving-ssi-and-performance/ Retrieving SSI and Performance Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-performance/ st.retrievePerformance Action Documentation}

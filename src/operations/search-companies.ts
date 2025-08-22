@@ -6,7 +6,7 @@ export class SearchCompanies extends PredefinedOperation<
   TSearchCompaniesParams,
   TSearchCompanyResult[]
 > {
-  protected override readonly functionName: TOperationName = 'searchCompanies';
+  protected override readonly operationName: TOperationName = 'searchCompanies';
   protected override readonly mapper = new ArrayWorkflowMapper<
     TSearchCompaniesParams,
     TSearchCompanyResult

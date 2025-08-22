@@ -11,7 +11,7 @@ export class FetchCompany extends PredefinedOperation<
   TBaseFetchCompanyParams,
   TFetchCompanyResult
 > {
-  protected override readonly functionName: TOperationName = 'fetchCompany';
+  protected override readonly operationName: TOperationName = 'fetchCompany';
   protected override readonly mapper = new FetchCompanyMapper();
 
   constructor(httpClient: HttpClient) {

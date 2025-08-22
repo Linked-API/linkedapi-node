@@ -6,7 +6,7 @@ export class SalesNavigatorSearchCompanies extends PredefinedOperation<
   TNvSearchCompaniesParams,
   TNvSearchCompanyResult[]
 > {
-  protected override readonly functionName: TOperationName = 'salesNavigatorSearchCompanies';
+  protected override readonly operationName: TOperationName = 'salesNavigatorSearchCompanies';
   protected override readonly mapper = new ArrayWorkflowMapper<
     TNvSearchCompaniesParams,
     TNvSearchCompanyResult
