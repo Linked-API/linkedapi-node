@@ -11,7 +11,7 @@ export interface TRetrievePerformanceResult {
   searchAppearancesPreviousWeek: number;
 }
 
-export interface TApiUsageStatsParams {
+export interface TApiUsageParams {
   start: string;
   end: string;
 }
@@ -20,13 +20,4 @@ export interface TApiUsageAction {
   actionType: string;
   success: boolean;
   time: string;
-}
-
-export interface TApiUsageStatsResponse {
-  success: boolean;
-  result?: TApiUsageAction[];
-  error?: {
-    type: string;
-    message: string;
-  };
 }

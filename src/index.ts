@@ -28,12 +28,12 @@ import {
 } from './operations';
 import {
   HttpClient,
+  LinkedApiError,
   TApiUsageAction,
-  TApiUsageStatsParams,
-  TApiUsageStatsResponse,
+  TApiUsageParams,
   TConversationPollRequest,
-  TConversationPollResponse,
   TConversationPollResult,
+  TLinkedApiErrorType,
 } from './types';
 import type { TLinkedApiConfig } from './types/config';
 import type { TLinkedApiResponse } from './types/responses';
@@ -295,17 +295,18 @@ class LinkedApi {
    */
   public async pollConversations(
     conversations: TConversationPollRequest[],
-  ): Promise<TConversationPollResponse> {
+  ): Promise<TConversationPollResult[]> {
     const response = await this.httpClient.post<TConversationPollResult[]>(
       '/conversations/poll',
       conversations,
     );
-
-    return {
-      success: response.success,
-      result: response.result,
-      error: response.error,
-    };
+    if (response.success && response.result) {
+      return response.result;
+    }
+    throw new LinkedApiError(
+      response.error?.type as TLinkedApiErrorType,
+      response.error?.message ?? '',
+    );
   }
 
   /**
@@ -941,7 +942,7 @@ class LinkedApi {
    * }
    * ```
    */
-  public async getApiUsageStats(params: TApiUsageStatsParams): Promise<TApiUsageStatsResponse> {
+  public async getApiUsage(params: TApiUsageParams): Promise<TApiUsageAction[]> {
     const queryParams = new URLSearchParams({
       start: params.start,
       end: params.end,
@@ -951,11 +952,13 @@ class LinkedApi {
       `/stats/actions?${queryParams.toString()}`,
     );
 
-    return {
-      success: response.success,
-      result: response.result,
-      error: response.error,
-    };
+    if (response.success && response.result) {
+      return response.result;
+    }
+    throw new LinkedApiError(
+      response.error?.type as TLinkedApiErrorType,
+      response.error?.message ?? '',
+    );
   }
 }
 

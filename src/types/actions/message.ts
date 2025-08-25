@@ -39,15 +39,6 @@ export interface TConversationPollResult {
   messages: TMessage[];
 }
 
-export interface TConversationPollResponse {
-  success: boolean;
-  result?: TConversationPollResult[];
-  error?: {
-    type: string;
-    message: string;
-  };
-}
-
 export const CONVERSATION_TYPE = {
   st: 'st',
   nv: 'nv',

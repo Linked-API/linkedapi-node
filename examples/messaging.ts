@@ -129,23 +129,17 @@ async function pollConversations(linkedapi: LinkedApi, standardPersonUrl: string
     },
   ]);
 
-  if (!pollResponse.success) {
-    console.error('❌ Failed to poll conversations:', pollResponse.error?.message);
-    return;
-  }
-
   console.log('✅ Conversations polled successfully');
-  console.log(`📊 Found ${pollResponse.result?.length || 0} conversations`);
+  console.log(`📊 Found ${pollResponse.length || 0} conversations`);
 
-  pollResponse.result?.forEach((conversation, index) => {
-    console.log(`\n💬 Conversation ${index + 1}:`);
-    console.log(`   👤 Person: ${conversation.personUrl}`);
+  pollResponse.forEach((conversation) => {
+    console.log(`\n💬 Conversation with ${conversation.personUrl}:`);
     console.log(`   🔗 Type: ${conversation.type === 'st' ? 'Standard' : 'Sales Navigator'}`);
     console.log(`   📬 Messages: ${conversation.messages.length}`);
 
     if (conversation.messages.length > 0) {
       console.log('   📝 Recent messages:');
-      conversation.messages.slice(-3).forEach((message) => {
+      conversation.messages.slice(0, 5).forEach((message) => {
         const senderIcon = message.sender === 'us' ? '👤' : '👋';
         console.log(`     ${senderIcon} ${message.sender.toUpperCase()}: "${message.text}"`);
         console.log(`       🕐 ${message.time}`);
