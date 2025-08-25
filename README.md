@@ -1,7 +1,7 @@
 This official Node.js SDK is the fastest and most reliable way to integrate with Linked API. It simplifies development by providing pre-defined methods for common scenarios, handling authentication, managing state persistence, and structuring error responses.
 
 ## Get started
-Please, read these essential guides first. Spending **~20 minutes** on them now will save you **hours of debugging** later:
+To get started with Linked API Node.js SDK, read these essential guides first. Spending **~20 minutes** on them now will save you **hours of debugging** later:
 
 1. [Core concepts](https://linkedapi.io/sdks/core-concepts-0/) – understand the fundamentals of how Linked API works.
 2. [Installation & authorization](https://linkedapi.io/sdks/installation-authorization/) – get the SDK installed and learn how to authorize it.
