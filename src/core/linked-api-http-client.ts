@@ -6,21 +6,22 @@ import {
   TLinkedApiResponse,
 } from '../types';
 
-export function buildLinkedApiHttpClient(config: TLinkedApiConfig): HttpClient {
-  return new LinkedApiHttpClient(config);
+export function buildLinkedApiHttpClient(config: TLinkedApiConfig, client: string): HttpClient {
+  return new LinkedApiHttpClient(config, client);
 }
 
 class LinkedApiHttpClient extends HttpClient {
   private readonly baseUrl: string;
   private readonly headers: Record<string, string>;
 
-  constructor(config: TLinkedApiConfig) {
+  constructor(config: TLinkedApiConfig, client: string) {
     super();
     this.baseUrl = 'https://api.linkedapi.io';
     this.headers = {
       'Content-Type': 'application/json',
       'linked-api-token': config.linkedApiToken,
       'identification-token': config.identificationToken,
+      client: client,
     };
   }
 

@@ -82,7 +82,7 @@ class LinkedApi {
     if (config instanceof HttpClient) {
       this.httpClient = config;
     } else {
-      this.httpClient = buildLinkedApiHttpClient(config);
+      this.httpClient = buildLinkedApiHttpClient(config, 'node');
     }
 
     this.customWorkflow = new CustomWorkflow(this.httpClient);
