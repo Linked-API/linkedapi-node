@@ -64,9 +64,9 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     personHashedUrl: 'https://www.linkedin.com/in/abc123',
   };
 
-  const workflowId = await linkedapi.salesNavigatorFetchPerson.execute(fetchParams);
+  const workflowId = await linkedapi.nvFetchPerson.execute(fetchParams);
   console.log('🔍 Workflow started: ', workflowId);
-  const personResult = await linkedapi.salesNavigatorFetchPerson.result(workflowId);
+  const personResult = await linkedapi.nvFetchPerson.result(workflowId);
   if (personResult.data) {
     const person = personResult.data;
     console.log('✅ Person page opened successfully');

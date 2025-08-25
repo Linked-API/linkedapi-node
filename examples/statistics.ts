@@ -64,17 +64,18 @@ async function getRecentUsageStats(linkedapi: LinkedApi): Promise<void> {
   const endDate = new Date();
   const startDate = new Date(endDate.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const apiUsage = await linkedapi.getApiUsage({
+  const { data } = await linkedapi.getApiUsage({
     start: startDate.toISOString(),
     end: endDate.toISOString()
   });
 
   console.log('✅ API Usage retrieved successfully');
-  console.log(`📈 Total actions executed: ${apiUsage.length || 0}`);
+  console.log(`📈 Total actions executed: ${data?.length || 0}`);
 
-  if (apiUsage.length > 0) {
+
+  if (data && data.length > 0) {
     console.log('\n📋 Recent actions:');
-    apiUsage.slice(0, 10).forEach((action) => {
+    data.slice(0, 10).forEach((action) => {
       const status = action.success ? '✅' : '❌';
       const date = new Date(action.time).toLocaleDateString();
       const time = new Date(action.time).toLocaleTimeString();

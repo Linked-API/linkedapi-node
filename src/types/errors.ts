@@ -5,20 +5,21 @@ import { TOperationName } from '../core';
  * @see {@link https://linkedapi.io/docs/actions-overview/#result-options}
  * This error signals that the workflow action failed to complete, but the workflow completed as expected.
  * Common types:
- * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, fetchPerson, salesNavigatorSendMessage, salesNavigatorSyncConversation, salesNavigatorFetchPerson)
- * - messagingNotAllowed (sendMessage, salesNavigatorSendMessage)
+ * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson)
+ * - messagingNotAllowed (sendMessage, nvSendMessage)
  * - alreadyPending (sendConnectionRequest)
  * - alreadyConnected (sendConnectionRequest)
  * - emailRequired (sendConnectionRequest)
  * - requestNotAllowed (sendConnectionRequest)
  * - notPending (withdrawConnectionRequest))
- * - retrievingNotAllowed (retrieveConnections, fetchCompany, salesNavigatorFetchCompany)
+ * - retrievingNotAllowed (retrieveConnections, fetchCompany, nvFetchCompany)
  * - connectionNotFound (removeConnection)
- * - searchingNotAllowed (searchCompanies, searchPeople, salesNavigatorSearchCompanies, salesNavigatorSearchPeople)
- * - companyNotFound (fetchCompany, salesNavigatorFetchCompany)
+ * - searchingNotAllowed (searchCompanies, searchPeople, nvSearchCompanies, nvSearchPeople)
+ * - companyNotFound (fetchCompany, nvFetchCompany)
  * - postNotFound (fetchPost, reactToPost, commentOnPost)
  * - commentingNotAllowed (commentOnPost)
- * - noSalesNavigator (salesNavigatorSendMessage, salesNavigatorSyncConversation, salesNavigatorSearchCompanies, salesNavigatorSearchPeople, salesNavigatorFetchCompany, salesNavigatorFetchPerson)
+ * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson)
+ * - conversationsNotSynced (pollConversations)
  */
 export const LINKED_API_ACTION_ERROR = {
   personNotFound: 'personNotFound',
@@ -35,6 +36,7 @@ export const LINKED_API_ACTION_ERROR = {
   postNotFound: 'postNotFound',
   commentingNotAllowed: 'commentingNotAllowed',
   noSalesNavigator: 'noSalesNavigator',
+  conversationsNotSynced: 'conversationsNotSynced',
 } as const;
 export type TLinkedApiActionErrorType =
   (typeof LINKED_API_ACTION_ERROR)[keyof typeof LINKED_API_ACTION_ERROR];

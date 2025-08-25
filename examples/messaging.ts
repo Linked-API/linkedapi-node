@@ -80,10 +80,10 @@ async function salesNavigatorSendMessage(linkedapi: LinkedApi, personUrl: string
     subject: 'Let\'s connect!',
   };
 
-  const workflowId = await linkedapi.salesNavigatorSendMessage.execute(nvMessageParams);
+  const workflowId = await linkedapi.nvSendMessage.execute(nvMessageParams);
   console.log('🎯 Sales Navigator send message workflow started:', workflowId);
 
-  const nvMessageResult = await linkedapi.salesNavigatorSendMessage.result(workflowId);
+  const nvMessageResult = await linkedapi.nvSendMessage.result(workflowId);
   if (nvMessageResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(nvMessageResult.errors, null, 2));
   } else {
@@ -100,10 +100,10 @@ async function salesNavigatorSyncConversation(linkedapi: LinkedApi, personUrl: s
     personUrl: personUrl,
   };
 
-  const workflowId = await linkedapi.salesNavigatorSyncConversation.execute(nvSyncParams);
+  const workflowId = await linkedapi.nvSyncConversation.execute(nvSyncParams);
   console.log('🎯 Sales Navigator sync conversation workflow started:', workflowId);
 
-  const nvSyncResult = await linkedapi.salesNavigatorSyncConversation.result(workflowId);
+  const nvSyncResult = await linkedapi.nvSyncConversation.result(workflowId);
   if (nvSyncResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(nvSyncResult.errors, null, 2));
   } else {
@@ -130,9 +130,12 @@ async function pollConversations(linkedapi: LinkedApi, standardPersonUrl: string
   ]);
 
   console.log('✅ Conversations polled successfully');
-  console.log(`📊 Found ${pollResponse.length || 0} conversations`);
+  console.log(`📊 Found ${pollResponse.data?.length || 0} conversations`);
 
-  pollResponse.forEach((conversation) => {
+  if (pollResponse.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(pollResponse.errors, null, 2));
+  }
+  pollResponse.data?.forEach((conversation) => {
     console.log(`\n💬 Conversation with ${conversation.personUrl}:`);
     console.log(`   🔗 Type: ${conversation.type === 'st' ? 'Standard' : 'Sales Navigator'}`);
     console.log(`   📬 Messages: ${conversation.messages.length}`);

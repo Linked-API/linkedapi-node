@@ -63,7 +63,7 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
 }
 
 async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
-  const workflowId = await linkedapi.salesNavigatorFetchCompany.execute({
+  const workflowId = await linkedapi.nvFetchCompany.execute({
     companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
     retrieveEmployees: true,
     retrieveDMs: true,
@@ -79,7 +79,7 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   });
 
   console.log('🔍 Sales Navigator workflow started: ', workflowId);
-  const nvCompanyData = await linkedapi.salesNavigatorFetchCompany.result(workflowId);
+  const nvCompanyData = await linkedapi.nvFetchCompany.result(workflowId);
   if (nvCompanyData.data) {
     const nvCompany = nvCompanyData.data;
     console.log('✅ Sales Navigator company page opened successfully');

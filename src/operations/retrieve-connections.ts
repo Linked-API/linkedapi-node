@@ -1,8 +1,8 @@
-import { PredefinedOperation, TOperationName } from '../core';
+import { Operation, TOperationName } from '../core';
 import { ArrayWorkflowMapper } from '../mappers/array-workflow-mapper';
 import { TRetrieveConnectionsParams, TRetrieveConnectionsResult } from '../types';
 
-export class RetrieveConnections extends PredefinedOperation<
+export class RetrieveConnections extends Operation<
   TRetrieveConnectionsParams,
   TRetrieveConnectionsResult[]
 > {
