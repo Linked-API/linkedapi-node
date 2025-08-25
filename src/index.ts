@@ -327,25 +327,40 @@ class LinkedApi {
   public async pollConversations(
     conversations: TConversationPollRequest[],
   ): Promise<TMappedResponse<TConversationPollResult[]>> {
-    const response = await this.httpClient.post<TConversationPollResult[]>(
-      '/conversations/poll',
-      conversations,
-    );
-    if (response.success && response.result) {
-      return {
-        data: response.result,
-        errors: [],
-      };
-    } else {
-      return {
-        data: undefined,
-        errors: [
-          {
-            type: response.error?.type as TLinkedApiActionErrorType,
-            message: response.error?.message ?? '',
-          },
-        ],
-      };
+    try {
+      const response = await this.httpClient.post<TConversationPollResult[]>(
+        '/conversations/poll',
+        conversations,
+      );
+      if (response.success && response.result) {
+        return {
+          data: response.result,
+          errors: [],
+        };
+      } else {
+        return {
+          data: undefined,
+          errors: [
+            {
+              type: response.error?.type as TLinkedApiActionErrorType,
+              message: response.error?.message ?? '',
+            },
+          ],
+        };
+      }
+    } catch (error) {
+      if (error instanceof LinkedApiError && (error.type as unknown) === 'conversationsNotSynced') {
+        return {
+          data: undefined,
+          errors: [
+            {
+              type: error.type as TLinkedApiActionErrorType,
+              message: error.message,
+            },
+          ],
+        };
+      }
+      throw error;
     }
   }
 
