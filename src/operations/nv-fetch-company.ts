@@ -1,12 +1,9 @@
-import { PredefinedOperation, TOperationName } from '../core';
+import { Operation, TOperationName } from '../core';
 import { TActionConfig, ThenWorkflowMapper } from '../mappers/then-workflow-mapper.abstract';
 import { TNvBaseFetchCompanyParams, TNvFetchCompanyParams, TNvFetchCompanyResult } from '../types';
 
-export class SalesNavigatorFetchCompany extends PredefinedOperation<
-  TNvBaseFetchCompanyParams,
-  TNvFetchCompanyResult
-> {
-  protected override readonly operationName: TOperationName = 'salesNavigatorFetchCompany';
+export class NvFetchCompany extends Operation<TNvBaseFetchCompanyParams, TNvFetchCompanyResult> {
+  protected override readonly operationName: TOperationName = 'nvFetchCompany';
   protected override readonly mapper = new NvFetchCompanyMapper();
 
   public override async execute<TParams extends TNvBaseFetchCompanyParams>(

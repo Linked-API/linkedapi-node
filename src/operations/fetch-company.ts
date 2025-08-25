@@ -1,4 +1,4 @@
-import { PredefinedOperation, TOperationName } from '../core';
+import { Operation, TOperationName } from '../core';
 import { TActionConfig, ThenWorkflowMapper } from '../mappers/then-workflow-mapper.abstract';
 import {
   HttpClient,
@@ -7,10 +7,7 @@ import {
   TFetchCompanyResult,
 } from '../types';
 
-export class FetchCompany extends PredefinedOperation<
-  TBaseFetchCompanyParams,
-  TFetchCompanyResult
-> {
+export class FetchCompany extends Operation<TBaseFetchCompanyParams, TFetchCompanyResult> {
   protected override readonly operationName: TOperationName = 'fetchCompany';
   protected override readonly mapper = new FetchCompanyMapper();
 

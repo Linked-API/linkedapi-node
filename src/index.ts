@@ -1,3 +1,4 @@
+import { Operation } from './core';
 import { buildLinkedApiHttpClient } from './core/linked-api-http-client';
 import type { TMappedResponse } from './mappers/base-mapper.abstract';
 import {
@@ -7,18 +8,18 @@ import {
   FetchCompany,
   FetchPerson,
   FetchPost,
+  NvFetchCompany,
+  NvFetchPerson,
+  NvSearchCompanies,
+  NvSearchPeople,
+  NvSendMessage,
+  NvSyncConversation,
   ReactToPost,
   RemoveConnection,
   RetrieveConnections,
   RetrievePendingRequests,
   RetrievePerformance,
   RetrieveSSI,
-  SalesNavigatorFetchCompany,
-  SalesNavigatorFetchPerson,
-  SalesNavigatorSearchCompanies,
-  SalesNavigatorSearchPeople,
-  SalesNavigatorSendMessage,
-  SalesNavigatorSyncConversation,
   SearchCompanies,
   SearchPeople,
   SendConnectionRequest,
@@ -28,12 +29,13 @@ import {
 } from './operations';
 import {
   HttpClient,
+  LinkedApiError,
   TApiUsageAction,
-  TApiUsageStatsParams,
-  TApiUsageStatsResponse,
+  TApiUsageParams,
   TConversationPollRequest,
-  TConversationPollResponse,
   TConversationPollResult,
+  TLinkedApiActionErrorType,
+  TLinkedApiErrorType,
 } from './types';
 import type { TLinkedApiConfig } from './types/config';
 import type { TLinkedApiResponse } from './types/responses';
@@ -80,34 +82,63 @@ class LinkedApi {
     if (config instanceof HttpClient) {
       this.httpClient = config;
     } else {
-      this.httpClient = buildLinkedApiHttpClient(config);
+      this.httpClient = buildLinkedApiHttpClient(config, 'node');
     }
 
     this.customWorkflow = new CustomWorkflow(this.httpClient);
-    this.fetchPerson = new FetchPerson(this.httpClient);
-    this.searchCompanies = new SearchCompanies(this.httpClient);
-    this.fetchCompany = new FetchCompany(this.httpClient);
-    this.salesNavigatorFetchCompany = new SalesNavigatorFetchCompany(this.httpClient);
     this.sendMessage = new SendMessage(this.httpClient);
-    this.salesNavigatorSendMessage = new SalesNavigatorSendMessage(this.httpClient);
     this.syncConversation = new SyncConversation(this.httpClient);
-    this.salesNavigatorSyncConversation = new SalesNavigatorSyncConversation(this.httpClient);
-    this.salesNavigatorFetchPerson = new SalesNavigatorFetchPerson(this.httpClient);
-    this.salesNavigatorSearchCompanies = new SalesNavigatorSearchCompanies(this.httpClient);
-    this.fetchPost = new FetchPost(this.httpClient);
-    this.searchPeople = new SearchPeople(this.httpClient);
-    this.salesNavigatorSearchPeople = new SalesNavigatorSearchPeople(this.httpClient);
-    this.sendConnectionRequest = new SendConnectionRequest(this.httpClient);
     this.checkConnectionStatus = new CheckConnectionStatus(this.httpClient);
+    this.sendConnectionRequest = new SendConnectionRequest(this.httpClient);
     this.withdrawConnectionRequest = new WithdrawConnectionRequest(this.httpClient);
     this.retrievePendingRequests = new RetrievePendingRequests(this.httpClient);
     this.retrieveConnections = new RetrieveConnections(this.httpClient);
     this.removeConnection = new RemoveConnection(this.httpClient);
+    this.searchCompanies = new SearchCompanies(this.httpClient);
+    this.searchPeople = new SearchPeople(this.httpClient);
+    this.fetchCompany = new FetchCompany(this.httpClient);
+    this.fetchPerson = new FetchPerson(this.httpClient);
+    this.fetchPost = new FetchPost(this.httpClient);
     this.reactToPost = new ReactToPost(this.httpClient);
     this.commentOnPost = new CommentOnPost(this.httpClient);
     this.retrieveSSI = new RetrieveSSI(this.httpClient);
     this.retrievePerformance = new RetrievePerformance(this.httpClient);
+    this.nvSendMessage = new NvSendMessage(this.httpClient);
+    this.nvSyncConversation = new NvSyncConversation(this.httpClient);
+    this.nvSearchCompanies = new NvSearchCompanies(this.httpClient);
+    this.nvSearchPeople = new NvSearchPeople(this.httpClient);
+    this.nvFetchCompany = new NvFetchCompany(this.httpClient);
+    this.nvFetchPerson = new NvFetchPerson(this.httpClient);
+
+    this.operations = [
+      this.customWorkflow,
+      this.sendMessage,
+      this.syncConversation,
+      this.checkConnectionStatus,
+      this.sendConnectionRequest,
+      this.withdrawConnectionRequest,
+      this.retrievePendingRequests,
+      this.retrieveConnections,
+      this.removeConnection,
+      this.searchCompanies,
+      this.searchPeople,
+      this.fetchCompany,
+      this.fetchPerson,
+      this.fetchPost,
+      this.reactToPost,
+      this.commentOnPost,
+      this.retrieveSSI,
+      this.retrievePerformance,
+      this.nvSendMessage,
+      this.nvSyncConversation,
+      this.nvSearchCompanies,
+      this.nvSearchPeople,
+      this.nvFetchCompany,
+      this.nvFetchPerson,
+    ];
   }
+
+  public operations: Operation<unknown, unknown>[];
 
   /**
    * Execute a custom workflow with raw workflow definition.
@@ -215,17 +246,17 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.salesNavigatorSendMessage.execute({
+   * const workflowId = await linkedapi.nvSendMessage.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe",
    *   text: "Hi John! I'm reaching out regarding potential collaboration opportunities.",
    *   subject: "Partnership Opportunity"
    * });
    *
-   * await linkedapi.salesNavigatorSendMessage.result(workflowId);
+   * await linkedapi.nvSendMessage.result(workflowId);
    * console.log("Sales Navigator message sent successfully");
    * ```
    */
-  public salesNavigatorSendMessage: SalesNavigatorSendMessage;
+  public nvSendMessage: NvSendMessage;
 
   /**
    * Sync a conversation with a LinkedIn user for Sales Navigator messaging.
@@ -242,15 +273,15 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.salesNavigatorSyncConversation.execute({
+   * const workflowId = await linkedapi.nvSyncConversation.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * await linkedapi.salesNavigatorSyncConversation.result(workflowId);
+   * await linkedapi.nvSyncConversation.result(workflowId);
    * console.log("Sales Navigator conversation synced and ready for polling");
    * ```
    */
-  public salesNavigatorSyncConversation: SalesNavigatorSyncConversation;
+  public nvSyncConversation: NvSyncConversation;
 
   /**
    * Poll multiple conversations to retrieve message history and new messages.
@@ -295,17 +326,42 @@ class LinkedApi {
    */
   public async pollConversations(
     conversations: TConversationPollRequest[],
-  ): Promise<TConversationPollResponse> {
-    const response = await this.httpClient.post<TConversationPollResult[]>(
-      '/conversations/poll',
-      conversations,
-    );
-
-    return {
-      success: response.success,
-      result: response.result,
-      error: response.error,
-    };
+  ): Promise<TMappedResponse<TConversationPollResult[]>> {
+    try {
+      const response = await this.httpClient.post<TConversationPollResult[]>(
+        '/conversations/poll',
+        conversations,
+      );
+      if (response.success && response.result) {
+        return {
+          data: response.result,
+          errors: [],
+        };
+      } else {
+        return {
+          data: undefined,
+          errors: [
+            {
+              type: response.error?.type as TLinkedApiActionErrorType,
+              message: response.error?.message ?? '',
+            },
+          ],
+        };
+      }
+    } catch (error) {
+      if (error instanceof LinkedApiError && (error.type as unknown) === 'conversationsNotSynced') {
+        return {
+          data: undefined,
+          errors: [
+            {
+              type: error.type as TLinkedApiActionErrorType,
+              message: error.message,
+            },
+          ],
+        };
+      }
+      throw error;
+    }
   }
 
   /**
@@ -391,15 +447,15 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.salesNavigatorFetchPerson.execute({
+   * const workflowId = await linkedapi.nvFetchPerson.execute({
    *   personHashedUrl: "https://www.linkedin.com/in/ABC123",
    * });
    *
-   * const personResult = await linkedapi.salesNavigatorFetchPerson.result(workflowId);
+   * const personResult = await linkedapi.nvFetchPerson.result(workflowId);
    * console.log("Sales Navigator data:", personResult.data);
    * ```
    */
-  public salesNavigatorFetchPerson: SalesNavigatorFetchPerson;
+  public nvFetchPerson: NvFetchPerson;
 
   /**
    * Retrieve detailed information about a LinkedIn company profile.
@@ -464,7 +520,7 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Sales Navigator company fetch (new simplified syntax)
-   * const workflowId = await linkedapi.salesNavigatorFetchCompany.execute({
+   * const workflowId = await linkedapi.nvFetchCompany.execute({
    *   companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
    *   retrieveEmployees: true,
    *   retrieveDMs: true,
@@ -482,7 +538,7 @@ class LinkedApi {
    *   },
    * });
    *
-   * const companyResult = await linkedapi.salesNavigatorFetchCompany.result(workflowId);
+   * const companyResult = await linkedapi.nvFetchCompany.result(workflowId);
    * if (companyResult.data) {
    *   console.log("Company name:", companyResult.data.name);
    *   console.log("Employees:", companyResult.data.employees?.length);
@@ -490,7 +546,7 @@ class LinkedApi {
    * }
    * ```
    */
-  public salesNavigatorFetchCompany: SalesNavigatorFetchCompany;
+  public nvFetchCompany: NvFetchCompany;
 
   /**
    * Retrieve detailed information about a LinkedIn post.
@@ -563,7 +619,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.salesNavigatorSearchCompanies.execute({
+   * const workflowId = await linkedapi.nvSearchCompanies.execute({
    *   term: "fintech startup",
    *   filter: {
    *     locations: ["United States"],
@@ -577,13 +633,13 @@ class LinkedApi {
    *   limit: 50
    * });
    *
-   * const companiesResult = await linkedapi.salesNavigatorSearchCompanies.result(workflowId);
+   * const companiesResult = await linkedapi.nvSearchCompanies.result(workflowId);
    * if (companiesResult.data) {
    *   console.log("Sales Navigator companies:", companiesResult.data.length);
    * }
    * ```
    */
-  public salesNavigatorSearchCompanies: SalesNavigatorSearchCompanies;
+  public nvSearchCompanies: NvSearchCompanies;
 
   /**
    * Search for people on LinkedIn using standard search.
@@ -629,7 +685,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.salesNavigatorSearchPeople.execute({
+   * const workflowId = await linkedapi.nvSearchPeople.execute({
    *   term: "VP Marketing B2B SaaS",
    *   filter: {
    *     locations: ["United States"],
@@ -639,13 +695,13 @@ class LinkedApi {
    *   limit: 25
    * });
    *
-   * const result = await linkedapi.salesNavigatorSearchPeople.result(workflowId);
+   * const result = await linkedapi.nvSearchPeople.result(workflowId);
    * if (result.data) {
    *   console.log("Sales Navigator prospects:", result.data.length);
    * }
    * ```
    */
-  public salesNavigatorSearchPeople: SalesNavigatorSearchPeople;
+  public nvSearchPeople: NvSearchPeople;
 
   /**
    * Send a connection request to a LinkedIn user.
@@ -941,7 +997,7 @@ class LinkedApi {
    * }
    * ```
    */
-  public async getApiUsageStats(params: TApiUsageStatsParams): Promise<TApiUsageStatsResponse> {
+  public async getApiUsage(params: TApiUsageParams): Promise<TMappedResponse<TApiUsageAction[]>> {
     const queryParams = new URLSearchParams({
       start: params.start,
       end: params.end,
@@ -951,17 +1007,22 @@ class LinkedApi {
       `/stats/actions?${queryParams.toString()}`,
     );
 
-    return {
-      success: response.success,
-      result: response.result,
-      error: response.error,
-    };
+    if (response.success && response.result) {
+      return {
+        data: response.result,
+        errors: [],
+      };
+    }
+    throw new LinkedApiError(
+      response.error?.type as TLinkedApiErrorType,
+      response.error?.message ?? '',
+    );
   }
 }
 
 export default LinkedApi;
 
-export { LinkedApi };
+export { LinkedApi, Operation as PredefinedOperation };
 
 export type {
   TLinkedApiConfig,

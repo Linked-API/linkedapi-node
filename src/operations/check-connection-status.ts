@@ -1,8 +1,8 @@
-import { PredefinedOperation, TOperationName } from '../core';
+import { Operation, TOperationName } from '../core';
 import { SimpleWorkflowMapper } from '../mappers';
 import { TCheckConnectionStatusParams, TCheckConnectionStatusResult } from '../types';
 
-export class CheckConnectionStatus extends PredefinedOperation<
+export class CheckConnectionStatus extends Operation<
   TCheckConnectionStatusParams,
   TCheckConnectionStatusResult
 > {

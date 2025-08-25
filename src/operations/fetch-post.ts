@@ -1,8 +1,8 @@
-import { PredefinedOperation, TOperationName } from '../core';
+import { Operation, TOperationName } from '../core';
 import { SimpleWorkflowMapper } from '../mappers';
 import { TFetchPostParams, TFetchPostResult } from '../types';
 
-export class FetchPost extends PredefinedOperation<TFetchPostParams, TFetchPostResult> {
+export class FetchPost extends Operation<TFetchPostParams, TFetchPostResult> {
   protected override readonly operationName: TOperationName = 'fetchPost';
   protected override readonly mapper = new SimpleWorkflowMapper<TFetchPostParams, TFetchPostResult>(
     {

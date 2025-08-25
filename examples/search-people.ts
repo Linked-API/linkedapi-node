@@ -70,9 +70,9 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   };
 
   console.log('\n🎯 Searching people with Sales Navigator...');
-  const workflowId = await linkedapi.salesNavigatorSearchPeople.execute(nvSearchParams);
+  const workflowId = await linkedapi.nvSearchPeople.execute(nvSearchParams);
   console.log('🔍 Sales Navigator workflow started:', workflowId);
-  const nvResults = await linkedapi.salesNavigatorSearchPeople.result(workflowId);
+  const nvResults = await linkedapi.nvSearchPeople.result(workflowId);
 
   if (nvResults.data) {
     const results = nvResults.data;
