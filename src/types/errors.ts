@@ -94,7 +94,7 @@ export class LinkedApiWorkflowTimeoutError extends LinkedApiError {
   constructor(workflowId: string, operationName: TOperationName) {
     super(
       'workflowTimeout',
-      `Workflow ${workflowId} timed out. Call .result again to continue checking the workflow.`,
+      `Workflow ${workflowId} timed out. Call ${operationName}.result() again to continue checking the workflow.`,
       {
         workflowId,
         operationName,

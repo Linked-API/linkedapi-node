@@ -3,7 +3,7 @@ import { VoidWorkflowMapper } from '../mappers';
 import { TWithdrawConnectionRequestParams } from '../types';
 
 export class WithdrawConnectionRequest extends Operation<TWithdrawConnectionRequestParams, void> {
-  protected override readonly operationName: TOperationName = 'withdrawConnectionRequest';
+  public override readonly operationName: TOperationName = 'withdrawConnectionRequest';
   protected override readonly mapper = new VoidWorkflowMapper<TWithdrawConnectionRequestParams>(
     'st.withdrawConnectionRequest',
   );

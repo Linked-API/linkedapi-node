@@ -6,7 +6,7 @@ export class RetrieveConnections extends Operation<
   TRetrieveConnectionsParams,
   TRetrieveConnectionsResult[]
 > {
-  protected override readonly operationName: TOperationName = 'retrieveConnections';
+  public override readonly operationName: TOperationName = 'retrieveConnections';
   protected override readonly mapper = new ArrayWorkflowMapper<
     TRetrieveConnectionsParams,
     TRetrieveConnectionsResult

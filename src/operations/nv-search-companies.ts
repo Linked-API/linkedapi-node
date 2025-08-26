@@ -6,7 +6,7 @@ export class NvSearchCompanies extends Operation<
   TNvSearchCompaniesParams,
   TNvSearchCompanyResult[]
 > {
-  protected override readonly operationName: TOperationName = 'nvSearchCompanies';
+  public override readonly operationName: TOperationName = 'nvSearchCompanies';
   protected override readonly mapper = new ArrayWorkflowMapper<
     TNvSearchCompaniesParams,
     TNvSearchCompanyResult

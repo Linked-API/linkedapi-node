@@ -45,7 +45,7 @@ export interface WaitForCompletionOptions {
 }
 
 export abstract class Operation<TParams, TResult> {
-  protected abstract readonly operationName: TOperationName;
+  public abstract readonly operationName: TOperationName;
   protected abstract readonly mapper: BaseMapper<TParams, TResult>;
 
   constructor(private readonly httpClient: HttpClient) {}
@@ -67,7 +67,10 @@ export abstract class Operation<TParams, TResult> {
     options: WaitForCompletionOptions = {},
   ): Promise<TMappedResponse<TResult>> {
     try {
-      return pollWorkflowResult<TMappedResponse<TResult>>(() => this.status(workflowId), options);
+      return await pollWorkflowResult<TMappedResponse<TResult>>(
+        () => this.status(workflowId),
+        options,
+      );
     } catch (error) {
       if (error instanceof LinkedApiError && error.type === 'workflowTimeout') {
         throw new LinkedApiWorkflowTimeoutError(workflowId, this.operationName);
