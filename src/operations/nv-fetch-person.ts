@@ -3,7 +3,7 @@ import { ThenWorkflowMapper } from '../mappers';
 import { TNvOpenPersonPageParams, TNvOpenPersonPageResult } from '../types';
 
 export class NvFetchPerson extends Operation<TNvOpenPersonPageParams, TNvOpenPersonPageResult> {
-  protected override readonly operationName: TOperationName = 'nvFetchPerson';
+  public override readonly operationName: TOperationName = 'nvFetchPerson';
   protected override readonly mapper = new NvFetchPersonMapper();
 }
 

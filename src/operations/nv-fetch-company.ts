@@ -3,7 +3,7 @@ import { TActionConfig, ThenWorkflowMapper } from '../mappers/then-workflow-mapp
 import { TNvBaseFetchCompanyParams, TNvFetchCompanyParams, TNvFetchCompanyResult } from '../types';
 
 export class NvFetchCompany extends Operation<TNvBaseFetchCompanyParams, TNvFetchCompanyResult> {
-  protected override readonly operationName: TOperationName = 'nvFetchCompany';
+  public override readonly operationName: TOperationName = 'nvFetchCompany';
   protected override readonly mapper = new NvFetchCompanyMapper();
 
   public override async execute<TParams extends TNvBaseFetchCompanyParams>(

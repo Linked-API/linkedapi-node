@@ -3,7 +3,7 @@ import { TActionConfig, ThenWorkflowMapper } from '../mappers/then-workflow-mapp
 import { TBaseFetchPersonParams, TFetchPersonParams, TFetchPersonResult } from '../types';
 
 export class FetchPerson extends Operation<TBaseFetchPersonParams, TFetchPersonResult> {
-  protected override readonly operationName: TOperationName = 'fetchPerson';
+  public override readonly operationName: TOperationName = 'fetchPerson';
   protected override readonly mapper = new FetchPersonMapper();
 
   public override async execute<TParams extends TBaseFetchPersonParams>(

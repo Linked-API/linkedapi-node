@@ -3,7 +3,7 @@ import { BaseMapper, TMappedResponse } from '../mappers';
 import { TWorkflowCompletion, TWorkflowDefinition } from '../types';
 
 export class CustomWorkflow extends Operation<TWorkflowDefinition, TWorkflowCompletion> {
-  protected readonly operationName: TOperationName = 'customWorkflow';
+  public readonly operationName: TOperationName = 'customWorkflow';
   protected readonly mapper = new CustomWorkflowMapper();
 }
 

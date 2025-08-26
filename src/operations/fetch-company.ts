@@ -8,7 +8,7 @@ import {
 } from '../types';
 
 export class FetchCompany extends Operation<TBaseFetchCompanyParams, TFetchCompanyResult> {
-  protected override readonly operationName: TOperationName = 'fetchCompany';
+  public override readonly operationName: TOperationName = 'fetchCompany';
   protected override readonly mapper = new FetchCompanyMapper();
 
   constructor(httpClient: HttpClient) {
