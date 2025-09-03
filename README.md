@@ -7,7 +7,7 @@ To get started with Linked API Node.js SDK, read these essential guides first. S
 2. [Installation & authorization](https://linkedapi.io/sdks/installation-authorization/) – get the SDK installed and learn how to authorize it.
 3. [Predefined vs. custom workflows](https://linkedapi.io/sdks/predefined-vs-custom-workflows/) – learn when to use ready-made methods and when to build your own custom logic.
 4. [Handling results and errors](https://linkedapi.io/sdks/handling-results-and-errors/) – see how to process successful results and errors.
-5. [Persisting and restoring workflows](https://linkedapi.io/sdks/persisting-and-restoring-workflows/) – discover how to save and resume your workflows to build resilient applications.
+5. [Persisting and cancelling workflows](https://linkedapi.io/sdks/persisting-and-cancelling-workflows/) – learn how to save, resume, and cancel workflows.
 
 ## License
 This project is licensed under the MIT – see the [LICENSE](https://github.com/Linked-API/linkedapi-node/blob/main/LICENSE) file for details.
