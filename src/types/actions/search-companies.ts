@@ -77,5 +77,5 @@ export interface TNvSearchCompanyResult {
   name: string;
   hashedUrl: string;
   industry: string;
-  employeeCount: number;
+  employeesCount: number;
 }

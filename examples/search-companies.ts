@@ -81,7 +81,7 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     results.forEach((company, index) => {
       console.log(`  ${index + 1}. ${company.name}`);
       console.log(`     Industry: ${company.industry}`);
-      console.log(`     Employees: ${company.employeeCount}`);
+      console.log(`     Employees: ${company.employeesCount}`);
       console.log(`     URL: ${company.hashedUrl}`);
     });
   }

@@ -9,8 +9,9 @@ export interface TPost {
   images: ReadonlyArray<string> | null;
   hasVideo: boolean;
   hasPoll: boolean;
-  reactionCount: number;
-  commentCount: number;
+  reactionsCount: number;
+  commentsCount: number;
+  repostsCount: number | null;
 }
 
 export const POST_TYPE = {
@@ -46,7 +47,7 @@ export interface TComment {
   time: string;
   text: string | null;
   image: string | null;
-  reactionCount: number;
+  reactionsCount: number;
 }
 
 export interface TReactToPostParams extends TBaseActionParams {

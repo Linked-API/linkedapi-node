@@ -36,8 +36,9 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
     console.log(`🖼️ Images: ${post.images?.length || 0} image(s)`);
     console.log(`🎥 Has Video: ${post.hasVideo}`);
     console.log(`📊 Has Poll: ${post.hasPoll}`);
-    console.log(`👍 Reactions: ${post.reactionCount}`);
-    console.log(`💬 Comments: ${post.commentCount}`);
+    console.log(`👍 Reactions: ${post.reactionsCount}`);
+    console.log(`💬 Comments: ${post.commentsCount}`);
+    console.log(`🔄 Reposts: ${post.repostsCount || 'No reposts'}`);
   }
   if (postResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(postResult.errors, null, 2));

@@ -52,7 +52,7 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
     console.log(`📖 Description: ${company.description}`);
     console.log(`📍 Location: ${company.location}`);
     console.log(`🏭 Industry: ${company.industry}`);
-    console.log(`👥 Employee Count: ${company.employeeCount}`);
+    console.log(`👥 Employees Count: ${company.employeesCount}`);
     console.log(`📅 Founded: ${company.yearFounded}`);
     console.log(`👨‍💼 Employees Retrieved: ${company.employees?.length || 0}`);
     console.log(`📝 Posts Retrieved: ${company.posts?.length || 0}`);
@@ -88,7 +88,7 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     console.log(`📍 Location: ${nvCompany.location}`);
     console.log(`🏭 Industry: ${nvCompany.industry}`);
     console.log(`🌐 Website: ${nvCompany.website}`);
-    console.log(`👥 Employee Count: ${nvCompany.employeeCount}`);
+    console.log(`👥 Employee Count: ${nvCompany.employeesCount}`);
     console.log(`📅 Founded: ${nvCompany.yearFounded || 'Not specified'}`);
     console.log(`👨‍💼 Employees Retrieved: ${nvCompany.employees?.length || 0}`);
     console.log(`🎯 Decision Makers Retrieved: ${nvCompany.dms?.length || 0}`);
