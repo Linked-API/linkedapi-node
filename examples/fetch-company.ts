@@ -10,7 +10,6 @@ async function fetchCompanyExample(): Promise<void> {
     console.log('🚀 TypeScript Linked API example starting...');
     await standardExample(linkedapi);
     await salesNavigatorExample(linkedapi);
-
   } catch (error) {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
@@ -88,7 +87,7 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     console.log(`📍 Location: ${nvCompany.location}`);
     console.log(`🏭 Industry: ${nvCompany.industry}`);
     console.log(`🌐 Website: ${nvCompany.website}`);
-    console.log(`👥 Employee Count: ${nvCompany.employeesCount}`);
+    console.log(`👥 Employees Count: ${nvCompany.employeesCount}`);
     console.log(`📅 Founded: ${nvCompany.yearFounded || 'Not specified'}`);
     console.log(`👨‍💼 Employees Retrieved: ${nvCompany.employees?.length || 0}`);
     console.log(`🎯 Decision Makers Retrieved: ${nvCompany.dms?.length || 0}`);

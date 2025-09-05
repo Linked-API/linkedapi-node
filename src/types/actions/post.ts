@@ -11,7 +11,7 @@ export interface TPost {
   hasPoll: boolean;
   reactionsCount: number;
   commentsCount: number;
-  repostsCount: number | null;
+  repostsCount: number;
 }
 
 export const POST_TYPE = {
