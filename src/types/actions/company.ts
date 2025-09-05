@@ -12,7 +12,7 @@ export interface TCompany {
   industry: string;
   specialties: string;
   website: string;
-  employeeCount: number;
+  employeesCount: number;
   yearFounded?: number;
   ventureFinancing: boolean;
   jobsCount: number;
@@ -78,7 +78,7 @@ export interface TNvCompany {
   headquarters: string;
   industry: string;
   website: string;
-  employeeCount: number;
+  employeesCount: number;
   yearFounded?: number;
   employees?: ReadonlyArray<TNvCompanyEmployee>;
   dms?: ReadonlyArray<TNvCompanyDm>;

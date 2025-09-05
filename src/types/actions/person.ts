@@ -43,6 +43,7 @@ export interface TPerson {
   position: string;
   companyName: string;
   companyHashedUrl: string;
+  followersCount: number | null;
   experiences?: ReadonlyArray<TPersonExperience>;
   education?: ReadonlyArray<TPersonEducation>;
   skills?: ReadonlyArray<TPersonSkill>;

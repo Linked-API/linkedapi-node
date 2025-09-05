@@ -53,6 +53,7 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
     console.log(`📍 Location: ${person.location}`);
     console.log(`🌐 Skills: ${person.skills}`);
     console.log(`💼 Experiences: ${person.experiences}`);
+    console.log(`👥 Followers: ${person.followersCount || 'No followers'}`);
   }
   if (personResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(personResult.errors, null, 2));
