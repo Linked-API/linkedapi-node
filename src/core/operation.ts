@@ -4,6 +4,7 @@ import {
   LinkedApiError,
   LinkedApiWorkflowTimeoutError,
   TLinkedApiErrorType,
+  TWorkflowCancelResponse,
   TWorkflowCompletion,
   TWorkflowResponse,
   TWorkflowRunningStatus,
@@ -88,6 +89,19 @@ export abstract class Operation<TParams, TResult> {
     }
     const result = this.getCompletion(workflowResult);
     return this.mapper.mapResponse(result);
+  }
+
+  public async cancel(workflowId: string): Promise<boolean> {
+    const response = await this.httpClient.delete<TWorkflowCancelResponse>(
+      `/workflows/${workflowId}`,
+    );
+    if (response.error) {
+      throw new LinkedApiError(response.error.type as TLinkedApiErrorType, response.error.message);
+    }
+    if (!response.result) {
+      throw LinkedApiError.unknownError();
+    }
+    return response.result.cancelled;
   }
 
   private async getWorkflowResult(workflowId: string): Promise<TWorkflowResponse> {
