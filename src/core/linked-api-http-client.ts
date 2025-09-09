@@ -6,17 +6,21 @@ import {
   TLinkedApiResponse,
 } from '../types';
 
-export function buildLinkedApiHttpClient(config: TLinkedApiConfig, client: string): HttpClient {
-  return new LinkedApiHttpClient(config, client);
+export function buildLinkedApiHttpClient(
+  config: TLinkedApiConfig,
+  client: string,
+  baseUrl: string = 'https://api.linkedapi.io',
+): HttpClient {
+  return new LinkedApiHttpClient(config, client, baseUrl);
 }
 
 class LinkedApiHttpClient extends HttpClient {
   private readonly baseUrl: string;
   private readonly headers: Record<string, string>;
 
-  constructor(config: TLinkedApiConfig, client: string) {
+  constructor(config: TLinkedApiConfig, client: string, baseUrl: string) {
     super();
-    this.baseUrl = 'https://api.linkedapi.io';
+    this.baseUrl = baseUrl;
     this.headers = {
       'Content-Type': 'application/json',
       'linked-api-token': config.linkedApiToken,
@@ -83,6 +87,18 @@ class LinkedApiHttpClient extends HttpClient {
         method: 'POST',
         headers: this.headers,
         body: data ? JSON.stringify(data) : null,
+      });
+      return this.handleResponse<T>(response);
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  public async delete<T>(url: string): Promise<TLinkedApiResponse<T>> {
+    try {
+      const response = await fetch(`${this.baseUrl}${url}`, {
+        method: 'DELETE',
+        headers: this.headers,
       });
       return this.handleResponse<T>(response);
     } catch (error) {

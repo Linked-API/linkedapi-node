@@ -30,6 +30,10 @@ export interface TWorkflowFailure {
   message: string;
 }
 
+export interface TWorkflowCancelResponse {
+  cancelled: boolean;
+}
+
 export interface TWorkflowStatusResponse {
   workflowId: string;
   workflowStatus: TWorkflowStatus;
