@@ -15,6 +15,7 @@ export interface TSearchPeopleParams extends TBaseActionParams {
     previousCompanies?: string[];
     schools?: string[];
   };
+  customSearchUrl?: string;
 }
 
 export interface TSearchPeopleResult {
@@ -38,6 +39,7 @@ export interface TNvSearchPeopleParams extends TBaseActionParams {
     schools?: string[];
     yearsOfExperience?: TYearsOfExperience[];
   };
+  customSearchUrl?: string;
 }
 
 export interface TNvSearchPeopleResult {

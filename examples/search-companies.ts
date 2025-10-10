@@ -10,7 +10,9 @@ async function searchCompaniesExample(): Promise<void> {
     console.log('🚀 Linked API searchCompanies example starting...');
 
     await standardExample(linkedapi);
+    await standardExampleWithCustomSearchUrl(linkedapi);
     await salesNavigatorExample(linkedapi);
+    await salesNavigatorWithCustomUrlExample(linkedapi);
 
   } catch (error) {
     if (error instanceof LinkedApiError) {
@@ -54,6 +56,31 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
   }
 }
 
+async function standardExampleWithCustomSearchUrl(linkedapi: LinkedApi): Promise<void> {
+  const searchParams = {
+    customSearchUrl: 'https://www.linkedin.com/search/results/companies/?companySize=%5B%22B%22%5D&keywords=Linked%20API',
+  };
+
+  console.log('🔍 Searching companies with custom search URL...');
+  const workflowId = await linkedapi.searchCompanies.execute(searchParams);
+  console.log('🔍 Workflow started:', workflowId);
+  const result = await linkedapi.searchCompanies.result(workflowId);
+  if (result.data) {
+    const results = result.data;
+    console.log('✅ Company search completed');
+    console.log(`📊 Found ${results.length} companies`);
+    results.forEach((company, index) => {
+      console.log(`  ${index + 1}. ${company.name}`);
+      console.log(`     Industry: ${company.industry}`);
+      console.log(`     Location: ${company.location}`);
+      console.log(`     URL: ${company.publicUrl}`);
+    });
+  }
+  if (result.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
+  }
+}
+
 async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   const nvSearchParams = {
     term: 'fintech',
@@ -70,6 +97,32 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   };
 
   console.log('\n🎯 Searching companies with Sales Navigator...');
+  const workflowId = await linkedapi.nvSearchCompanies.execute(nvSearchParams);
+  console.log('🔍 Sales Navigator workflow started:', workflowId);
+  const nvResults = await linkedapi.nvSearchCompanies.result(workflowId);
+
+  if (nvResults.data) {
+    const results = nvResults.data;
+    console.log('✅ Sales Navigator company search completed');
+    console.log(`📊 Found ${results.length} companies`);
+    results.forEach((company, index) => {
+      console.log(`  ${index + 1}. ${company.name}`);
+      console.log(`     Industry: ${company.industry}`);
+      console.log(`     Employees: ${company.employeesCount}`);
+      console.log(`     URL: ${company.hashedUrl}`);
+    });
+  }
+  if (nvResults.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(nvResults.errors, null, 2));
+  }
+}
+
+async function salesNavigatorWithCustomUrlExample(linkedapi: LinkedApi): Promise<void> {
+  const nvSearchParams = {
+    customSearchUrl: "https://www.linkedin.com/sales/search/company?query=(spellCorrectionEnabled%3Atrue%2Ckeywords%3ALinked%2520API)",
+  };
+
+  console.log('\n🎯 Searching companies with Sales Navigator custom search URL...');
   const workflowId = await linkedapi.nvSearchCompanies.execute(nvSearchParams);
   console.log('🔍 Sales Navigator workflow started:', workflowId);
   const nvResults = await linkedapi.nvSearchCompanies.result(workflowId);

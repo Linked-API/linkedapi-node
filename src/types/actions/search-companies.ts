@@ -8,6 +8,7 @@ export interface TSearchCompaniesParams extends TBaseActionParams {
     locations?: string[];
     industries?: string[];
   };
+  customSearchUrl?: string;
 }
 
 export const SEARCH_COMPANY_SIZE = {
@@ -41,6 +42,7 @@ export interface TNvSearchCompaniesParams extends TBaseActionParams {
       max: TMaxAnnualRevenue;
     };
   };
+  customSearchUrl?: string;
 }
 
 export const MIN_ANNUAL_REVENUE = {
