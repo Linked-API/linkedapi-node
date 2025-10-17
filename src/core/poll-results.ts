@@ -11,11 +11,26 @@ export async function pollWorkflowResult<TResult>(
   const { pollInterval = 5000, timeout = 24 * 60 * 60 * 1000 } = options;
   const startTime = Date.now();
 
-  while (Date.now() - startTime < timeout) {
-    const result = await workflowResultFn();
+  let invalidAttempts = 0;
+  const maxInvalidAttempts = 15;
 
-    if (result !== 'running') {
-      return result;
+  while (Date.now() - startTime < timeout) {
+    try {
+      const result = await workflowResultFn();
+
+      if (result !== 'running') {
+        return result;
+      }
+      invalidAttempts = 0;
+    } catch (error) {
+      if (error instanceof LinkedApiError && error.type === 'httpError') {
+        invalidAttempts = invalidAttempts + 1;
+        if (invalidAttempts > maxInvalidAttempts) {
+          throw error;
+        }
+      } else {
+        throw error;
+      }
     }
 
     await sleep(pollInterval);

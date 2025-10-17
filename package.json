@@ -1,6 +1,6 @@
 {
   "name": "linkedapi-node",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Official TypeScript SDK for Linked API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
