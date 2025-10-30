@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, POST_COMMENTS_SORT } from 'linkedapi-node';
 
 async function fetchPostExample(): Promise<void> {
   const linkedapi = new LinkedApi({
@@ -21,7 +21,16 @@ async function fetchPostExample(): Promise<void> {
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
   const workflowId = await linkedapi.fetchPost.execute({
-    postUrl: 'https://www.linkedin.com/posts/post-url'
+    postUrl: 'https://www.linkedin.com/posts/post-url',
+    retrieveComments: true,
+    retrieveReactions: true,
+    commentsRetrievalConfig: {
+      limit: 25,
+      sort: POST_COMMENTS_SORT.mostRelevant,
+    },
+    reactionsRetrievalConfig: {
+      limit: 100,
+    },
   });
   console.log('🔍 Workflow started:', workflowId);
   const postResult = await linkedapi.fetchPost.result(workflowId);
@@ -39,6 +48,8 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
     console.log(`👍 Reactions: ${post.reactionsCount}`);
     console.log(`💬 Comments: ${post.commentsCount}`);
     console.log(`🔄 Reposts: ${post.repostsCount}`);
+    console.log(`👍 Reactions: ${post.reactions?.length || 0}`);
+    console.log(`💬 Comments: ${post.comments?.length || 0}`);
   }
   if (postResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(postResult.errors, null, 2));
