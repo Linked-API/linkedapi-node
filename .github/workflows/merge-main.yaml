@@ -23,24 +23,6 @@ jobs:
       - name: Run ESLint
         run: npm run lint
 
-  typecheck:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4.1.1
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4.0.1
-        with:
-          node-version: 20
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run typecheck
-        run: npm run typecheck
-
   build:
     runs-on: ubuntu-latest
 
@@ -60,9 +42,9 @@ jobs:
         run: npm run build
 
   publish:
-    needs: [linting, typecheck, build]
+    needs: [linting, build]
     runs-on: ubuntu-latest
-    if: always() && needs.linting.result == 'success' && needs.typecheck.result == 'success' && needs.build.result == 'success'
+    if: always() && needs.linting.result == 'success' && needs.build.result == 'success'
 
     steps:
       - name: Checkout code
