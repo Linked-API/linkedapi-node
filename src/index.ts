@@ -4,6 +4,7 @@ import type { TMappedResponse } from './mappers/base-mapper.abstract';
 import {
   CheckConnectionStatus,
   CommentOnPost,
+  CreatePost,
   CustomWorkflow,
   FetchCompany,
   FetchPerson,
@@ -101,6 +102,7 @@ class LinkedApi {
     this.fetchPost = new FetchPost(this.httpClient);
     this.reactToPost = new ReactToPost(this.httpClient);
     this.commentOnPost = new CommentOnPost(this.httpClient);
+    this.createPost = new CreatePost(this.httpClient);
     this.retrieveSSI = new RetrieveSSI(this.httpClient);
     this.retrievePerformance = new RetrievePerformance(this.httpClient);
     this.nvSendMessage = new NvSendMessage(this.httpClient);
@@ -127,6 +129,7 @@ class LinkedApi {
       this.fetchPost,
       this.reactToPost,
       this.commentOnPost,
+      this.createPost,
       this.retrieveSSI,
       this.retrievePerformance,
       this.nvSendMessage,
@@ -911,6 +914,63 @@ class LinkedApi {
    * ```
    */
   public commentOnPost: CommentOnPost;
+
+  /**
+   * Create a LinkedIn post on your personal profile or a company page.
+   *
+   * This method creates a new post on LinkedIn. Posts can include text (up to 3,000 characters)
+   * and optional media attachments (images, videos, or documents). For company posts, you must
+   * have admin access to the company page.
+   *
+   * @param params - Parameters including post text, optional attachments, and optional company URL
+   * @returns Promise resolving to an object containing the created post URL
+   *
+   * @see {@link https://linkedapi.io/docs/action-st-create-post/ st.createPost Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * // Create a simple text post
+   * const workflowId = await linkedapi.createPost.execute({
+   *   text: "Excited to share our latest product updates!\n\n#innovation"
+   * });
+   *
+   * const result = await linkedapi.createPost.result(workflowId);
+   * if (result.data) {
+   *   console.log("Post created:", result.data.postUrl);
+   * }
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // Create a post with image attachments
+   * const workflowId = await linkedapi.createPost.execute({
+   *   text: "Check out these amazing photos from our team event!",
+   *   attachments: [
+   *     { url: "https://example.com/photo1.jpg", type: "image" },
+   *     { url: "https://example.com/photo2.jpg", type: "image" }
+   *   ]
+   * });
+   *
+   * const result = await linkedapi.createPost.result(workflowId);
+   * console.log("Post with images created:", result.data?.postUrl);
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // Create a company page post with a document
+   * const workflowId = await linkedapi.createPost.execute({
+   *   text: "Download our latest whitepaper on AI trends",
+   *   companyUrl: "https://www.linkedin.com/company/acme-corp",
+   *   attachments: [
+   *     { url: "https://example.com/whitepaper.pdf", type: "document", name: "AI Trends 2025" }
+   *   ]
+   * });
+   *
+   * const result = await linkedapi.createPost.result(workflowId);
+   * console.log("Company post created:", result.data?.postUrl);
+   * ```
+   */
+  public createPost: CreatePost;
 
   /**
    * Retrieve your LinkedIn Social Selling Index (SSI) score.

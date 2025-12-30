@@ -29,6 +29,7 @@ export const OPERATION_NAME = {
   fetchPost: 'fetchPost',
   reactToPost: 'reactToPost',
   commentOnPost: 'commentOnPost',
+  createPost: 'createPost',
   retrieveSSI: 'retrieveSSI',
   retrievePerformance: 'retrievePerformance',
   nvSendMessage: 'nvSendMessage',

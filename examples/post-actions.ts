@@ -8,6 +8,9 @@ async function postActionsExample(): Promise<void> {
 
   try {
     console.log('🚀 Linked API Post Actions example starting...');
+    await createPost(linkedapi);
+    await createPostWithAttachments(linkedapi);
+    await createCompanyPost(linkedapi);
     await reactToPost(linkedapi);
     await commentOnPost(linkedapi);
   } catch (error) {
@@ -17,6 +20,69 @@ async function postActionsExample(): Promise<void> {
     } else {
       console.error('💥 Unknown error:', error);  
     }
+  }
+}
+
+async function createPost(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n📝 Creating a simple text post...');
+
+  const workflowId = await linkedapi.createPost.execute({
+    text: 'Excited to share our latest product updates!\n\n#innovation #technology',
+  });
+  console.log('📝 Create post workflow started:', workflowId);
+
+  const result = await linkedapi.createPost.result(workflowId);
+  if (result.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
+  } else {
+    console.log('✅ Post created successfully');
+    console.log('🔗 Post URL:', result.data?.postUrl);
+  }
+}
+
+async function createPostWithAttachments(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n🖼️ Creating a post with image attachments...');
+
+  const workflowId = await linkedapi.createPost.execute({
+    text: 'Check out these amazing photos from our team event!',
+    attachments: [
+      { url: 'https://example.com/photo1.jpg', type: 'image' },
+      { url: 'https://example.com/photo2.jpg', type: 'image' },
+    ],
+  });
+  console.log('🖼️ Create post with images workflow started:', workflowId);
+
+  const result = await linkedapi.createPost.result(workflowId);
+  if (result.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
+  } else {
+    console.log('✅ Post with images created successfully');
+    console.log('🔗 Post URL:', result.data?.postUrl);
+  }
+}
+
+async function createCompanyPost(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n🏢 Creating a company page post with document...');
+
+  const workflowId = await linkedapi.createPost.execute({
+    text: 'Download our latest whitepaper on AI trends in 2026',
+    companyUrl: 'https://www.linkedin.com/company/acme-corp',
+    attachments: [
+      {
+        url: 'https://example.com/whitepaper.pdf',
+        type: 'document',
+        name: 'AI Trends 2026 Whitepaper',
+      },
+    ],
+  });
+  console.log('🏢 Create company post workflow started:', workflowId);
+
+  const result = await linkedapi.createPost.result(workflowId);
+  if (result.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
+  } else {
+    console.log('✅ Company post created successfully');
+    console.log('🔗 Post URL:', result.data?.postUrl);
   }
 }
 

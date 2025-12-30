@@ -123,3 +123,26 @@ export type TFetchPostParams<T extends TBaseFetchPostParams = TBaseFetchPostPara
 };
 
 export type TFetchPostResult = TPost;
+
+export const ATTACHMENT_TYPE = {
+  image: 'image',
+  video: 'video',
+  document: 'document',
+} as const;
+export type TAttachmentType = (typeof ATTACHMENT_TYPE)[keyof typeof ATTACHMENT_TYPE];
+
+export interface TCreatePostAttachment {
+  url: string;
+  type: TAttachmentType;
+  name?: string;
+}
+
+export interface TCreatePostParams extends TBaseActionParams {
+  text: string;
+  attachments?: ReadonlyArray<TCreatePostAttachment>;
+  companyUrl?: string;
+}
+
+export interface TCreatePostResult {
+  postUrl: string;
+}
