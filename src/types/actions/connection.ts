@@ -39,6 +39,7 @@ export interface TRetrievePendingRequestsResult {
   name: string;
   publicUrl: string;
   headline: string;
+  sentTime: string;
 }
 
 export interface TRetrieveConnectionsParams extends TLimitParams {
