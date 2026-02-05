@@ -813,9 +813,11 @@ class LinkedApi {
    * Retrieve your LinkedIn connections with optional filtering.
    *
    * This method fetches a list of your LinkedIn connections. You can filter by various criteria
-   * like name, position, location, industry, company, and school.
+   * like name, position, location, industry, company, and school. When no filter is provided,
+   * you can use the `since` parameter to retrieve only connections made on or after a specific date,
+   * and each result will include a `connectedAt` timestamp.
    *
-   * @param params - Parameters including optional filters and pagination options
+   * @param params - Parameters including optional filters, since date, and pagination options
    * @returns Promise resolving to an object containing an array of connections
    *
    * @see {@link https://linkedapi.io/docs/managing-existing-connections/ Managing Existing Connections Documentation}
@@ -823,6 +825,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
+   * // Retrieve connections with filter
    * const workflowId = await linkedapi.retrieveConnections.execute({
    *   filter: {
    *     firstName: "John",
@@ -836,6 +839,20 @@ class LinkedApi {
    * const result = await linkedapi.retrieveConnections.result(workflowId);
    * if (result.data) {
    *   console.log("Filtered connections:", result.data.length);
+   * }
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // Retrieve recent connections using since parameter
+   * const workflowId = await linkedapi.retrieveConnections.execute({
+   *   since: "2025-01-01",
+   *   limit: 100
+   * });
+   *
+   * const result = await linkedapi.retrieveConnections.result(workflowId);
+   * if (result.data) {
+   *   result.data.forEach(c => console.log(c.name, c.connectedAt));
    * }
    * ```
    */

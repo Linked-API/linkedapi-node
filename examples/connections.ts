@@ -116,6 +116,7 @@ async function withdrawConnectionRequest(linkedapi: LinkedApi, personUrl: string
 async function retrieveConnections(linkedapi: LinkedApi): Promise<void> {
   console.log('\n👥 Retrieving existing connections...');
 
+  // Example 1: Retrieve with filter (returns location field)
   const connectionsParams = {
     limit: 10,
     filter: {
@@ -142,6 +143,30 @@ async function retrieveConnections(linkedapi: LinkedApi): Promise<void> {
   }
   if (connectionsResults.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(connectionsResults.errors, null, 2));
+  }
+
+  // Example 2: Retrieve recent connections using since (returns connectedAt field)
+  const recentWorkflowId = await linkedapi.retrieveConnections.execute({
+    since: '2025-01-01',
+    limit: 10,
+  });
+  console.log('👥 Retrieve recent connections workflow started:', recentWorkflowId);
+
+  const recentResults = await linkedapi.retrieveConnections.result(recentWorkflowId);
+
+  if (recentResults.data) {
+    const connections = recentResults.data;
+    console.log('✅ Recent connections retrieval completed');
+    console.log(`📊 Found ${connections.length} recent connections`);
+    connections.forEach((connection, index) => {
+      console.log(`  ${index + 1}. ${connection.name}`);
+      console.log(`     Profile: ${connection.publicUrl}`);
+      console.log(`     Headline: ${connection.headline}`);
+      console.log(`     Connected At: ${connection.connectedAt}`);
+    });
+  }
+  if (recentResults.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(recentResults.errors, null, 2));
   }
 }
 

@@ -43,6 +43,7 @@ export interface TRetrievePendingRequestsResult {
 }
 
 export interface TRetrieveConnectionsParams extends TLimitParams {
+  since?: string;
   filter?: {
     firstName?: string;
     lastName?: string;
@@ -59,7 +60,8 @@ export interface TRetrieveConnectionsResult {
   name: string;
   publicUrl: string;
   headline: string;
-  location: string;
+  location?: string;
+  connectedAt?: string;
 }
 
 // Remove Connection
