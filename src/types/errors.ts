@@ -19,6 +19,7 @@ import { TOperationName } from '../core';
  * - companyNotFound (fetchCompany, nvFetchCompany)
  * - postNotFound (fetchPost, reactToPost, commentOnPost)
  * - commentingNotAllowed (commentOnPost)
+ * - noPostingPermission (createPost, reactToPost, commentOnPost)
  * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson)
  * - conversationsNotSynced (pollConversations)
  */
@@ -37,6 +38,7 @@ export const LINKED_API_ACTION_ERROR = {
   companyNotFound: 'companyNotFound',
   postNotFound: 'postNotFound',
   commentingNotAllowed: 'commentingNotAllowed',
+  noPostingPermission: 'noPostingPermission',
   noSalesNavigator: 'noSalesNavigator',
   conversationsNotSynced: 'conversationsNotSynced',
 } as const;

@@ -111,6 +111,7 @@ async function commentOnPost(linkedapi: LinkedApi): Promise<void> {
   const commentParams = {
     postUrl: 'https://www.linkedin.com/posts/example-post',
     text: 'Great post! Thanks for sharing this valuable insight. Looking forward to more content like this.',
+    companyUrl: 'https://www.linkedin.com/company/acme-corp',
   };
 
   const workflowId = await linkedapi.commentOnPost.execute(commentParams);

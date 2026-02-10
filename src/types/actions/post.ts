@@ -49,11 +49,13 @@ export interface TComment {
 export interface TReactToPostParams extends TBaseActionParams {
   postUrl: string;
   type: TReactionType;
+  companyUrl?: string;
 }
 
 export interface TCommentOnPostParams extends TBaseActionParams {
   postUrl: string;
   text: string;
+  companyUrl?: string;
 }
 
 export const POST_COMMENTER_TYPE = {
