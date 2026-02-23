@@ -1,3 +1,4 @@
+export * from './account';
 export * from './company';
 export * from './connection';
 export * from './message';

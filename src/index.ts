@@ -31,6 +31,7 @@ import {
 import {
   HttpClient,
   LinkedApiError,
+  TAccountInfo,
   TApiUsageAction,
   TApiUsageParams,
   TConversationPollRequest,
@@ -1039,6 +1040,35 @@ class LinkedApi {
    * ```
    */
   public retrievePerformance: RetrievePerformance;
+
+  /**
+   * Retrieve basic information about the LinkedIn account associated with the current API tokens.
+   *
+   * This method validates the tokens and returns the account name and LinkedIn profile URL.
+   * Use this to verify credentials or display account information.
+   *
+   * @returns Promise resolving to account info (name and url)
+   *
+   * @example
+   * ```typescript
+   * const accountInfo = await linkedapi.getAccountInfo();
+   * console.log("Account:", accountInfo.data?.name);
+   * console.log("URL:", accountInfo.data?.url);
+   * ```
+   */
+  public async getAccountInfo(): Promise<TMappedResponse<TAccountInfo>> {
+    const response = await this.httpClient.get<TAccountInfo>('/account');
+    if (response.success && response.result) {
+      return {
+        data: response.result,
+        errors: [],
+      };
+    }
+    throw new LinkedApiError(
+      response.error?.type as TLinkedApiErrorType,
+      response.error?.message ?? '',
+    );
+  }
 
   /**
    * Retrieve Linked API usage statistics for a specific time period.
