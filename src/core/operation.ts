@@ -6,8 +6,8 @@ import {
   TLinkedApiErrorType,
   TWorkflowCancelResponse,
   TWorkflowCompletion,
+  TWorkflowInProgressStatus,
   TWorkflowResponse,
-  TWorkflowRunningStatus,
 } from '../types';
 
 import { pollWorkflowResult } from './poll-results';
@@ -83,9 +83,12 @@ export abstract class Operation<TParams, TResult> {
 
   public async status(
     workflowId: string,
-  ): Promise<TWorkflowRunningStatus | TMappedResponse<TResult>> {
+  ): Promise<TWorkflowInProgressStatus | TMappedResponse<TResult>> {
     const workflowResult = await this.getWorkflowResult(workflowId);
-    if (workflowResult.workflowStatus === 'running') {
+    if (
+      workflowResult.workflowStatus === 'running' ||
+      workflowResult.workflowStatus === 'pending'
+    ) {
       return workflowResult.workflowStatus;
     }
     const result = this.getCompletion(workflowResult);

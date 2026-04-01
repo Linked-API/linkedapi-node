@@ -1,9 +1,9 @@
-import { LinkedApiError, TWorkflowRunningStatus } from '../types';
+import { LinkedApiError, TWorkflowInProgressStatus } from '../types';
 
 import { WaitForCompletionOptions } from './operation';
 
 export async function pollWorkflowResult<TResult>(
-  workflowResultFn: () => Promise<TWorkflowRunningStatus | TResult>,
+  workflowResultFn: () => Promise<TWorkflowInProgressStatus | TResult>,
   options: WaitForCompletionOptions,
 ): Promise<TResult> {
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -18,7 +18,7 @@ export async function pollWorkflowResult<TResult>(
     try {
       const result = await workflowResultFn();
 
-      if (result !== 'running') {
+      if (result !== 'running' && result !== 'pending') {
         return result;
       }
       invalidAttempts = 0;

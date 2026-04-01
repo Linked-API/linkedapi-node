@@ -9,9 +9,13 @@ export type TWorkflowDefinition =
   | TSingleActionWorkflowDefinition
   | TSingleActionWorkflowDefinition[];
 
+export type TWorkflowPendingStatus = 'pending';
+
 export type TWorkflowRunningStatus = 'running';
 
-export type TWorkflowStatus = TWorkflowRunningStatus | 'completed' | 'failed';
+export type TWorkflowInProgressStatus = TWorkflowPendingStatus | TWorkflowRunningStatus;
+
+export type TWorkflowStatus = TWorkflowInProgressStatus | 'completed' | 'failed';
 
 export type TWorkflowCompletion<TResult extends TWorkflowData = TWorkflowData> =
   | TWorkflowCompletionSingleAction<TResult>
