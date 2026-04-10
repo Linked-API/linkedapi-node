@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError } from '@linkedapi/node';
 
 async function postActionsExample(): Promise<void> {
   const linkedapi = new LinkedApi({

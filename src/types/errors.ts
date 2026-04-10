@@ -67,6 +67,12 @@ export const LINKED_API_ERROR = {
   languageNotSupported: 'languageNotSupported',
   workflowTimeout: 'workflowTimeout',
   httpError: 'httpError',
+  tooManyRequests: 'tooManyRequests',
+  accountNotFound: 'accountNotFound',
+  accountIdRequired: 'accountIdRequired',
+  sessionNotFound: 'sessionNotFound',
+  noAvailableSeats: 'noAvailableSeats',
+  dailyConnectionAttemptsExceeded: 'dailyConnectionAttemptsExceeded',
 } as const;
 export type TLinkedApiErrorType = (typeof LINKED_API_ERROR)[keyof typeof LINKED_API_ERROR];
 export class LinkedApiError extends Error {

@@ -5,3 +5,4 @@ export * from './responses';
 export * from './workflows';
 export * from './actions/index';
 export * from './http-client';
+export * from './admin/index';

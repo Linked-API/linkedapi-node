@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, TYearsOfExperience } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, TYearsOfExperience } from '@linkedapi/node';
 
 async function searchPeopleExample(): Promise<void> {
   const linkedapi = new LinkedApi({

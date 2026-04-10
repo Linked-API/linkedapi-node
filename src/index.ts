@@ -1130,6 +1130,7 @@ class LinkedApi {
 export default LinkedApi;
 
 export { LinkedApi, Operation as PredefinedOperation };
+export { LinkedApiAdmin } from './admin';
 
 export type {
   TLinkedApiConfig,

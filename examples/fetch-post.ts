@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, POST_COMMENTS_SORT } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, POST_COMMENTS_SORT } from '@linkedapi/node';
 
 async function fetchPostExample(): Promise<void> {
   const linkedapi = new LinkedApi({

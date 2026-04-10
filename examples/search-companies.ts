@@ -1,4 +1,4 @@
-import LinkedApi, { LinkedApiError, TSearchCompanySize } from 'linkedapi-node';
+import LinkedApi, { LinkedApiError, TSearchCompanySize } from '@linkedapi/node';
 
 async function searchCompaniesExample(): Promise<void> {
   const linkedapi = new LinkedApi({
