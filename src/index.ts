@@ -84,7 +84,7 @@ class LinkedApi {
     if (config instanceof HttpClient) {
       this.httpClient = config;
     } else {
-      this.httpClient = buildLinkedApiHttpClient(config, config.client ?? 'node');
+      this.httpClient = buildLinkedApiHttpClient(config, config.client ?? 'node', config.baseUrl);
     }
 
     this.customWorkflow = new CustomWorkflow(this.httpClient);
@@ -1131,7 +1131,6 @@ export default LinkedApi;
 
 export { LinkedApi, Operation as PredefinedOperation };
 export { LinkedApiAdmin } from './admin';
-export { buildLinkedApiHttpClient } from './core/linked-api-http-client';
 
 export type {
   TLinkedApiConfig,
