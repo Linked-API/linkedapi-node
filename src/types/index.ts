@@ -2,6 +2,8 @@ export * from './config';
 export * from './errors';
 export * from './params';
 export * from './responses';
+export * from './workflow-in-progress-response.type';
+export * from './workflow-started-response.type';
 export * from './workflows';
 export * from './actions/index';
 export * from './http-client';

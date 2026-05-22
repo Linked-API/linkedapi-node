@@ -37,10 +37,11 @@ async function checkConnectionStatus(linkedapi: LinkedApi, personUrl: string): P
     personUrl: personUrl,
   };
 
-  const workflowId = await linkedapi.checkConnectionStatus.execute(statusParams);
-  console.log('🔍 Connection status workflow started:', workflowId);
+  const workflow = await linkedapi.checkConnectionStatus.execute(statusParams);
+  console.log('🔍 Connection status workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const statusResult = await linkedapi.checkConnectionStatus.result(workflowId);
+  const statusResult = await linkedapi.checkConnectionStatus.result(workflow.workflowId);
   if (statusResult.data) {
     console.log('✅ Connection status check completed');
     console.log(`📊 Connection status: ${statusResult.data.connectionStatus}`);
@@ -59,10 +60,11 @@ async function sendConnectionRequest(linkedapi: LinkedApi, personUrl: string): P
     email: 'example@gmail.com',
   };
 
-  const workflowId = await linkedapi.sendConnectionRequest.execute(requestParams);
-  console.log('📤 Send connection request workflow started:', workflowId);
+  const workflow = await linkedapi.sendConnectionRequest.execute(requestParams);
+  console.log('📤 Send connection request workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const requestResult = await linkedapi.sendConnectionRequest.result(workflowId);
+  const requestResult = await linkedapi.sendConnectionRequest.result(workflow.workflowId);
   if (requestResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(requestResult.errors, null, 2));
   } else {
@@ -74,10 +76,11 @@ async function sendConnectionRequest(linkedapi: LinkedApi, personUrl: string): P
 async function retrievePendingRequests(linkedapi: LinkedApi): Promise<void> {
   console.log('\n📋 Retrieving pending connection requests...');
 
-  const workflowId = await linkedapi.retrievePendingRequests.execute();
-  console.log('📋 Retrieve pending requests workflow started:', workflowId);
+  const workflow = await linkedapi.retrievePendingRequests.execute();
+  console.log('📋 Retrieve pending requests workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const pendingResults = await linkedapi.retrievePendingRequests.result(workflowId);
+  const pendingResults = await linkedapi.retrievePendingRequests.result(workflow.workflowId);
   if (pendingResults.data) {
     const pendingRequests = pendingResults.data;
     console.log('✅ Pending requests retrieval completed');
@@ -101,10 +104,11 @@ async function withdrawConnectionRequest(linkedapi: LinkedApi, personUrl: string
     unfollow: true,
   };
 
-  const workflowId = await linkedapi.withdrawConnectionRequest.execute(withdrawParams);
-  console.log('🔙 Withdraw connection request workflow started:', workflowId);
+  const workflow = await linkedapi.withdrawConnectionRequest.execute(withdrawParams);
+  console.log('🔙 Withdraw connection request workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const withdrawResult = await linkedapi.withdrawConnectionRequest.result(workflowId);
+  const withdrawResult = await linkedapi.withdrawConnectionRequest.result(workflow.workflowId);
   if (withdrawResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(withdrawResult.errors, null, 2));
   } else {
@@ -125,10 +129,11 @@ async function retrieveConnections(linkedapi: LinkedApi): Promise<void> {
     },
   };
 
-  const workflowId = await linkedapi.retrieveConnections.execute(connectionsParams);
-  console.log('👥 Retrieve connections workflow started:', workflowId);
+  const workflow = await linkedapi.retrieveConnections.execute(connectionsParams);
+  console.log('👥 Retrieve connections workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const connectionsResults = await linkedapi.retrieveConnections.result(workflowId);
+  const connectionsResults = await linkedapi.retrieveConnections.result(workflow.workflowId);
 
   if (connectionsResults.data) {
     const connections = connectionsResults.data;
@@ -146,13 +151,14 @@ async function retrieveConnections(linkedapi: LinkedApi): Promise<void> {
   }
 
   // Example 2: Retrieve recent connections using since (returns connectedAt field)
-  const recentWorkflowId = await linkedapi.retrieveConnections.execute({
+  const recentWorkflow = await linkedapi.retrieveConnections.execute({
     since: '2025-01-01',
     limit: 10,
   });
-  console.log('👥 Retrieve recent connections workflow started:', recentWorkflowId);
+  console.log('👥 Retrieve recent connections workflow started:', recentWorkflow.workflowId);
+  console.log('💬 Workflow message:', recentWorkflow.message);
 
-  const recentResults = await linkedapi.retrieveConnections.result(recentWorkflowId);
+  const recentResults = await linkedapi.retrieveConnections.result(recentWorkflow.workflowId);
 
   if (recentResults.data) {
     const connections = recentResults.data;
@@ -177,10 +183,11 @@ async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promis
     personUrl: personUrl,
   };
 
-  const workflowId = await linkedapi.removeConnection.execute(removeParams);
-  console.log('❌ Remove connection workflow started:', workflowId);
+  const workflow = await linkedapi.removeConnection.execute(removeParams);
+  console.log('❌ Remove connection workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const removeResult = await linkedapi.removeConnection.result(workflowId);
+  const removeResult = await linkedapi.removeConnection.result(workflow.workflowId);
   if (removeResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(removeResult.errors, null, 2));
   } else {
@@ -191,4 +198,4 @@ async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promis
 
 if (require.main === module) {
   connectionsExample();
-} 
+}

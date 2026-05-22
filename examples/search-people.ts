@@ -37,9 +37,10 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
   };
 
   console.log('🔍 Searching people with Linked API...');
-  const workflowId = await linkedapi.searchPeople.execute(searchParams);
-  console.log('🔍 Workflow started:', workflowId);
-  const searchResult = await linkedapi.searchPeople.result(workflowId);
+  const workflow = await linkedapi.searchPeople.execute(searchParams);
+  console.log('🔍 Workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
+  const searchResult = await linkedapi.searchPeople.result(workflow.workflowId);
 
   if (searchResult.data) {
     const results = searchResult.data;
@@ -64,9 +65,10 @@ async function standardExampleWithCustomSearchUrlExample(linkedapi: LinkedApi): 
   };
 
   console.log('🔍 Searching people with custom search URL...');
-  const workflowId = await linkedapi.searchPeople.execute(searchParams);
-  console.log('🔍 Workflow started:', workflowId);
-  const searchResult = await linkedapi.searchPeople.result(workflowId);
+  const workflow = await linkedapi.searchPeople.execute(searchParams);
+  console.log('🔍 Workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
+  const searchResult = await linkedapi.searchPeople.result(workflow.workflowId);
 
   if (searchResult.data) {
     const results = searchResult.data;
@@ -98,9 +100,10 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
   };
 
   console.log('\n🎯 Searching people with Sales Navigator custom search URL...');
-  const workflowId = await linkedapi.nvSearchPeople.execute(nvSearchParams);
-  console.log('🔍 Sales Navigator workflow started:', workflowId);
-  const nvResults = await linkedapi.nvSearchPeople.result(workflowId);
+  const workflow = await linkedapi.nvSearchPeople.execute(nvSearchParams);
+  console.log('🔍 Sales Navigator workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
+  const nvResults = await linkedapi.nvSearchPeople.result(workflow.workflowId);
 
   if (nvResults.data) {
     const results = nvResults.data;
@@ -124,9 +127,10 @@ async function salesNavigatorWithCustomSearchUrlExample(linkedapi: LinkedApi): P
   };
 
   console.log('\n🎯 Searching people with Sales Navigator...');
-  const workflowId = await linkedapi.nvSearchPeople.execute(nvSearchParams);
-  console.log('🔍 Sales Navigator workflow started:', workflowId);
-  const nvResults = await linkedapi.nvSearchPeople.result(workflowId);
+  const workflow = await linkedapi.nvSearchPeople.execute(nvSearchParams);
+  console.log('🔍 Sales Navigator workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
+  const nvResults = await linkedapi.nvSearchPeople.result(workflow.workflowId);
 
   if (nvResults.data) {
     const results = nvResults.data;
@@ -146,4 +150,4 @@ async function salesNavigatorWithCustomSearchUrlExample(linkedapi: LinkedApi): P
 
 if (require.main === module) {
   searchPeopleExample();
-} 
+}

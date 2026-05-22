@@ -38,10 +38,11 @@ async function sendMessage(linkedapi: LinkedApi, personUrl: string): Promise<voi
     text: 'Hi! I hope you\'re doing well. I came across your profile and was impressed by your work. I\'d love to connect and discuss potential collaboration opportunities.',
   };
 
-  const workflowId = await linkedapi.sendMessage.execute(messageParams);
-  console.log('💬 Send message workflow started:', workflowId);
+  const workflow = await linkedapi.sendMessage.execute(messageParams);
+  console.log('💬 Send message workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const sendMessageResult = await linkedapi.sendMessage.result(workflowId);
+  const sendMessageResult = await linkedapi.sendMessage.result(workflow.workflowId);
   if (sendMessageResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(sendMessageResult.errors, null, 2));
   } else {
@@ -58,10 +59,11 @@ async function syncConversation(linkedapi: LinkedApi, personUrl: string): Promis
     personUrl: personUrl,
   };
 
-  const workflowId = await linkedapi.syncConversation.execute(syncParams);
-  console.log('🔄 Sync conversation workflow started:', workflowId);
+  const workflow = await linkedapi.syncConversation.execute(syncParams);
+  console.log('🔄 Sync conversation workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const syncResult = await linkedapi.syncConversation.result(workflowId);
+  const syncResult = await linkedapi.syncConversation.result(workflow.workflowId);
   if (syncResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(syncResult.errors, null, 2));
   } else {
@@ -80,10 +82,11 @@ async function salesNavigatorSendMessage(linkedapi: LinkedApi, personUrl: string
     subject: 'Let\'s connect!',
   };
 
-  const workflowId = await linkedapi.nvSendMessage.execute(nvMessageParams);
-  console.log('🎯 Sales Navigator send message workflow started:', workflowId);
+  const workflow = await linkedapi.nvSendMessage.execute(nvMessageParams);
+  console.log('🎯 Sales Navigator send message workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const nvMessageResult = await linkedapi.nvSendMessage.result(workflowId);
+  const nvMessageResult = await linkedapi.nvSendMessage.result(workflow.workflowId);
   if (nvMessageResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(nvMessageResult.errors, null, 2));
   } else {
@@ -100,10 +103,11 @@ async function salesNavigatorSyncConversation(linkedapi: LinkedApi, personUrl: s
     personUrl: personUrl,
   };
 
-  const workflowId = await linkedapi.nvSyncConversation.execute(nvSyncParams);
-  console.log('🎯 Sales Navigator sync conversation workflow started:', workflowId);
+  const workflow = await linkedapi.nvSyncConversation.execute(nvSyncParams);
+  console.log('🎯 Sales Navigator sync conversation workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const nvSyncResult = await linkedapi.nvSyncConversation.result(workflowId);
+  const nvSyncResult = await linkedapi.nvSyncConversation.result(workflow.workflowId);
   if (nvSyncResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(nvSyncResult.errors, null, 2));
   } else {
@@ -153,4 +157,4 @@ async function pollConversations(linkedapi: LinkedApi, standardPersonUrl: string
 
 if (require.main === module) {
   messagingExample();
-} 
+}

@@ -5,6 +5,7 @@ import {
   TBaseFetchCompanyParams,
   TFetchCompanyParams,
   TFetchCompanyResult,
+  TWorkflowStartedResponse,
 } from '../types';
 
 export class FetchCompany extends Operation<TBaseFetchCompanyParams, TFetchCompanyResult> {
@@ -17,7 +18,7 @@ export class FetchCompany extends Operation<TBaseFetchCompanyParams, TFetchCompa
 
   public override async execute<TParams extends TBaseFetchCompanyParams>(
     params: TFetchCompanyParams<TParams>,
-  ): Promise<string> {
+  ): Promise<TWorkflowStartedResponse> {
     return super.execute(params);
   }
 }

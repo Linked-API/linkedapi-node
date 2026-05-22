@@ -1,6 +1,11 @@
 import { Operation, TOperationName } from '../core';
 import { TActionConfig, ThenWorkflowMapper } from '../mappers/then-workflow-mapper.abstract';
-import { TNvBaseFetchCompanyParams, TNvFetchCompanyParams, TNvFetchCompanyResult } from '../types';
+import {
+  TNvBaseFetchCompanyParams,
+  TNvFetchCompanyParams,
+  TNvFetchCompanyResult,
+  TWorkflowStartedResponse,
+} from '../types';
 
 export class NvFetchCompany extends Operation<TNvBaseFetchCompanyParams, TNvFetchCompanyResult> {
   public override readonly operationName: TOperationName = 'nvFetchCompany';
@@ -8,7 +13,7 @@ export class NvFetchCompany extends Operation<TNvBaseFetchCompanyParams, TNvFetc
 
   public override async execute<TParams extends TNvBaseFetchCompanyParams>(
     params: TNvFetchCompanyParams<TParams>,
-  ): Promise<string> {
+  ): Promise<TWorkflowStartedResponse> {
     return super.execute(params);
   }
 }

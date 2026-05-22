@@ -1,9 +1,9 @@
-import { LinkedApiError, TWorkflowInProgressStatus } from '../types';
+import { LinkedApiError, TWorkflowInProgressResponse } from '../types';
 
 import { WaitForCompletionOptions } from './operation';
 
 export async function pollWorkflowResult<TResult>(
-  workflowResultFn: () => Promise<TWorkflowInProgressStatus | TResult>,
+  workflowResultFn: () => Promise<TWorkflowInProgressResponse | TResult>,
   options: WaitForCompletionOptions,
 ): Promise<TResult> {
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -18,7 +18,7 @@ export async function pollWorkflowResult<TResult>(
     try {
       const result = await workflowResultFn();
 
-      if (result !== 'running' && result !== 'pending') {
+      if (!isWorkflowInProgress(result)) {
         return result;
       }
       invalidAttempts = 0;
@@ -36,4 +36,14 @@ export async function pollWorkflowResult<TResult>(
     await sleep(pollInterval);
   }
   throw new LinkedApiError('workflowTimeout', `Workflow did not complete within ${timeout}ms`);
+}
+
+function isWorkflowInProgress(result: unknown): result is TWorkflowInProgressResponse {
+  if (!result || typeof result !== 'object') {
+    return false;
+  }
+
+  const { workflowStatus } = result as { workflowStatus?: unknown };
+
+  return workflowStatus === 'running' || workflowStatus === 'pending';
 }

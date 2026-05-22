@@ -26,12 +26,13 @@ async function postActionsExample(): Promise<void> {
 async function createPost(linkedapi: LinkedApi): Promise<void> {
   console.log('\n📝 Creating a simple text post...');
 
-  const workflowId = await linkedapi.createPost.execute({
+  const workflow = await linkedapi.createPost.execute({
     text: 'Excited to share our latest product updates!\n\n#innovation #technology',
   });
-  console.log('📝 Create post workflow started:', workflowId);
+  console.log('📝 Create post workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const result = await linkedapi.createPost.result(workflowId);
+  const result = await linkedapi.createPost.result(workflow.workflowId);
   if (result.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
   } else {
@@ -43,16 +44,17 @@ async function createPost(linkedapi: LinkedApi): Promise<void> {
 async function createPostWithAttachments(linkedapi: LinkedApi): Promise<void> {
   console.log('\n🖼️ Creating a post with image attachments...');
 
-  const workflowId = await linkedapi.createPost.execute({
+  const workflow = await linkedapi.createPost.execute({
     text: 'Check out these amazing photos from our team event!',
     attachments: [
       { url: 'https://example.com/photo1.jpg', type: 'image' },
       { url: 'https://example.com/photo2.jpg', type: 'image' },
     ],
   });
-  console.log('🖼️ Create post with images workflow started:', workflowId);
+  console.log('🖼️ Create post with images workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const result = await linkedapi.createPost.result(workflowId);
+  const result = await linkedapi.createPost.result(workflow.workflowId);
   if (result.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
   } else {
@@ -64,7 +66,7 @@ async function createPostWithAttachments(linkedapi: LinkedApi): Promise<void> {
 async function createCompanyPost(linkedapi: LinkedApi): Promise<void> {
   console.log('\n🏢 Creating a company page post with document...');
 
-  const workflowId = await linkedapi.createPost.execute({
+  const workflow = await linkedapi.createPost.execute({
     text: 'Download our latest whitepaper on AI trends in 2026',
     companyUrl: 'https://www.linkedin.com/company/acme-corp',
     attachments: [
@@ -75,9 +77,10 @@ async function createCompanyPost(linkedapi: LinkedApi): Promise<void> {
       },
     ],
   });
-  console.log('🏢 Create company post workflow started:', workflowId);
+  console.log('🏢 Create company post workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const result = await linkedapi.createPost.result(workflowId);
+  const result = await linkedapi.createPost.result(workflow.workflowId);
   if (result.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(result.errors, null, 2));
   } else {
@@ -94,10 +97,11 @@ async function reactToPost(linkedapi: LinkedApi): Promise<void> {
     type: 'like' as const,
   };
 
-  const workflowId = await linkedapi.reactToPost.execute(reactionParams);
-  console.log('👍 React to post workflow started:', workflowId);
+  const workflow = await linkedapi.reactToPost.execute(reactionParams);
+  console.log('👍 React to post workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const reactionResult = await linkedapi.reactToPost.result(workflowId);
+  const reactionResult = await linkedapi.reactToPost.result(workflow.workflowId);
   if (reactionResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(reactionResult.errors, null, 2));
   } else {
@@ -114,10 +118,11 @@ async function commentOnPost(linkedapi: LinkedApi): Promise<void> {
     companyUrl: 'https://www.linkedin.com/company/acme-corp',
   };
 
-  const workflowId = await linkedapi.commentOnPost.execute(commentParams);
-  console.log('💬 Comment on post workflow started:', workflowId);
+  const workflow = await linkedapi.commentOnPost.execute(commentParams);
+  console.log('💬 Comment on post workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
 
-  const commentResult = await linkedapi.commentOnPost.result(workflowId);
+  const commentResult = await linkedapi.commentOnPost.result(workflow.workflowId);
   if (commentResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(commentResult.errors, null, 2));
   } else {

@@ -21,7 +21,7 @@ async function advancedUsageExample(): Promise<void> {
 
 async function customWorkflowExample(linkedapi: LinkedApi): Promise<void> { 
   console.log('🚀 Linked API custom workflow example starting...');
-  const workflowId = await linkedapi.customWorkflow.execute({
+  const workflow = await linkedapi.customWorkflow.execute({
     actionType: 'st.searchPeople',
     limit: 3,
     filter: {
@@ -38,8 +38,9 @@ async function customWorkflowExample(linkedapi: LinkedApi): Promise<void> {
       }
     }
   });
-  console.log('🔍 Workflow started: ', workflowId);
-  const result = await linkedapi.customWorkflow.result(workflowId);
+  console.log('🔍 Workflow started: ', workflow.workflowId);
+  console.log('💬 Workflow message: ', workflow.message);
+  const result = await linkedapi.customWorkflow.result(workflow.workflowId);
 
   console.log('✅ Custom workflow executed successfully');
   console.log('🔍 Result: ', JSON.stringify(result.data, null, 2));
@@ -47,14 +48,15 @@ async function customWorkflowExample(linkedapi: LinkedApi): Promise<void> {
 
 async function cancelWorkflowExample(linkedapi: LinkedApi): Promise<void> {
   console.log('🚀 Linked API cancel workflow example starting...');
-  const workflowId = await linkedapi.searchPeople.execute({
+  const workflow = await linkedapi.searchPeople.execute({
     limit: 3,
     filter: {
       locations: ["San Francisco"],
     },
   });
-  console.log('🔍 Workflow started: ', workflowId);
-  const result = await linkedapi.searchPeople.cancel(workflowId);
+  console.log('🔍 Workflow started: ', workflow.workflowId);
+  console.log('💬 Workflow message: ', workflow.message);
+  const result = await linkedapi.searchPeople.cancel(workflow.workflowId);
   console.log('✅ Workflow cancelled: ', result);
 }
 

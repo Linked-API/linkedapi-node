@@ -41,10 +41,12 @@ export interface TWorkflowCancelResponse {
 export interface TWorkflowStatusResponse {
   workflowId: string;
   workflowStatus: TWorkflowStatus;
+  message?: string;
 }
 
-export interface TWorkflowResponse<TResult extends TWorkflowData = TWorkflowData>
-  extends TWorkflowStatusResponse {
+export interface TWorkflowResponse<
+  TResult extends TWorkflowData = TWorkflowData,
+> extends TWorkflowStatusResponse {
   completion?: TWorkflowCompletion<TResult>;
   failure?: TWorkflowFailure;
 }

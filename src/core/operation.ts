@@ -6,8 +6,9 @@ import {
   TLinkedApiErrorType,
   TWorkflowCancelResponse,
   TWorkflowCompletion,
-  TWorkflowInProgressStatus,
+  TWorkflowInProgressResponse,
   TWorkflowResponse,
+  TWorkflowStartedResponse,
 } from '../types';
 
 import { pollWorkflowResult } from './poll-results';
@@ -52,16 +53,16 @@ export abstract class Operation<TParams, TResult> {
 
   constructor(private readonly httpClient: HttpClient) {}
 
-  public async execute(params: TParams): Promise<string> {
+  public async execute(params: TParams): Promise<TWorkflowStartedResponse> {
     const request = this.mapper.mapRequest(params);
-    const response = await this.httpClient.post<TWorkflowResponse>(`/workflows`, request);
+    const response = await this.httpClient.post<TWorkflowStartedResponse>(`/workflows`, request);
     if (response.error) {
       throw new LinkedApiError(response.error.type as TLinkedApiErrorType, response.error.message);
     }
     if (!response.result) {
       throw LinkedApiError.unknownError();
     }
-    return response.result.workflowId;
+    return response.result;
   }
 
   public async result(
@@ -83,14 +84,19 @@ export abstract class Operation<TParams, TResult> {
 
   public async status(
     workflowId: string,
-  ): Promise<TWorkflowInProgressStatus | TMappedResponse<TResult>> {
+  ): Promise<TWorkflowInProgressResponse | TMappedResponse<TResult>> {
     const workflowResult = await this.getWorkflowResult(workflowId);
     if (
       workflowResult.workflowStatus === 'running' ||
       workflowResult.workflowStatus === 'pending'
     ) {
-      return workflowResult.workflowStatus;
+      return {
+        workflowId,
+        workflowStatus: workflowResult.workflowStatus,
+        message: workflowResult.message,
+      };
     }
+
     const result = this.getCompletion(workflowResult);
     return this.mapper.mapResponse(result);
   }

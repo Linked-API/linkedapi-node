@@ -160,7 +160,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.customWorkflow.execute({
+   * const workflow = await linkedapi.customWorkflow.execute({
    *   actionType: "st.searchCompanies",
    *   term: "Tech Inc",
    *   filter: {
@@ -181,7 +181,7 @@ class LinkedApi {
    *   }
    * });
    *
-   * const result = await linkedapi.customWorkflow.result(workflowId);
+   * const result = await linkedapi.customWorkflow.result(workflow.workflowId);
    * ```
    */
   public customWorkflow: CustomWorkflow;
@@ -200,12 +200,12 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.sendMessage.execute({
+   * const workflow = await linkedapi.sendMessage.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe",
    *   text: "Hi John! I saw your recent post about AI and would love to discuss further."
    * });
    *
-   * await linkedapi.sendMessage.result(workflowId);
+   * await linkedapi.sendMessage.result(workflow.workflowId);
    * console.log("Message sent successfully");
    * ```
    */
@@ -226,11 +226,11 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.syncConversation.execute({
+   * const workflow = await linkedapi.syncConversation.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * await linkedapi.syncConversation.result(workflowId);
+   * await linkedapi.syncConversation.result(workflow.workflowId);
    * console.log("Conversation synced and ready for polling");
    * ```
    */
@@ -250,13 +250,13 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.nvSendMessage.execute({
+   * const workflow = await linkedapi.nvSendMessage.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe",
    *   text: "Hi John! I'm reaching out regarding potential collaboration opportunities.",
    *   subject: "Partnership Opportunity"
    * });
    *
-   * await linkedapi.nvSendMessage.result(workflowId);
+   * await linkedapi.nvSendMessage.result(workflow.workflowId);
    * console.log("Sales Navigator message sent successfully");
    * ```
    */
@@ -277,11 +277,11 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.nvSyncConversation.execute({
+   * const workflow = await linkedapi.nvSyncConversation.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * await linkedapi.nvSyncConversation.result(workflowId);
+   * await linkedapi.nvSyncConversation.result(workflow.workflowId);
    * console.log("Sales Navigator conversation synced and ready for polling");
    * ```
    */
@@ -390,7 +390,7 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Fetch comprehensive person information with type-safe parameters
-   * const workflowId = await linkedapi.fetchPerson.execute({
+   * const workflow = await linkedapi.fetchPerson.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe",
    *   retrieveExperience: true,
    *   retrieveEducation: true,
@@ -413,7 +413,7 @@ class LinkedApi {
    *   }
    * });
    *
-   * const personResult = await linkedapi.fetchPerson.result(workflowId);
+   * const personResult = await linkedapi.fetchPerson.result(workflow.workflowId);
    * if (personResult.data) {
    *   console.log("Person name:", personResult.data.name);
    *   console.log("Headline:", personResult.data.headline);
@@ -425,11 +425,11 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Simple fetch without additional data - no config objects needed
-   * const workflowId = await linkedapi.fetchPerson.execute({
+   * const workflow = await linkedapi.fetchPerson.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * const basicResult = await linkedapi.fetchPerson.result(workflowId);
+   * const basicResult = await linkedapi.fetchPerson.result(workflow.workflowId);
    * if (basicResult.data) {
    *   console.log("Basic info:", basicResult.data.name, basicResult.data.headline);
    * }
@@ -451,11 +451,11 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.nvFetchPerson.execute({
+   * const workflow = await linkedapi.nvFetchPerson.execute({
    *   personHashedUrl: "https://www.linkedin.com/in/ABC123",
    * });
    *
-   * const personResult = await linkedapi.nvFetchPerson.result(workflowId);
+   * const personResult = await linkedapi.nvFetchPerson.result(workflow.workflowId);
    * console.log("Sales Navigator data:", personResult.data);
    * ```
    */
@@ -478,7 +478,7 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Fetch company information with employees and posts (new simplified syntax)
-   * const workflowId = await linkedapi.fetchCompany.execute({
+   * const workflow = await linkedapi.fetchCompany.execute({
    *   companyUrl: "https://www.linkedin.com/company/microsoft",
    *   retrieveEmployees: true,
    *   retrievePosts: true,
@@ -498,7 +498,7 @@ class LinkedApi {
    *   dmsRetrievalConfig: { limit: 3 }
    * });
    *
-   * const companyResult = await linkedapi.fetchCompany.result(workflowId);
+   * const companyResult = await linkedapi.fetchCompany.result(workflow.workflowId);
    * if (companyResult.data) {
    *   console.log("Company name:", companyResult.data.name);
    *   console.log("Employee count:", companyResult.data.employees?.length);
@@ -524,7 +524,7 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Sales Navigator company fetch (new simplified syntax)
-   * const workflowId = await linkedapi.nvFetchCompany.execute({
+   * const workflow = await linkedapi.nvFetchCompany.execute({
    *   companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
    *   retrieveEmployees: true,
    *   retrieveDMs: true,
@@ -542,7 +542,7 @@ class LinkedApi {
    *   },
    * });
    *
-   * const companyResult = await linkedapi.nvFetchCompany.result(workflowId);
+   * const companyResult = await linkedapi.nvFetchCompany.result(workflow.workflowId);
    * if (companyResult.data) {
    *   console.log("Company name:", companyResult.data.name);
    *   console.log("Employees:", companyResult.data.employees?.length);
@@ -565,11 +565,11 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.fetchPost.execute({
+   * const workflow = await linkedapi.fetchPost.execute({
    *   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789"
    * });
    *
-   * const result = await linkedapi.fetchPost.result(workflowId);
+   * const result = await linkedapi.fetchPost.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("Post content:", result.data.text);
    *   console.log("Author:", result.data.author);
@@ -592,7 +592,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.searchCompanies.execute({
+   * const workflow = await linkedapi.searchCompanies.execute({
    *   term: "software development",
    *   filter: {
    *     locations: ["San Francisco", "New York"],
@@ -602,7 +602,7 @@ class LinkedApi {
    *   limit: 25
    * });
    *
-   * const companiesResult = await linkedapi.searchCompanies.result(workflowId);
+   * const companiesResult = await linkedapi.searchCompanies.result(workflow.workflowId);
    * if (companiesResult.data) {
    *   console.log("Found companies:", companiesResult.data.length);
    * }
@@ -623,7 +623,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.nvSearchCompanies.execute({
+   * const workflow = await linkedapi.nvSearchCompanies.execute({
    *   term: "fintech startup",
    *   filter: {
    *     locations: ["United States"],
@@ -637,7 +637,7 @@ class LinkedApi {
    *   limit: 50
    * });
    *
-   * const companiesResult = await linkedapi.nvSearchCompanies.result(workflowId);
+   * const companiesResult = await linkedapi.nvSearchCompanies.result(workflow.workflowId);
    * if (companiesResult.data) {
    *   console.log("Sales Navigator companies:", companiesResult.data.length);
    * }
@@ -658,7 +658,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.searchPeople.execute({
+   * const workflow = await linkedapi.searchPeople.execute({
    *   term: "software engineer React",
    *   filter: {
    *     locations: ["San Francisco Bay Area"],
@@ -668,7 +668,7 @@ class LinkedApi {
    *   limit: 50
    * });
    *
-   * const result = await linkedapi.searchPeople.result(workflowId);
+   * const result = await linkedapi.searchPeople.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("Found professionals:", result.data.length);
    * }
@@ -689,7 +689,7 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.nvSearchPeople.execute({
+   * const workflow = await linkedapi.nvSearchPeople.execute({
    *   term: "VP Marketing B2B SaaS",
    *   filter: {
    *     locations: ["United States"],
@@ -699,7 +699,7 @@ class LinkedApi {
    *   limit: 25
    * });
    *
-   * const result = await linkedapi.nvSearchPeople.result(workflowId);
+   * const result = await linkedapi.nvSearchPeople.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("Sales Navigator prospects:", result.data.length);
    * }
@@ -721,12 +721,12 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.sendConnectionRequest.execute({
+   * const workflow = await linkedapi.sendConnectionRequest.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe",
    *   note: "Hi John, I'd love to connect and discuss opportunities in tech!"
    * });
    *
-   * await linkedapi.sendConnectionRequest.result(workflowId);
+   * await linkedapi.sendConnectionRequest.result(workflow.workflowId);
    * console.log("Connection request sent successfully");
    * ```
    */
@@ -746,11 +746,11 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.checkConnectionStatus.execute({
+   * const workflow = await linkedapi.checkConnectionStatus.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * const result = await linkedapi.checkConnectionStatus.result(workflowId);
+   * const result = await linkedapi.checkConnectionStatus.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("Connection status:", result.data.connectionStatus);
    * }
@@ -772,11 +772,11 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.withdrawConnectionRequest.execute({
+   * const workflow = await linkedapi.withdrawConnectionRequest.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * await linkedapi.withdrawConnectionRequest.result(workflowId);
+   * await linkedapi.withdrawConnectionRequest.result(workflow.workflowId);
    * console.log("Connection request withdrawn successfully");
    * ```
    */
@@ -795,9 +795,9 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.retrievePendingRequests.execute();
+   * const workflow = await linkedapi.retrievePendingRequests.execute();
    *
-   * const result = await linkedapi.retrievePendingRequests.result(workflowId);
+   * const result = await linkedapi.retrievePendingRequests.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("Pending requests:", result.data.length);
    *
@@ -827,7 +827,7 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Retrieve connections with filter
-   * const workflowId = await linkedapi.retrieveConnections.execute({
+   * const workflow = await linkedapi.retrieveConnections.execute({
    *   filter: {
    *     firstName: "John",
    *     industries: ["Technology", "Software"],
@@ -837,7 +837,7 @@ class LinkedApi {
    *   limit: 50
    * });
    *
-   * const result = await linkedapi.retrieveConnections.result(workflowId);
+   * const result = await linkedapi.retrieveConnections.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("Filtered connections:", result.data.length);
    * }
@@ -846,12 +846,12 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Retrieve recent connections using since parameter
-   * const workflowId = await linkedapi.retrieveConnections.execute({
+   * const workflow = await linkedapi.retrieveConnections.execute({
    *   since: "2025-01-01",
    *   limit: 100
    * });
    *
-   * const result = await linkedapi.retrieveConnections.result(workflowId);
+   * const result = await linkedapi.retrieveConnections.result(workflow.workflowId);
    * if (result.data) {
    *   result.data.forEach(c => console.log(c.name, c.connectedAt));
    * }
@@ -873,11 +873,11 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.removeConnection.execute({
+   * const workflow = await linkedapi.removeConnection.execute({
    *   personUrl: "https://www.linkedin.com/in/john-doe"
    * });
    *
-   * await linkedapi.removeConnection.result(workflowId);
+   * await linkedapi.removeConnection.result(workflow.workflowId);
    * console.log("Connection removed successfully");
    * ```
    */
@@ -897,12 +897,12 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.reactToPost.execute({
+   * const workflow = await linkedapi.reactToPost.execute({
    *   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789",
    *   type: "like"
    * });
    *
-   * await linkedapi.reactToPost.result(workflowId);
+   * await linkedapi.reactToPost.result(workflow.workflowId);
    * console.log("Post reaction added successfully");
    * ```
    */
@@ -922,12 +922,12 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.commentOnPost.execute({
+   * const workflow = await linkedapi.commentOnPost.execute({
    *   postUrl: "https://www.linkedin.com/posts/john-doe_activity-123456789",
    *   text: "Great insights! Thanks for sharing this valuable information."
    * });
    *
-   * await linkedapi.commentOnPost.result(workflowId);
+   * await linkedapi.commentOnPost.result(workflow.workflowId);
    * console.log("Comment posted successfully");
    * ```
    */
@@ -948,11 +948,11 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Create a simple text post
-   * const workflowId = await linkedapi.createPost.execute({
+   * const workflow = await linkedapi.createPost.execute({
    *   text: "Excited to share our latest product updates!\n\n#innovation"
    * });
    *
-   * const result = await linkedapi.createPost.result(workflowId);
+   * const result = await linkedapi.createPost.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("Post created:", result.data.postUrl);
    * }
@@ -961,7 +961,7 @@ class LinkedApi {
    * @example
    * ```typescript
    * // Create a post with image attachments
-   * const workflowId = await linkedapi.createPost.execute({
+   * const workflow = await linkedapi.createPost.execute({
    *   text: "Check out these amazing photos from our team event!",
    *   attachments: [
    *     { url: "https://example.com/photo1.jpg", type: "image" },
@@ -969,14 +969,14 @@ class LinkedApi {
    *   ]
    * });
    *
-   * const result = await linkedapi.createPost.result(workflowId);
+   * const result = await linkedapi.createPost.result(workflow.workflowId);
    * console.log("Post with images created:", result.data?.postUrl);
    * ```
    *
    * @example
    * ```typescript
    * // Create a company page post with a document
-   * const workflowId = await linkedapi.createPost.execute({
+   * const workflow = await linkedapi.createPost.execute({
    *   text: "Download our latest whitepaper on AI trends",
    *   companyUrl: "https://www.linkedin.com/company/acme-corp",
    *   attachments: [
@@ -984,7 +984,7 @@ class LinkedApi {
    *   ]
    * });
    *
-   * const result = await linkedapi.createPost.result(workflowId);
+   * const result = await linkedapi.createPost.result(workflow.workflowId);
    * console.log("Company post created:", result.data?.postUrl);
    * ```
    */
@@ -1004,9 +1004,9 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.retrieveSSI.execute();
+   * const workflow = await linkedapi.retrieveSSI.execute();
    *
-   * const result = await linkedapi.retrieveSSI.result(workflowId);
+   * const result = await linkedapi.retrieveSSI.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("SSI Score:", result.data.ssi);
    *   console.log("Industry Ranking:", result.data.industryTop);
@@ -1029,9 +1029,9 @@ class LinkedApi {
    *
    * @example
    * ```typescript
-   * const workflowId = await linkedapi.retrievePerformance.execute();
+   * const workflow = await linkedapi.retrievePerformance.execute();
    *
-   * const result = await linkedapi.retrievePerformance.result(workflowId);
+   * const result = await linkedapi.retrievePerformance.result(workflow.workflowId);
    * if (result.data) {
    *   console.log("Profile views:", result.data.profileViews);
    *   console.log("Search appearances:", result.data.searchAppearances);

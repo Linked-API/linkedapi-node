@@ -20,7 +20,7 @@ async function fetchPostExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const workflowId = await linkedapi.fetchPost.execute({
+  const workflow = await linkedapi.fetchPost.execute({
     postUrl: 'https://www.linkedin.com/posts/post-url',
     retrieveComments: true,
     retrieveReactions: true,
@@ -32,8 +32,9 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
       limit: 100,
     },
   });
-  console.log('🔍 Workflow started:', workflowId);
-  const postResult = await linkedapi.fetchPost.result(workflowId);
+  console.log('🔍 Workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
+  const postResult = await linkedapi.fetchPost.result(workflow.workflowId);
   if (postResult.data) {
     const post = postResult.data;
     console.log('✅ Post fetched successfully');
@@ -58,4 +59,4 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
 
 if (require.main === module) {
   fetchPostExample();
-} 
+}

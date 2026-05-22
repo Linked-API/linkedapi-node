@@ -1,6 +1,11 @@
 import { Operation, TOperationName } from '../core';
 import { TActionConfig, ThenWorkflowMapper } from '../mappers';
-import { TBaseFetchPostParams, TFetchPostParams, TFetchPostResult } from '../types';
+import {
+  TBaseFetchPostParams,
+  TFetchPostParams,
+  TFetchPostResult,
+  TWorkflowStartedResponse,
+} from '../types';
 
 export class FetchPost extends Operation<TBaseFetchPostParams, TFetchPostResult> {
   public override readonly operationName: TOperationName = 'fetchPost';
@@ -8,7 +13,7 @@ export class FetchPost extends Operation<TBaseFetchPostParams, TFetchPostResult>
 
   public override async execute<TParams extends TBaseFetchPostParams>(
     params: TFetchPostParams<TParams>,
-  ): Promise<string> {
+  ): Promise<TWorkflowStartedResponse> {
     return super.execute(params);
   }
 }

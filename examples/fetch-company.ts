@@ -21,7 +21,7 @@ async function fetchCompanyExample(): Promise<void> {
 }
 
 async function standardExample(linkedapi: LinkedApi): Promise<void> {
-  const workflowId = await linkedapi.fetchCompany.execute({
+  const workflow = await linkedapi.fetchCompany.execute({
     companyUrl: 'https://www.linkedin.com/company/linkedin/',
     retrieveEmployees: true,
     retrieveDMs: true,
@@ -42,8 +42,9 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
     },
   });
 
-  console.log('🔍 Company workflow started: ', workflowId);
-  const companyData = await linkedapi.fetchCompany.result(workflowId);
+  console.log('🔍 Company workflow started: ', workflow.workflowId);
+  console.log('💬 Workflow message: ', workflow.message);
+  const companyData = await linkedapi.fetchCompany.result(workflow.workflowId);
   if (companyData.data) {
     const company = companyData.data;
     console.log('✅ Company page opened successfully');
@@ -62,7 +63,7 @@ async function standardExample(linkedapi: LinkedApi): Promise<void> {
 }
 
 async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
-  const workflowId = await linkedapi.nvFetchCompany.execute({
+  const workflow = await linkedapi.nvFetchCompany.execute({
     companyHashedUrl: 'https://www.linkedin.com/sales/company/1035',
     retrieveEmployees: true,
     retrieveDMs: true,
@@ -77,8 +78,9 @@ async function salesNavigatorExample(linkedapi: LinkedApi): Promise<void> {
     },
   });
 
-  console.log('🔍 Sales Navigator workflow started: ', workflowId);
-  const nvCompanyData = await linkedapi.nvFetchCompany.result(workflowId);
+  console.log('🔍 Sales Navigator workflow started: ', workflow.workflowId);
+  console.log('💬 Workflow message: ', workflow.message);
+  const nvCompanyData = await linkedapi.nvFetchCompany.result(workflow.workflowId);
   if (nvCompanyData.data) {
     const nvCompany = nvCompanyData.data;
     console.log('✅ Sales Navigator company page opened successfully');
