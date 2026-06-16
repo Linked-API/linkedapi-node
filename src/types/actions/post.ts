@@ -4,10 +4,18 @@ export interface TPost {
   url: string;
   time: string;
   type: TPostType;
+  activityUrn: string | null;
+  author: TPostAuthor | null;
+  reposter: TPostReposter | null;
   repostText: string | null;
+  hashtags: ReadonlyArray<string>;
+  mentions: ReadonlyArray<string>;
+  externalLinks: ReadonlyArray<string>;
   text: string | null;
   images: ReadonlyArray<string> | null;
+  documentSlides: ReadonlyArray<string>;
   hasVideo: boolean;
+  videoThumbnail: string | null;
   hasPoll: boolean;
   reactionsCount: number;
   commentsCount: number;
@@ -21,6 +29,42 @@ export const POST_TYPE = {
   repost: 'repost',
 } as const;
 export type TPostType = (typeof POST_TYPE)[keyof typeof POST_TYPE];
+
+export const POST_ACTOR_TYPE = {
+  company: 'company',
+  person: 'person',
+} as const;
+export type TPostActorType = (typeof POST_ACTOR_TYPE)[keyof typeof POST_ACTOR_TYPE];
+
+export interface TPostPersonAuthor {
+  type: typeof POST_ACTOR_TYPE.person;
+  name: string | null;
+  profileUrl: string | null;
+  headline: string | null;
+}
+
+export interface TPostCompanyAuthor {
+  type: typeof POST_ACTOR_TYPE.company;
+  name: string | null;
+  companyUrl: string | null;
+}
+
+export type TPostAuthor = TPostPersonAuthor | TPostCompanyAuthor;
+
+export interface TPostPersonReposter {
+  type: typeof POST_ACTOR_TYPE.person;
+  name: string | null;
+  profileUrl: string | null;
+  headline: string | null;
+}
+
+export interface TPostCompanyReposter {
+  type: typeof POST_ACTOR_TYPE.company;
+  name: string | null;
+  companyUrl: string | null;
+}
+
+export type TPostReposter = TPostPersonReposter | TPostCompanyReposter;
 
 export interface TReaction {
   postUrl: string;

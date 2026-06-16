@@ -1,6 +1,6 @@
 {
   "name": "@linkedapi/node",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Control your LinkedIn accounts and retrieve real-time data, all through this Node.js SDK.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
