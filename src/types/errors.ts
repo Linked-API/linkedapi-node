@@ -15,9 +15,10 @@ import { TOperationName } from '../core';
  * - notPending (withdrawConnectionRequest))
  * - retrievingNotAllowed (retrieveConnections, fetchCompany, nvFetchCompany)
  * - connectionNotFound (removeConnection)
- * - searchingNotAllowed (searchCompanies, searchPeople, nvSearchCompanies, nvSearchPeople)
+ * - searchingNotAllowed (searchCompanies, searchPeople, searchJobs, nvSearchCompanies, nvSearchPeople)
  * - companyNotFound (fetchCompany, nvFetchCompany)
  * - postNotFound (fetchPost, reactToPost, commentOnPost)
+ * - jobNotFound (fetchJob)
  * - commentingNotAllowed (commentOnPost)
  * - noPostingPermission (createPost, reactToPost, commentOnPost)
  * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson)
@@ -37,6 +38,7 @@ export const LINKED_API_ACTION_ERROR = {
   searchingNotAllowed: 'searchingNotAllowed',
   companyNotFound: 'companyNotFound',
   postNotFound: 'postNotFound',
+  jobNotFound: 'jobNotFound',
   commentingNotAllowed: 'commentingNotAllowed',
   noPostingPermission: 'noPostingPermission',
   noSalesNavigator: 'noSalesNavigator',

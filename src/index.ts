@@ -7,6 +7,7 @@ import {
   CreatePost,
   CustomWorkflow,
   FetchCompany,
+  FetchJob,
   FetchPerson,
   FetchPost,
   NvFetchCompany,
@@ -22,6 +23,7 @@ import {
   RetrievePerformance,
   RetrieveSSI,
   SearchCompanies,
+  SearchJobs,
   SearchPeople,
   SendConnectionRequest,
   SendMessage,
@@ -98,9 +100,11 @@ class LinkedApi {
     this.removeConnection = new RemoveConnection(this.httpClient);
     this.searchCompanies = new SearchCompanies(this.httpClient);
     this.searchPeople = new SearchPeople(this.httpClient);
+    this.searchJobs = new SearchJobs(this.httpClient);
     this.fetchCompany = new FetchCompany(this.httpClient);
     this.fetchPerson = new FetchPerson(this.httpClient);
     this.fetchPost = new FetchPost(this.httpClient);
+    this.fetchJob = new FetchJob(this.httpClient);
     this.reactToPost = new ReactToPost(this.httpClient);
     this.commentOnPost = new CommentOnPost(this.httpClient);
     this.createPost = new CreatePost(this.httpClient);
@@ -125,9 +129,11 @@ class LinkedApi {
       this.removeConnection,
       this.searchCompanies,
       this.searchPeople,
+      this.searchJobs,
       this.fetchCompany,
       this.fetchPerson,
       this.fetchPost,
+      this.fetchJob,
       this.reactToPost,
       this.commentOnPost,
       this.createPost,
@@ -580,6 +586,32 @@ class LinkedApi {
   public fetchPost: FetchPost;
 
   /**
+   * Retrieve detailed information about a LinkedIn job.
+   *
+   * This method fetches comprehensive data about a specific LinkedIn job,
+   * including company, location, salary, description, and application details.
+   *
+   * @param params - Parameters specifying the job URL
+   * @returns Promise resolving to an object containing the job data
+   *
+   * @see {@link https://linkedapi.io/docs/action-st-open-job/ st.openJob Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.fetchJob.execute({
+   *   jobUrl: "https://www.linkedin.com/jobs/view/4416248954/"
+   * });
+   *
+   * const result = await linkedapi.fetchJob.result(workflow.workflowId);
+   * if (result.data) {
+   *   console.log("Job title:", result.data.title);
+   *   console.log("Company:", result.data.companyName);
+   * }
+   * ```
+   */
+  public fetchJob: FetchJob;
+
+  /**
    * Search for companies on LinkedIn using standard search.
    *
    * This method performs a company search on LinkedIn using the standard search interface.
@@ -675,6 +707,37 @@ class LinkedApi {
    * ```
    */
   public searchPeople: SearchPeople;
+
+  /**
+   * Search for jobs on LinkedIn using standard search.
+   *
+   * This method performs a job search on LinkedIn using the standard search interface.
+   * You can filter by location, date posted, experience level, employment type, workplace type, and more.
+   *
+   * @param params - Search parameters including keywords, filters, and pagination options
+   * @returns Promise resolving to an object containing an array of job search results
+   *
+   * @see {@link https://linkedapi.io/docs/action-st-search-jobs/ st.searchJobs Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.searchJobs.execute({
+   *   term: "product manager",
+   *   filter: {
+   *     location: "San Francisco, California, United States",
+   *     experienceLevels: ["midSeniorLevel", "director"],
+   *     workplaceTypes: ["remote", "hybrid"]
+   *   },
+   *   limit: 25
+   * });
+   *
+   * const jobsResult = await linkedapi.searchJobs.result(workflow.workflowId);
+   * if (jobsResult.data) {
+   *   console.log("Found jobs:", jobsResult.data.length);
+   * }
+   * ```
+   */
+  public searchJobs: SearchJobs;
 
   /**
    * Search for people on LinkedIn using Sales Navigator.
