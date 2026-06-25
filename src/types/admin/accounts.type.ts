@@ -1,10 +1,15 @@
 export interface TAdminAccount {
   id: string;
   name: string;
+  url: string;
+  avatarUrl: string | null;
+  headline: string | null;
   countryCode: string;
   identificationToken: string;
   status: 'active' | 'frozen' | 'reconnection_required';
   connectedAt: string;
+  reconnectionSessionId?: string;
+  reconnectionLink?: string;
 }
 
 export interface TPendingConnectionSession {
@@ -21,6 +26,14 @@ export interface TDisconnectParams {
   accountId: string;
 }
 
+export interface TReparseAccountInfoParams {
+  accountId: string;
+}
+
+export interface TReparseAccountInfoResult {
+  workflowId: string;
+}
+
 export interface TRegenerateTokenParams {
   accountId: string;
 }
@@ -32,6 +45,15 @@ export interface TRegenerateTokenResult {
 export interface TCreateConnectionSessionResult {
   sessionId: string;
   connectionLink: string;
+}
+
+export interface TCreateReconnectionSessionParams {
+  accountId: string;
+}
+
+export interface TCreateReconnectionSessionResult {
+  reconnectionSessionId: string;
+  reconnectionLink: string;
 }
 
 export interface TGetConnectionSessionParams {

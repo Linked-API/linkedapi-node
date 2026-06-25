@@ -11,6 +11,8 @@ import { TOperationName } from '../core';
  * - alreadyPending (sendConnectionRequest)
  * - alreadyConnected (sendConnectionRequest)
  * - emailRequired (sendConnectionRequest)
+ * - noteTooLong (sendConnectionRequest)
+ * - noteLimitExceeded (sendConnectionRequest)
  * - requestNotAllowed (sendConnectionRequest)
  * - notPending (withdrawConnectionRequest))
  * - retrievingNotAllowed (retrieveConnections, fetchCompany, nvFetchCompany)
@@ -30,6 +32,8 @@ export const LINKED_API_ACTION_ERROR = {
   alreadyPending: 'alreadyPending',
   alreadyConnected: 'alreadyConnected',
   emailRequired: 'emailRequired',
+  noteTooLong: 'noteTooLong',
+  noteLimitExceeded: 'noteLimitExceeded',
   requestNotAllowed: 'requestNotAllowed',
   notPending: 'notPending',
   retrievingNotAllowed: 'retrievingNotAllowed',

@@ -5,11 +5,15 @@ import {
   TCancelConnectionSessionParams,
   TConnectionSessionResult,
   TCreateConnectionSessionResult,
+  TCreateReconnectionSessionParams,
+  TCreateReconnectionSessionResult,
   TDisconnectParams,
   TGetConnectionSessionParams,
   TLinkedApiErrorType,
   TRegenerateTokenParams,
   TRegenerateTokenResult,
+  TReparseAccountInfoParams,
+  TReparseAccountInfoResult,
 } from '../types';
 
 export class AdminAccounts {
@@ -34,6 +38,22 @@ export class AdminAccounts {
     throw new LinkedApiError(
       (response.error?.type ?? 'httpError') as TLinkedApiErrorType,
       response.error?.message ?? 'Failed to disconnect account',
+    );
+  }
+
+  public async reparseAccountInfo(
+    params: TReparseAccountInfoParams,
+  ): Promise<TReparseAccountInfoResult> {
+    const response = await this.httpClient.post<TReparseAccountInfoResult>(
+      '/admin/accounts.reparseAccountInfo',
+      params,
+    );
+    if (response.success && response.result) {
+      return response.result;
+    }
+    throw new LinkedApiError(
+      (response.error?.type ?? 'httpError') as TLinkedApiErrorType,
+      response.error?.message ?? 'Failed to reparse account info',
     );
   }
 
@@ -63,6 +83,22 @@ export class AdminAccounts {
     throw new LinkedApiError(
       (response.error?.type ?? 'httpError') as TLinkedApiErrorType,
       response.error?.message ?? 'Failed to create connection session',
+    );
+  }
+
+  public async createReconnectionSession(
+    params: TCreateReconnectionSessionParams,
+  ): Promise<TCreateReconnectionSessionResult> {
+    const response = await this.httpClient.post<TCreateReconnectionSessionResult>(
+      '/admin/accounts.createReconnectionSession',
+      params,
+    );
+    if (response.success && response.result) {
+      return response.result;
+    }
+    throw new LinkedApiError(
+      (response.error?.type ?? 'httpError') as TLinkedApiErrorType,
+      response.error?.message ?? 'Failed to create reconnection session',
     );
   }
 

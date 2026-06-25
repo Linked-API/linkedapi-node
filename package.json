@@ -1,6 +1,6 @@
 {
   "name": "@linkedapi/node",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Control your LinkedIn accounts and retrieve real-time data, all through this Node.js SDK.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,7 +16,7 @@
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src --fix",
-    "format": "prettier --write \"src/**/*.ts\"",
+    "format": "prettier --write --log-level warn \"src/**/*.ts\"",
     "prepublishOnly": "npm run clean && npm run build",
     "prepare": "husky"
   },
