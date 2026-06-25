@@ -10,8 +10,6 @@ async function adminSubscriptionExample(): Promise<void> {
 
     await getSubscriptionStatus(admin);
     await getSeats(admin);
-    await getPricing(admin);
-
   } catch (error) {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
@@ -42,18 +40,6 @@ async function getSeats(admin: LinkedApiAdmin): Promise<void> {
   }
 }
 
-async function getPricing(admin: LinkedApiAdmin): Promise<void> {
-  console.log('\n💰 Getting pricing information...');
-
-  const { products } = await admin.subscription.getPricing();
-  console.log('✅ Pricing retrieved');
-  for (const product of products) {
-    const price = (product.unitPrice / 100).toFixed(2);
-    const currencySymbol = product.currency === 'eur' ? '€' : '$';
-    console.log(`   ${product.seatType} ${product.billingPeriod}: ${currencySymbol}${price}/seat`);
-  }
-}
-
 async function setSeats(admin: LinkedApiAdmin): Promise<void> {
   console.log('\n🔧 Setting subscription seats...');
 
@@ -69,14 +55,6 @@ async function setSeats(admin: LinkedApiAdmin): Promise<void> {
     console.log('💳 Checkout required. Complete payment:');
     console.log(`   ${result.paymentLink}`);
   }
-}
-
-async function getBillingLink(admin: LinkedApiAdmin): Promise<void> {
-  console.log('\n🔗 Getting billing portal link...');
-
-  const { stripeLink } = await admin.subscription.getBillingLink();
-  console.log('✅ Billing link retrieved');
-  console.log(`   ${stripeLink}`);
 }
 
 if (require.main === module) {
