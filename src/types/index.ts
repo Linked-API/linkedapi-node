@@ -5,6 +5,7 @@ export * from './responses';
 export * from './workflow-in-progress-response.type';
 export * from './workflow-started-response.type';
 export * from './workflows';
+export * from './webhooks';
 export * from './actions/index';
 export * from './http-client';
 export * from './admin/index';
