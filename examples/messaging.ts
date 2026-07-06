@@ -20,6 +20,11 @@ async function messagingExample(): Promise<void> {
 
     await pollConversations(linkedapi, targetPersonUrl, targetPersonUrl2);
 
+    await syncInbox(linkedapi);
+    await salesNavigatorSyncInbox(linkedapi);
+
+    await pollInbox(linkedapi);
+
   } catch (error) {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
@@ -152,6 +157,68 @@ async function pollConversations(linkedapi: LinkedApi, standardPersonUrl: string
         console.log(`       🕐 ${message.time}`);
       });
     }
+  });
+}
+
+async function syncInbox(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n🔄 Enabling inbox monitoring...');
+
+  const workflow = await linkedapi.syncInbox.execute({});
+  console.log('🔄 Sync inbox workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
+
+  const syncResult = await linkedapi.syncInbox.result(workflow.workflowId);
+  if (syncResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(syncResult.errors, null, 2));
+  } else {
+    console.log('✅ Inbox monitoring enabled successfully');
+    console.log('   📥 Whole inbox is now ready for polling');
+  }
+}
+
+async function salesNavigatorSyncInbox(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n🎯 Enabling Sales Navigator inbox monitoring...');
+
+  const workflow = await linkedapi.nvSyncInbox.execute({});
+  console.log('🎯 Sales Navigator sync inbox workflow started:', workflow.workflowId);
+  console.log('💬 Workflow message:', workflow.message);
+
+  const nvSyncResult = await linkedapi.nvSyncInbox.result(workflow.workflowId);
+  if (nvSyncResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(nvSyncResult.errors, null, 2));
+  } else {
+    console.log('✅ Sales Navigator inbox monitoring enabled successfully');
+    console.log('   📥 Whole Sales Navigator inbox is now ready for polling');
+  }
+}
+
+async function pollInbox(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n📥 Polling inbox...');
+
+  const pollResponse = await linkedapi.pollInbox({
+    type: 'st',
+    since: '2025-01-01T00:00:00Z',
+  });
+
+  if (pollResponse.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(pollResponse.errors, null, 2));
+    return;
+  }
+
+  const messages = pollResponse.data?.messages ?? [];
+  console.log('✅ Inbox polled successfully');
+  console.log(`📊 Found ${messages.length} messages`);
+
+  messages.slice(0, 5).forEach((message) => {
+    const senderIcon = message.sender === 'us' ? '👤' : '👋';
+    console.log(`  ${senderIcon} ${message.sender.toUpperCase()} in thread ${message.threadId}: "${message.text}"`);
+    console.log(`    🔗 Type: ${message.type === 'st' ? 'Standard' : 'Sales Navigator'} | 🕐 ${message.time}`);
+
+    // Reply straight into the thread using threadId (no personUrl needed).
+    void linkedapi.sendMessage.execute({
+      threadId: message.threadId,
+      text: 'Thanks for your message!',
+    });
   });
 }
 

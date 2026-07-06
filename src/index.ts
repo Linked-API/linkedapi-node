@@ -16,6 +16,7 @@ import {
   NvSearchPeople,
   NvSendMessage,
   NvSyncConversation,
+  NvSyncInbox,
   ReactToPost,
   RemoveConnection,
   RetrieveConnections,
@@ -28,6 +29,7 @@ import {
   SendConnectionRequest,
   SendMessage,
   SyncConversation,
+  SyncInbox,
   WithdrawConnectionRequest,
 } from './operations';
 import {
@@ -38,6 +40,8 @@ import {
   TApiUsageParams,
   TConversationPollRequest,
   TConversationPollResult,
+  TInboxPollRequest,
+  TInboxPollResult,
   TLinkedApiActionErrorType,
   TLinkedApiErrorType,
 } from './types';
@@ -92,6 +96,7 @@ class LinkedApi {
     this.customWorkflow = new CustomWorkflow(this.httpClient);
     this.sendMessage = new SendMessage(this.httpClient);
     this.syncConversation = new SyncConversation(this.httpClient);
+    this.syncInbox = new SyncInbox(this.httpClient);
     this.checkConnectionStatus = new CheckConnectionStatus(this.httpClient);
     this.sendConnectionRequest = new SendConnectionRequest(this.httpClient);
     this.withdrawConnectionRequest = new WithdrawConnectionRequest(this.httpClient);
@@ -112,6 +117,7 @@ class LinkedApi {
     this.retrievePerformance = new RetrievePerformance(this.httpClient);
     this.nvSendMessage = new NvSendMessage(this.httpClient);
     this.nvSyncConversation = new NvSyncConversation(this.httpClient);
+    this.nvSyncInbox = new NvSyncInbox(this.httpClient);
     this.nvSearchCompanies = new NvSearchCompanies(this.httpClient);
     this.nvSearchPeople = new NvSearchPeople(this.httpClient);
     this.nvFetchCompany = new NvFetchCompany(this.httpClient);
@@ -121,6 +127,7 @@ class LinkedApi {
       this.customWorkflow,
       this.sendMessage,
       this.syncConversation,
+      this.syncInbox,
       this.checkConnectionStatus,
       this.sendConnectionRequest,
       this.withdrawConnectionRequest,
@@ -141,6 +148,7 @@ class LinkedApi {
       this.retrievePerformance,
       this.nvSendMessage,
       this.nvSyncConversation,
+      this.nvSyncInbox,
       this.nvSearchCompanies,
       this.nvSearchPeople,
       this.nvFetchCompany,
@@ -243,6 +251,29 @@ class LinkedApi {
   public syncConversation: SyncConversation;
 
   /**
+   * Enable whole-inbox monitoring for standard LinkedIn messaging.
+   *
+   * This method enables monitoring of your entire standard LinkedIn inbox, preparing it for future
+   * message polling with {@link pollInbox}. Unlike {@link syncConversation}, it is not scoped to a single
+   * person: once enabled, all conversations in the inbox are monitored. This action takes no parameters
+   * and returns no data.
+   *
+   * @param params - No parameters are required
+   * @returns Promise resolving to the sync action
+   *
+   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.syncInbox.execute({});
+   *
+   * await linkedapi.syncInbox.result(workflow.workflowId);
+   * console.log("Inbox monitoring enabled and ready for polling");
+   * ```
+   */
+  public syncInbox: SyncInbox;
+
+  /**
    * Send a message to a LinkedIn user via Sales Navigator.
    *
    * This method sends a direct message to a person using Sales Navigator's messaging capabilities.
@@ -292,6 +323,30 @@ class LinkedApi {
    * ```
    */
   public nvSyncConversation: NvSyncConversation;
+
+  /**
+   * Enable whole-inbox monitoring for Sales Navigator messaging.
+   *
+   * This method enables monitoring of your entire Sales Navigator inbox, preparing it for future
+   * message polling with {@link pollInbox}. Unlike {@link nvSyncConversation}, it is not scoped to a
+   * single person: once enabled, all Sales Navigator conversations are monitored. This action takes no
+   * parameters and returns no data. It can fail with a `noSalesNavigator` error if the account does not
+   * have Sales Navigator.
+   *
+   * @param params - No parameters are required
+   * @returns Promise resolving to the sync action
+   *
+   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.nvSyncInbox.execute({});
+   *
+   * await linkedapi.nvSyncInbox.result(workflow.workflowId);
+   * console.log("Sales Navigator inbox monitoring enabled and ready for polling");
+   * ```
+   */
+  public nvSyncInbox: NvSyncInbox;
 
   /**
    * Poll multiple conversations to retrieve message history and new messages.
@@ -372,6 +427,56 @@ class LinkedApi {
       }
       throw error;
     }
+  }
+
+  /**
+   * Poll the monitored inbox to retrieve message history and new messages.
+   *
+   * This method reads messages from the inbox previously enabled for monitoring via {@link syncInbox}
+   * and/or {@link nvSyncInbox}, using a direct HTTP request. Unlike {@link pollConversations}, it is not
+   * scoped to specific person URLs: it returns messages across the whole monitored inbox, newest-first.
+   * You can optionally filter by `since` timestamp, messaging `type`, and `threadId`.
+   *
+   * @param request - Optional filters: `since` timestamp, `type` ("st" | "nv"), and `threadId`
+   * @returns Promise resolving to a response containing the inbox messages
+   *
+   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
+   *
+   * @example
+   * ```typescript
+   * const pollResponse = await linkedapi.pollInbox({
+   *   type: "st",
+   *   since: "2025-01-01T00:00:00Z",
+   * });
+   *
+   * if (pollResponse.data) {
+   *   pollResponse.data.messages.forEach((message) => {
+   *     console.log(`${message.sender} in ${message.threadId}: ${message.text}`);
+   *   });
+   * } else {
+   *   console.error("Polling failed:", pollResponse.errors);
+   * }
+   * ```
+   */
+  public async pollInbox(
+    request: TInboxPollRequest = {},
+  ): Promise<TMappedResponse<TInboxPollResult>> {
+    const response = await this.httpClient.post<TInboxPollResult>('/inbox/poll', request);
+    if (response.success && response.result) {
+      return {
+        data: response.result,
+        errors: [],
+      };
+    }
+    return {
+      data: undefined,
+      errors: [
+        {
+          type: response.error?.type as TLinkedApiActionErrorType,
+          message: response.error?.message ?? '',
+        },
+      ],
+    };
   }
 
   /**

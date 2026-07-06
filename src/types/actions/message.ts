@@ -1,23 +1,29 @@
 import { TBaseActionParams } from '../params';
 
 export interface TSendMessageParams extends TBaseActionParams {
-  personUrl: string;
+  personUrl?: string;
   text: string;
+  threadId?: string;
 }
 
 export interface TSyncConversationParams extends TBaseActionParams {
   personUrl: string;
 }
 
+export interface TSyncInboxParams extends TBaseActionParams {}
+
 export interface TNvSendMessageParams extends TBaseActionParams {
-  personUrl: string;
+  personUrl?: string;
   text: string;
-  subject: string;
+  subject?: string;
+  threadId?: string;
 }
 
 export interface TNvSyncConversationParams extends TBaseActionParams {
   personUrl: string;
 }
+
+export interface TNvSyncInboxParams extends TBaseActionParams {}
 
 export interface TConversationPollRequest {
   personUrl: string;
@@ -30,6 +36,7 @@ export interface TMessage {
   sender: TMessageSender;
   text: string;
   time: string;
+  threadId: string | null;
 }
 
 export interface TConversationPollResult {
@@ -37,6 +44,26 @@ export interface TConversationPollResult {
   since?: string;
   type: TConversationType;
   messages: TMessage[];
+}
+
+export interface TInboxPollRequest {
+  since?: string;
+  type?: TConversationType;
+  threadId?: string;
+}
+
+export interface TInboxMessage {
+  id: string;
+  type: TConversationType;
+  threadId: string;
+  personUrl: string;
+  sender: TMessageSender;
+  text: string;
+  time: string;
+}
+
+export interface TInboxPollResult {
+  messages: TInboxMessage[];
 }
 
 export const CONVERSATION_TYPE = {

@@ -23,7 +23,7 @@ import { TOperationName } from '../core';
  * - jobNotFound (fetchJob)
  * - commentingNotAllowed (commentOnPost)
  * - noPostingPermission (createPost, reactToPost, commentOnPost)
- * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson)
+ * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson)
  * - conversationsNotSynced (pollConversations)
  */
 export const LINKED_API_ACTION_ERROR = {

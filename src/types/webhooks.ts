@@ -1,3 +1,5 @@
+import type { TConversationType, TMessageSender } from './actions/message';
+
 export type TWebhookPayloadMode = 'thin' | 'fat';
 
 export type TWebhookEventType =
@@ -8,6 +10,8 @@ export type TWebhookEventType =
   | 'account.reconnectionRequired'
   | 'account.frozen'
   | 'account.deleted'
+  | 'linkedin.messageReceived'
+  | 'linkedin.messageSent'
   | 'webhook.test';
 
 export type TWebhookDeliveryStatus = 'pending' | 'delivering' | 'success' | 'failed';
@@ -79,6 +83,20 @@ export interface TAccountWebhookEvent extends TWebhookEventBase {
   };
 }
 
+export interface TLinkedInMessageWebhookEvent extends TWebhookEventBase {
+  type: 'linkedin.messageReceived' | 'linkedin.messageSent';
+  data: {
+    accountId: string;
+    type: TConversationType;
+    threadId: string;
+    personUrl: string;
+    messageId: string;
+    sender: TMessageSender;
+    text: string;
+    time: string;
+  };
+}
+
 export interface TWebhookTestEvent extends TWebhookEventBase {
   type: 'webhook.test';
   data: {
@@ -86,4 +104,8 @@ export interface TWebhookTestEvent extends TWebhookEventBase {
   };
 }
 
-export type TWebhookEvent = TWorkflowWebhookEvent | TAccountWebhookEvent | TWebhookTestEvent;
+export type TWebhookEvent =
+  | TWorkflowWebhookEvent
+  | TAccountWebhookEvent
+  | TLinkedInMessageWebhookEvent
+  | TWebhookTestEvent;

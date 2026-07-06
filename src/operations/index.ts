@@ -7,6 +7,8 @@ export * from './send-message';
 export * from './nv-send-message';
 export * from './sync-conversation';
 export * from './nv-sync-conversation';
+export * from './sync-inbox';
+export * from './nv-sync-inbox';
 export * from './nv-fetch-person';
 export * from './nv-search-companies';
 export * from './fetch-post';
