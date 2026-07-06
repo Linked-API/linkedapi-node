@@ -10,8 +10,8 @@ export type TWebhookEventType =
   | 'account.reconnectionRequired'
   | 'account.frozen'
   | 'account.deleted'
-  | 'linkedin.messageReceived'
-  | 'linkedin.messageSent'
+  | 'inbox.messageReceived'
+  | 'inbox.messageSent'
   | 'webhook.test';
 
 export type TWebhookDeliveryStatus = 'pending' | 'delivering' | 'success' | 'failed';
@@ -83,8 +83,8 @@ export interface TAccountWebhookEvent extends TWebhookEventBase {
   };
 }
 
-export interface TLinkedInMessageWebhookEvent extends TWebhookEventBase {
-  type: 'linkedin.messageReceived' | 'linkedin.messageSent';
+export interface TInboxMessageWebhookEvent extends TWebhookEventBase {
+  type: 'inbox.messageReceived' | 'inbox.messageSent';
   data: {
     accountId: string;
     type: TConversationType;
@@ -107,5 +107,5 @@ export interface TWebhookTestEvent extends TWebhookEventBase {
 export type TWebhookEvent =
   | TWorkflowWebhookEvent
   | TAccountWebhookEvent
-  | TLinkedInMessageWebhookEvent
+  | TInboxMessageWebhookEvent
   | TWebhookTestEvent;
