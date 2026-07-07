@@ -25,6 +25,16 @@ export interface TNvSyncConversationParams extends TBaseActionParams {
 
 export interface TNvSyncInboxParams extends TBaseActionParams {}
 
+export interface TManageConversationParams extends TBaseActionParams {
+  threadId: string;
+  operation: TManageConversationOperation;
+}
+
+export interface TNvManageConversationParams extends TBaseActionParams {
+  threadId: string;
+  operation: TNvManageConversationOperation;
+}
+
 export interface TConversationPollRequest {
   personUrl: string;
   since?: string;
@@ -77,3 +87,21 @@ export const MESSAGE_SENDER = {
   them: 'them',
 } as const;
 export type TMessageSender = (typeof MESSAGE_SENDER)[keyof typeof MESSAGE_SENDER];
+
+export const MANAGE_CONVERSATION_OPERATION = {
+  archive: 'archive',
+  unarchive: 'unarchive',
+  star: 'star',
+  unstar: 'unstar',
+  mute: 'mute',
+  unmute: 'unmute',
+} as const;
+export type TManageConversationOperation =
+  (typeof MANAGE_CONVERSATION_OPERATION)[keyof typeof MANAGE_CONVERSATION_OPERATION];
+
+export const NV_MANAGE_CONVERSATION_OPERATION = {
+  archive: 'archive',
+  unarchive: 'unarchive',
+} as const;
+export type TNvManageConversationOperation =
+  (typeof NV_MANAGE_CONVERSATION_OPERATION)[keyof typeof NV_MANAGE_CONVERSATION_OPERATION];

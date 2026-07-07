@@ -10,8 +10,10 @@ import {
   FetchJob,
   FetchPerson,
   FetchPost,
+  ManageConversation,
   NvFetchCompany,
   NvFetchPerson,
+  NvManageConversation,
   NvSearchCompanies,
   NvSearchPeople,
   NvSendMessage,
@@ -97,6 +99,7 @@ class LinkedApi {
     this.sendMessage = new SendMessage(this.httpClient);
     this.syncConversation = new SyncConversation(this.httpClient);
     this.syncInbox = new SyncInbox(this.httpClient);
+    this.manageConversation = new ManageConversation(this.httpClient);
     this.checkConnectionStatus = new CheckConnectionStatus(this.httpClient);
     this.sendConnectionRequest = new SendConnectionRequest(this.httpClient);
     this.withdrawConnectionRequest = new WithdrawConnectionRequest(this.httpClient);
@@ -118,6 +121,7 @@ class LinkedApi {
     this.nvSendMessage = new NvSendMessage(this.httpClient);
     this.nvSyncConversation = new NvSyncConversation(this.httpClient);
     this.nvSyncInbox = new NvSyncInbox(this.httpClient);
+    this.nvManageConversation = new NvManageConversation(this.httpClient);
     this.nvSearchCompanies = new NvSearchCompanies(this.httpClient);
     this.nvSearchPeople = new NvSearchPeople(this.httpClient);
     this.nvFetchCompany = new NvFetchCompany(this.httpClient);
@@ -128,6 +132,7 @@ class LinkedApi {
       this.sendMessage,
       this.syncConversation,
       this.syncInbox,
+      this.manageConversation,
       this.checkConnectionStatus,
       this.sendConnectionRequest,
       this.withdrawConnectionRequest,
@@ -149,6 +154,7 @@ class LinkedApi {
       this.nvSendMessage,
       this.nvSyncConversation,
       this.nvSyncInbox,
+      this.nvManageConversation,
       this.nvSearchCompanies,
       this.nvSearchPeople,
       this.nvFetchCompany,
@@ -274,6 +280,32 @@ class LinkedApi {
   public syncInbox: SyncInbox;
 
   /**
+   * Manage a standard LinkedIn conversation thread.
+   *
+   * This method applies a management operation to a conversation thread identified by its `threadId`
+   * (as returned by {@link pollInbox} or {@link pollConversations}, or read from an open conversation URL).
+   * Supported operations are `archive`, `unarchive`, `star`, `unstar`, `mute`, and `unmute`. This action
+   * returns no data and can fail with a `threadNotFound` error if the thread does not exist.
+   *
+   * @param params - Parameters including the thread id and the operation to apply
+   * @returns Promise resolving to the management action
+   *
+   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.manageConversation.execute({
+   *   threadId: "2-Zjhm...",
+   *   operation: "archive"
+   * });
+   *
+   * await linkedapi.manageConversation.result(workflow.workflowId);
+   * console.log("Conversation updated successfully");
+   * ```
+   */
+  public manageConversation: ManageConversation;
+
+  /**
    * Send a message to a LinkedIn user via Sales Navigator.
    *
    * This method sends a direct message to a person using Sales Navigator's messaging capabilities.
@@ -347,6 +379,33 @@ class LinkedApi {
    * ```
    */
   public nvSyncInbox: NvSyncInbox;
+
+  /**
+   * Manage a Sales Navigator conversation thread.
+   *
+   * This method applies a management operation to a Sales Navigator conversation thread identified by its
+   * `threadId` (as returned by {@link pollInbox} or {@link pollConversations}, or read from an open
+   * conversation URL). Supported operations are `archive` and `unarchive`. This action returns no data and
+   * can fail with a `noSalesNavigator` error if the account does not have Sales Navigator, or a
+   * `threadNotFound` error if the thread does not exist.
+   *
+   * @param params - Parameters including the thread id and the operation to apply
+   * @returns Promise resolving to the management action
+   *
+   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.nvManageConversation.execute({
+   *   threadId: "2-Zjhm...",
+   *   operation: "archive"
+   * });
+   *
+   * await linkedapi.nvManageConversation.result(workflow.workflowId);
+   * console.log("Sales Navigator conversation updated successfully");
+   * ```
+   */
+  public nvManageConversation: NvManageConversation;
 
   /**
    * Poll multiple conversations to retrieve message history and new messages.

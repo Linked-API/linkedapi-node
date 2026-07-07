@@ -23,8 +23,9 @@ import { TOperationName } from '../core';
  * - jobNotFound (fetchJob)
  * - commentingNotAllowed (commentOnPost)
  * - noPostingPermission (createPost, reactToPost, commentOnPost)
- * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson)
+ * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson, nvManageConversation)
  * - conversationsNotSynced (pollConversations)
+ * - threadNotFound (manageConversation, nvManageConversation)
  */
 export const LINKED_API_ACTION_ERROR = {
   personNotFound: 'personNotFound',
@@ -47,6 +48,7 @@ export const LINKED_API_ACTION_ERROR = {
   noPostingPermission: 'noPostingPermission',
   noSalesNavigator: 'noSalesNavigator',
   conversationsNotSynced: 'conversationsNotSynced',
+  threadNotFound: 'threadNotFound',
 } as const;
 export type TLinkedApiActionErrorType =
   (typeof LINKED_API_ACTION_ERROR)[keyof typeof LINKED_API_ACTION_ERROR];
