@@ -2,6 +2,7 @@ import { Operation } from './core';
 import { buildLinkedApiHttpClient } from './core/linked-api-http-client';
 import type { TMappedResponse } from './mappers/base-mapper.abstract';
 import {
+  AcceptConnectionRequest,
   CheckConnectionStatus,
   CommentOnPost,
   CreatePost,
@@ -10,6 +11,7 @@ import {
   FetchJob,
   FetchPerson,
   FetchPost,
+  IgnoreConnectionRequest,
   ManageConversation,
   NvFetchCompany,
   NvFetchPerson,
@@ -21,6 +23,7 @@ import {
   NvSyncInbox,
   ReactToPost,
   RemoveConnection,
+  RetrieveConnectionRequests,
   RetrieveConnections,
   RetrievePendingRequests,
   RetrievePerformance,
@@ -104,6 +107,9 @@ class LinkedApi {
     this.sendConnectionRequest = new SendConnectionRequest(this.httpClient);
     this.withdrawConnectionRequest = new WithdrawConnectionRequest(this.httpClient);
     this.retrievePendingRequests = new RetrievePendingRequests(this.httpClient);
+    this.retrieveConnectionRequests = new RetrieveConnectionRequests(this.httpClient);
+    this.acceptConnectionRequest = new AcceptConnectionRequest(this.httpClient);
+    this.ignoreConnectionRequest = new IgnoreConnectionRequest(this.httpClient);
     this.retrieveConnections = new RetrieveConnections(this.httpClient);
     this.removeConnection = new RemoveConnection(this.httpClient);
     this.searchCompanies = new SearchCompanies(this.httpClient);
@@ -137,6 +143,9 @@ class LinkedApi {
       this.sendConnectionRequest,
       this.withdrawConnectionRequest,
       this.retrievePendingRequests,
+      this.retrieveConnectionRequests,
+      this.acceptConnectionRequest,
+      this.ignoreConnectionRequest,
       this.retrieveConnections,
       this.removeConnection,
       this.searchCompanies,
@@ -1036,6 +1045,69 @@ class LinkedApi {
    * ```
    */
   public retrievePendingRequests: RetrievePendingRequests;
+
+  /**
+   * Retrieve incoming connection requests (invitations others have sent you).
+   *
+   * This method fetches the list of received connection requests from your invitation manager.
+   *
+   * @returns Promise resolving to an object containing an array of received requests
+   *
+   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-retrieve-connection-requests/ st.retrieveConnectionRequests Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.retrieveConnectionRequests.execute();
+   *
+   * const result = await linkedapi.retrieveConnectionRequests.result(workflow.workflowId);
+   * if (result.data) {
+   *   result.data.forEach(request => {
+   *     console.log(`${request.name}: ${request.headline}`);
+   *     console.log(`Profile: ${request.publicUrl}`);
+   *   });
+   * }
+   * ```
+   */
+  public retrieveConnectionRequests: RetrieveConnectionRequests;
+
+  /**
+   * Accept an incoming connection request from a person's profile.
+   *
+   * @param params - Parameters including the person's profile URL
+   *
+   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-accept-connection-request/ st.acceptConnectionRequest Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.acceptConnectionRequest.execute({
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   * });
+   *
+   * await linkedapi.acceptConnectionRequest.result(workflow.workflowId);
+   * ```
+   */
+  public acceptConnectionRequest: AcceptConnectionRequest;
+
+  /**
+   * Ignore an incoming connection request from a person's profile.
+   *
+   * @param params - Parameters including the person's profile URL
+   *
+   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-ignore-connection-request/ st.ignoreConnectionRequest Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.ignoreConnectionRequest.execute({
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   * });
+   *
+   * await linkedapi.ignoreConnectionRequest.result(workflow.workflowId);
+   * ```
+   */
+  public ignoreConnectionRequest: IgnoreConnectionRequest;
 
   /**
    * Retrieve your LinkedIn connections with optional filtering.

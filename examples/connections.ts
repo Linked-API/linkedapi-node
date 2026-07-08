@@ -17,6 +17,9 @@ async function connectionsExample(): Promise<void> {
     await sendConnectionRequest(linkedapi, targetPersonUrl);
     await retrievePendingRequests(linkedapi);
     await withdrawConnectionRequest(linkedapi, targetPersonUrl);
+    await retrieveConnectionRequests(linkedapi);
+    await acceptConnectionRequest(linkedapi, targetPersonUrl2);
+    await ignoreConnectionRequest(linkedapi, targetPersonUrl2);
     await retrieveConnections(linkedapi);
     await removeConnection(linkedapi, targetPersonUrl2);
 
@@ -193,6 +196,56 @@ async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promis
   } else {
     console.log('✅ Connection removed successfully');
     console.log('   🔗 No longer connected with this person');
+  }
+}
+
+async function retrieveConnectionRequests(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n📥 Retrieving incoming connection requests...');
+
+  const workflow = await linkedapi.retrieveConnectionRequests.execute();
+  console.log('📥 Retrieve connection requests workflow started:', workflow.workflowId);
+
+  const requestsResult = await linkedapi.retrieveConnectionRequests.result(workflow.workflowId);
+  if (requestsResult.data) {
+    const requests = requestsResult.data;
+    console.log('✅ Incoming requests retrieval completed');
+    console.log(`📊 Found ${requests.length} incoming requests`);
+    requests.forEach((request, index) => {
+      console.log(`  ${index + 1}. ${request.name}`);
+      console.log(`     Profile: ${request.publicUrl}`);
+      console.log(`     Headline: ${request.headline}`);
+    });
+  }
+  if (requestsResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(requestsResult.errors, null, 2));
+  }
+}
+
+async function acceptConnectionRequest(linkedapi: LinkedApi, personUrl: string): Promise<void> {
+  console.log('\n🤝 Accepting incoming connection request...');
+
+  const workflow = await linkedapi.acceptConnectionRequest.execute({ personUrl });
+  console.log('🤝 Accept connection request workflow started:', workflow.workflowId);
+
+  const acceptResult = await linkedapi.acceptConnectionRequest.result(workflow.workflowId);
+  if (acceptResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(acceptResult.errors, null, 2));
+  } else {
+    console.log('✅ Connection request accepted successfully');
+  }
+}
+
+async function ignoreConnectionRequest(linkedapi: LinkedApi, personUrl: string): Promise<void> {
+  console.log('\n🙈 Ignoring incoming connection request...');
+
+  const workflow = await linkedapi.ignoreConnectionRequest.execute({ personUrl });
+  console.log('🙈 Ignore connection request workflow started:', workflow.workflowId);
+
+  const ignoreResult = await linkedapi.ignoreConnectionRequest.result(workflow.workflowId);
+  if (ignoreResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(ignoreResult.errors, null, 2));
+  } else {
+    console.log('✅ Connection request ignored successfully');
   }
 }
 
