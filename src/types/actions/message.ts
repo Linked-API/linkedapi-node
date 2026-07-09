@@ -4,6 +4,11 @@ export interface TSendMessageParams extends TBaseActionParams {
   personUrl?: string;
   text: string;
   threadId?: string;
+  manageConversation?: TSendMessageManageConversation;
+}
+
+export interface TSendMessageManageConversation {
+  operation: TManageConversationOperation;
 }
 
 export interface TSyncConversationParams extends TBaseActionParams {
