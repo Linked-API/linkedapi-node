@@ -18,6 +18,7 @@ export const OPERATION_NAME = {
   sendMessage: 'sendMessage',
   syncConversation: 'syncConversation',
   syncInbox: 'syncInbox',
+  syncNetwork: 'syncNetwork',
   manageConversation: 'manageConversation',
   checkConnectionStatus: 'checkConnectionStatus',
   sendConnectionRequest: 'sendConnectionRequest',

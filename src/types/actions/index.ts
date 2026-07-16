@@ -3,6 +3,7 @@ export * from './company';
 export * from './connection';
 export * from './job';
 export * from './message';
+export * from './network';
 export * from './person';
 export * from './post';
 export * from './search-companies';

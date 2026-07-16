@@ -12,6 +12,9 @@ export type TWebhookEventType =
   | 'account.deleted'
   | 'inbox.messageReceived'
   | 'inbox.messageSent'
+  | 'network.connectionAccepted'
+  | 'network.connectionAdded'
+  | 'network.connectionRequestReceived'
   | 'webhook.test';
 
 export type TWebhookDeliveryStatus = 'pending' | 'delivering' | 'success' | 'failed';
@@ -97,6 +100,18 @@ export interface TInboxMessageWebhookEvent extends TWebhookEventBase {
   };
 }
 
+export interface TNetworkWebhookEvent extends TWebhookEventBase {
+  type:
+    | 'network.connectionAccepted'
+    | 'network.connectionAdded'
+    | 'network.connectionRequestReceived';
+  data: {
+    accountId: string;
+    personUrl: string;
+    detectedAt: string;
+  };
+}
+
 export interface TWebhookTestEvent extends TWebhookEventBase {
   type: 'webhook.test';
   data: {
@@ -108,4 +123,5 @@ export type TWebhookEvent =
   | TWorkflowWebhookEvent
   | TAccountWebhookEvent
   | TInboxMessageWebhookEvent
+  | TNetworkWebhookEvent
   | TWebhookTestEvent;

@@ -35,6 +35,7 @@ import {
   SendMessage,
   SyncConversation,
   SyncInbox,
+  SyncNetwork,
   WithdrawConnectionRequest,
 } from './operations';
 import {
@@ -49,6 +50,8 @@ import {
   TInboxPollResult,
   TLinkedApiActionErrorType,
   TLinkedApiErrorType,
+  TNetworkPollRequest,
+  TNetworkPollResult,
 } from './types';
 import type { TLinkedApiConfig } from './types/config';
 import type { TLinkedApiResponse } from './types/responses';
@@ -102,6 +105,7 @@ class LinkedApi {
     this.sendMessage = new SendMessage(this.httpClient);
     this.syncConversation = new SyncConversation(this.httpClient);
     this.syncInbox = new SyncInbox(this.httpClient);
+    this.syncNetwork = new SyncNetwork(this.httpClient);
     this.manageConversation = new ManageConversation(this.httpClient);
     this.checkConnectionStatus = new CheckConnectionStatus(this.httpClient);
     this.sendConnectionRequest = new SendConnectionRequest(this.httpClient);
@@ -138,6 +142,7 @@ class LinkedApi {
       this.sendMessage,
       this.syncConversation,
       this.syncInbox,
+      this.syncNetwork,
       this.manageConversation,
       this.checkConnectionStatus,
       this.sendConnectionRequest,
@@ -287,6 +292,27 @@ class LinkedApi {
    * ```
    */
   public syncInbox: SyncInbox;
+
+  /**
+   * Enable whole-network monitoring for standard LinkedIn.
+   *
+   * This method enables background monitoring of your LinkedIn network, preparing it for future
+   * polling with {@link pollNetwork}. Once enabled, connection activity across your network is
+   * monitored: accepted connections, newly added connections, and received connection requests.
+   * This action takes no parameters and returns no data.
+   *
+   * @param params - No parameters are required
+   * @returns Promise resolving to the sync action
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.syncNetwork.execute({});
+   *
+   * await linkedapi.syncNetwork.result(workflow.workflowId);
+   * console.log("Network monitoring enabled and ready for polling");
+   * ```
+   */
+  public syncNetwork: SyncNetwork;
 
   /**
    * Manage a standard LinkedIn conversation thread.
@@ -530,6 +556,53 @@ class LinkedApi {
     request: TInboxPollRequest = {},
   ): Promise<TMappedResponse<TInboxPollResult>> {
     const response = await this.httpClient.post<TInboxPollResult>('/inbox/poll', request);
+    if (response.success && response.result) {
+      return {
+        data: response.result,
+        errors: [],
+      };
+    }
+    return {
+      data: undefined,
+      errors: [
+        {
+          type: response.error?.type as TLinkedApiActionErrorType,
+          message: response.error?.message ?? '',
+        },
+      ],
+    };
+  }
+
+  /**
+   * Poll the monitored network to retrieve connection activity events.
+   *
+   * This method reads network events from the network previously enabled for monitoring via
+   * {@link syncNetwork}, using a direct HTTP request. It returns events across the whole monitored
+   * network, newest-first. You can optionally filter by `since` timestamp and event `type`.
+   *
+   * @param request - Optional filters: `since` timestamp and `type`
+   * @returns Promise resolving to a response containing the network events
+   *
+   * @example
+   * ```typescript
+   * const pollResponse = await linkedapi.pollNetwork({
+   *   type: "connectionAccepted",
+   *   since: "2025-01-01T00:00:00Z",
+   * });
+   *
+   * if (pollResponse.data) {
+   *   pollResponse.data.events.forEach((event) => {
+   *     console.log(`${event.type} ${event.personUrl} at ${event.detectedAt}`);
+   *   });
+   * } else {
+   *   console.error("Polling failed:", pollResponse.errors);
+   * }
+   * ```
+   */
+  public async pollNetwork(
+    request: TNetworkPollRequest = {},
+  ): Promise<TMappedResponse<TNetworkPollResult>> {
+    const response = await this.httpClient.post<TNetworkPollResult>('/network/poll', request);
     if (response.success && response.result) {
       return {
         data: response.result,
