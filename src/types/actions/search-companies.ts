@@ -28,6 +28,7 @@ export interface TSearchCompanyResult {
   publicUrl: string;
   industry: string;
   location: string;
+  logoUrl: string | null;
 }
 
 export interface TNvSearchCompaniesParams extends TBaseActionParams {
@@ -80,4 +81,5 @@ export interface TNvSearchCompanyResult {
   hashedUrl: string;
   industry: string;
   employeesCount: number;
+  logoUrl: string | null;
 }

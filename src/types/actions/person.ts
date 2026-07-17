@@ -45,6 +45,7 @@ export interface TPerson {
   companyHashedUrl: string;
   followersCount: number | null;
   about: string | null;
+  avatarUrl: string | null;
   experiences?: ReadonlyArray<TPersonExperience>;
   education?: ReadonlyArray<TPersonEducation>;
   skills?: ReadonlyArray<TPersonSkill>;

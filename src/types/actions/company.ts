@@ -16,6 +16,7 @@ export interface TCompany {
   yearFounded?: number;
   ventureFinancing: boolean;
   jobsCount: number;
+  logoUrl: string | null;
   employees?: ReadonlyArray<TStCompanyEmployee>;
   dms?: ReadonlyArray<TStCompanyDm>;
   posts?: ReadonlyArray<TPost>;
@@ -80,6 +81,7 @@ export interface TNvCompany {
   website: string;
   employeesCount: number;
   yearFounded?: number;
+  logoUrl: string | null;
   employees?: ReadonlyArray<TNvCompanyEmployee>;
   dms?: ReadonlyArray<TNvCompanyDm>;
 }
