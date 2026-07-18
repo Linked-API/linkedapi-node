@@ -31,20 +31,6 @@ export const CONNECTION_STATUS = {
 } as const;
 export type TConnectionStatus = (typeof CONNECTION_STATUS)[keyof typeof CONNECTION_STATUS];
 
-export interface TAcceptConnectionRequestParams extends TBaseActionParams {
-  personUrl: string;
-}
-
-export interface TIgnoreConnectionRequestParams extends TBaseActionParams {
-  personUrl: string;
-}
-
-export interface TRetrieveConnectionRequestsResult {
-  name: string;
-  publicUrl: string;
-  headline: string;
-}
-
 export interface TWithdrawConnectionRequestParams extends TBaseActionParams {
   personUrl: string;
   unfollow?: boolean;

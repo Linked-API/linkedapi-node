@@ -2,7 +2,7 @@ import { Operation } from './core';
 import { buildLinkedApiHttpClient } from './core/linked-api-http-client';
 import type { TMappedResponse } from './mappers/base-mapper.abstract';
 import {
-  AcceptConnectionRequest,
+  AcceptInvitation,
   CheckConnectionStatus,
   CommentOnPost,
   CreatePost,
@@ -11,7 +11,7 @@ import {
   FetchJob,
   FetchPerson,
   FetchPost,
-  IgnoreConnectionRequest,
+  IgnoreInvitation,
   ManageConversation,
   NvFetchCompany,
   NvFetchPerson,
@@ -23,8 +23,8 @@ import {
   NvSyncInbox,
   ReactToPost,
   RemoveConnection,
-  RetrieveConnectionRequests,
   RetrieveConnections,
+  RetrieveInvitations,
   RetrievePendingRequests,
   RetrievePerformance,
   RetrieveSSI,
@@ -111,9 +111,9 @@ class LinkedApi {
     this.sendConnectionRequest = new SendConnectionRequest(this.httpClient);
     this.withdrawConnectionRequest = new WithdrawConnectionRequest(this.httpClient);
     this.retrievePendingRequests = new RetrievePendingRequests(this.httpClient);
-    this.retrieveConnectionRequests = new RetrieveConnectionRequests(this.httpClient);
-    this.acceptConnectionRequest = new AcceptConnectionRequest(this.httpClient);
-    this.ignoreConnectionRequest = new IgnoreConnectionRequest(this.httpClient);
+    this.retrieveInvitations = new RetrieveInvitations(this.httpClient);
+    this.acceptInvitation = new AcceptInvitation(this.httpClient);
+    this.ignoreInvitation = new IgnoreInvitation(this.httpClient);
     this.retrieveConnections = new RetrieveConnections(this.httpClient);
     this.removeConnection = new RemoveConnection(this.httpClient);
     this.searchCompanies = new SearchCompanies(this.httpClient);
@@ -148,9 +148,9 @@ class LinkedApi {
       this.sendConnectionRequest,
       this.withdrawConnectionRequest,
       this.retrievePendingRequests,
-      this.retrieveConnectionRequests,
-      this.acceptConnectionRequest,
-      this.ignoreConnectionRequest,
+      this.retrieveInvitations,
+      this.acceptInvitation,
+      this.ignoreInvitation,
       this.retrieveConnections,
       this.removeConnection,
       this.searchCompanies,
@@ -1025,7 +1025,7 @@ class LinkedApi {
    * @param params - Parameters including the person's URL and optional connection message
    * @returns Promise resolving to the connection request action
    *
-   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/working-with-invitations/ Working with Invitations Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-send-connection-request/ st.sendConnectionRequest Action Documentation}
    *
    * @example
@@ -1076,7 +1076,7 @@ class LinkedApi {
    * @param params - Parameters including the person's URL
    * @returns Promise resolving to the withdrawal action
    *
-   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/working-with-invitations/ Working with Invitations Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-withdraw-connection-request/ st.withdrawConnectionRequest Action Documentation}
    *
    * @example
@@ -1099,7 +1099,7 @@ class LinkedApi {
    *
    * @returns Promise resolving to an object containing an array of pending requests
    *
-   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
+   * @see {@link https://linkedapi.io/docs/working-with-invitations/ Working with Invitations Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-pending-requests/ st.retrievePendingRequests Action Documentation}
    *
    * @example
@@ -1120,67 +1120,75 @@ class LinkedApi {
   public retrievePendingRequests: RetrievePendingRequests;
 
   /**
-   * Retrieve incoming connection requests (invitations others have sent you).
+   * Retrieve incoming connection, company-follow, and newsletter-subscription invitations.
    *
-   * This method fetches the list of received connection requests from your invitation manager.
+   * This method fetches the list of received invitations from your invitation manager.
    *
-   * @returns Promise resolving to an object containing an array of received requests
+   * @returns Promise resolving to an object containing an array of received invitations
    *
-   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
-   * @see {@link https://linkedapi.io/docs/action-st-retrieve-connection-requests/ st.retrieveConnectionRequests Action Documentation}
+   * @see {@link https://linkedapi.io/docs/working-with-invitations/ Working with Invitations Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-retrieve-invitations/ st.retrieveInvitations Action Documentation}
    *
    * @example
    * ```typescript
-   * const workflow = await linkedapi.retrieveConnectionRequests.execute();
+   * const workflow = await linkedapi.retrieveInvitations.execute();
    *
-   * const result = await linkedapi.retrieveConnectionRequests.result(workflow.workflowId);
+   * const result = await linkedapi.retrieveInvitations.result(workflow.workflowId);
    * if (result.data) {
-   *   result.data.forEach(request => {
-   *     console.log(`${request.name}: ${request.headline}`);
-   *     console.log(`Profile: ${request.publicUrl}`);
-   *   });
+   *   for (const invitation of result.data) {
+   *     console.log(`${invitation.invitationType}: ${invitation.name}`);
+   *     if (invitation.invitationType === "connect") {
+   *       console.log(`Profile: ${invitation.publicUrl}`);
+   *     } else if (invitation.invitationType === "companyFollow") {
+   *       console.log(`Company: ${invitation.companyUrl}`);
+   *     } else {
+   *       console.log(`Newsletter: ${invitation.newsletterUrl}`);
+   *     }
+   *   }
    * }
    * ```
    */
-  public retrieveConnectionRequests: RetrieveConnectionRequests;
+  public retrieveInvitations: RetrieveInvitations;
 
   /**
-   * Accept an incoming connection request from a person's profile.
+   * Accept an incoming connection, company-follow, or newsletter-subscription invitation.
    *
-   * @param params - Parameters including the person's profile URL
+   * @param params - Invitation type and its matching target URL
    *
-   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
-   * @see {@link https://linkedapi.io/docs/action-st-accept-connection-request/ st.acceptConnectionRequest Action Documentation}
+   * @see {@link https://linkedapi.io/docs/working-with-invitations/ Working with Invitations Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-accept-invitation/ st.acceptInvitation Action Documentation}
    *
    * @example
    * ```typescript
-   * const workflow = await linkedapi.acceptConnectionRequest.execute({
+   * const workflow = await linkedapi.acceptInvitation.execute({
+   *   invitationType: "connect",
    *   personUrl: "https://www.linkedin.com/in/john-doe",
    * });
    *
-   * await linkedapi.acceptConnectionRequest.result(workflow.workflowId);
+   * await linkedapi.acceptInvitation.result(workflow.workflowId);
    * ```
    */
-  public acceptConnectionRequest: AcceptConnectionRequest;
+  public acceptInvitation: AcceptInvitation;
 
   /**
-   * Ignore an incoming connection request from a person's profile.
+   * Ignore an incoming connection, company-follow, or newsletter-subscription invitation.
    *
-   * @param params - Parameters including the person's profile URL
+   * @param params - Invitation type and its matching target URL
    *
-   * @see {@link https://linkedapi.io/docs/working-with-connection-requests/ Working with Connection Requests Documentation}
-   * @see {@link https://linkedapi.io/docs/action-st-ignore-connection-request/ st.ignoreConnectionRequest Action Documentation}
+   * @see {@link https://linkedapi.io/docs/working-with-invitations/ Working with Invitations Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-ignore-invitation/ st.ignoreInvitation Action Documentation}
    *
    * @example
    * ```typescript
-   * const workflow = await linkedapi.ignoreConnectionRequest.execute({
-   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   * const workflow = await linkedapi.ignoreInvitation.execute({
+   *   invitationType: "newsletterSubscribe",
+   *   newsletterUrl: "https://www.linkedin.com/newsletters/example-1234567890/",
    * });
    *
-   * await linkedapi.ignoreConnectionRequest.result(workflow.workflowId);
+   * await linkedapi.ignoreInvitation.result(workflow.workflowId);
    * ```
    */
-  public ignoreConnectionRequest: IgnoreConnectionRequest;
+  public ignoreInvitation: IgnoreInvitation;
 
   /**
    * Retrieve your LinkedIn connections with optional filtering.
