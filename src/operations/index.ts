@@ -31,5 +31,6 @@ export * from './remove-connection';
 export * from './react-to-post';
 export * from './comment-on-post';
 export * from './create-post';
+export * from './retrieve-feed';
 export * from './retrieve-ssi';
 export * from './retrieve-performance';

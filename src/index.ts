@@ -24,6 +24,7 @@ import {
   ReactToPost,
   RemoveConnection,
   RetrieveConnections,
+  RetrieveFeed,
   RetrieveInvitations,
   RetrievePendingRequests,
   RetrievePerformance,
@@ -126,6 +127,7 @@ class LinkedApi {
     this.reactToPost = new ReactToPost(this.httpClient);
     this.commentOnPost = new CommentOnPost(this.httpClient);
     this.createPost = new CreatePost(this.httpClient);
+    this.retrieveFeed = new RetrieveFeed(this.httpClient);
     this.retrieveSSI = new RetrieveSSI(this.httpClient);
     this.retrievePerformance = new RetrievePerformance(this.httpClient);
     this.nvSendMessage = new NvSendMessage(this.httpClient);
@@ -163,6 +165,7 @@ class LinkedApi {
       this.reactToPost,
       this.commentOnPost,
       this.createPost,
+      this.retrieveFeed,
       this.retrieveSSI,
       this.retrievePerformance,
       this.nvSendMessage,
@@ -1420,6 +1423,26 @@ class LinkedApi {
    * ```
    */
   public retrievePerformance: RetrievePerformance;
+
+  /**
+   * Retrieve posts from the current account's personalized LinkedIn home feed.
+   *
+   * @param params - Optional maximum number of posts to retrieve (1-100, default 20)
+   * @returns Promise resolving to home-feed posts and their localized feed context
+   *
+   * @see {@link https://linkedapi.io/docs/action-st-retrieve-feed/ st.retrieveFeed Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.retrieveFeed.execute({ limit: 20 });
+   * const result = await linkedapi.retrieveFeed.result(workflow.workflowId);
+   *
+   * for (const post of result.data ?? []) {
+   *   console.log(post.url, post.feedContext);
+   * }
+   * ```
+   */
+  public readonly retrieveFeed: RetrieveFeed;
 
   /**
    * Retrieve basic information about the LinkedIn account associated with the current API tokens.
