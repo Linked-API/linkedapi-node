@@ -38,6 +38,8 @@ export const OPERATION_NAME = {
   fetchJob: 'fetchJob',
   reactToPost: 'reactToPost',
   commentOnPost: 'commentOnPost',
+  reactToComment: 'reactToComment',
+  replyToComment: 'replyToComment',
   createPost: 'createPost',
   retrieveSSI: 'retrieveSSI',
   retrievePerformance: 'retrievePerformance',

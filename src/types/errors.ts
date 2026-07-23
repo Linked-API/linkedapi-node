@@ -22,6 +22,8 @@ import { TOperationName } from '../core';
  * - postNotFound (fetchPost, reactToPost, commentOnPost)
  * - jobNotFound (fetchJob)
  * - commentingNotAllowed (commentOnPost)
+ * - commentNotFound (openComment, reactToComment, replyToComment)
+ * - replyingNotAllowed (replyToComment)
  * - noPostingPermission (createPost, reactToPost, commentOnPost)
  * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson, nvManageConversation)
  * - conversationsNotSynced (pollConversations)
@@ -45,6 +47,8 @@ export const LINKED_API_ACTION_ERROR = {
   postNotFound: 'postNotFound',
   jobNotFound: 'jobNotFound',
   commentingNotAllowed: 'commentingNotAllowed',
+  commentNotFound: 'commentNotFound',
+  replyingNotAllowed: 'replyingNotAllowed',
   noPostingPermission: 'noPostingPermission',
   noSalesNavigator: 'noSalesNavigator',
   conversationsNotSynced: 'conversationsNotSynced',

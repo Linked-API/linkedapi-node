@@ -13,6 +13,8 @@ async function postActionsExample(): Promise<void> {
     await createCompanyPost(linkedapi);
     await reactToPost(linkedapi);
     await commentOnPost(linkedapi);
+    await reactToComment(linkedapi);
+    await replyToComment(linkedapi);
   } catch (error) {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
@@ -127,6 +129,46 @@ async function commentOnPost(linkedapi: LinkedApi): Promise<void> {
     console.error('🚨 Errors:', JSON.stringify(commentResult.errors, null, 2));
   } else {
     console.log('✅ Comment added successfully');
+    console.log('🔗 Comment URN:', commentResult.data?.commentUrn);
+    console.log('🔗 Comment URL:', commentResult.data?.commentUrl);
+  }
+}
+
+async function reactToComment(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n👍 Reacting to a comment...');
+
+  const workflow = await linkedapi.reactToComment.execute({
+    commentUrl:
+      'https://www.linkedin.com/feed/update/urn:li:activity:123/?dashCommentUrn=urn:li:fsd_comment:(456,urn:li:activity:123)',
+    type: 'like',
+  });
+  console.log('👍 React to comment workflow started:', workflow.workflowId);
+
+  const reactionResult = await linkedapi.reactToComment.result(workflow.workflowId);
+  if (reactionResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(reactionResult.errors, null, 2));
+  } else {
+    console.log('✅ Comment reaction added successfully');
+  }
+}
+
+async function replyToComment(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n💬 Replying to a comment...');
+
+  const workflow = await linkedapi.replyToComment.execute({
+    commentUrl:
+      'https://www.linkedin.com/feed/update/urn:li:activity:123/?dashCommentUrn=urn:li:fsd_comment:(456,urn:li:activity:123)',
+    text: 'Totally agree — thanks for adding this!',
+  });
+  console.log('💬 Reply to comment workflow started:', workflow.workflowId);
+
+  const replyResult = await linkedapi.replyToComment.result(workflow.workflowId);
+  if (replyResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(replyResult.errors, null, 2));
+  } else {
+    console.log('✅ Reply posted successfully');
+    console.log('🔗 Reply URN:', replyResult.data?.commentUrn);
+    console.log('🔗 Reply URL:', replyResult.data?.commentUrl);
   }
 }
 

@@ -21,8 +21,10 @@ import {
   NvSendMessage,
   NvSyncConversation,
   NvSyncInbox,
+  ReactToComment,
   ReactToPost,
   RemoveConnection,
+  ReplyToComment,
   RetrieveConnectionRequests,
   RetrieveConnections,
   RetrievePendingRequests,
@@ -125,6 +127,8 @@ class LinkedApi {
     this.fetchJob = new FetchJob(this.httpClient);
     this.reactToPost = new ReactToPost(this.httpClient);
     this.commentOnPost = new CommentOnPost(this.httpClient);
+    this.reactToComment = new ReactToComment(this.httpClient);
+    this.replyToComment = new ReplyToComment(this.httpClient);
     this.createPost = new CreatePost(this.httpClient);
     this.retrieveSSI = new RetrieveSSI(this.httpClient);
     this.retrievePerformance = new RetrievePerformance(this.httpClient);
@@ -162,6 +166,8 @@ class LinkedApi {
       this.fetchJob,
       this.reactToPost,
       this.commentOnPost,
+      this.reactToComment,
+      this.replyToComment,
       this.createPost,
       this.retrieveSSI,
       this.retrievePerformance,
@@ -1299,11 +1305,62 @@ class LinkedApi {
    *   text: "Great insights! Thanks for sharing this valuable information."
    * });
    *
-   * await linkedapi.commentOnPost.result(workflow.workflowId);
-   * console.log("Comment posted successfully");
+   * const { data } = await linkedapi.commentOnPost.result(workflow.workflowId);
+   * console.log("Comment posted:", data?.commentUrn, data?.commentUrl);
    * ```
    */
   public commentOnPost: CommentOnPost;
+
+  /**
+   * React to a LinkedIn comment with an emoji reaction.
+   *
+   * This method adds a reaction (like, love, celebrate, support, funny, insightful) to a specific
+   * comment, identified by its comment URL (as returned by `commentOnPost` / `fetchPost` comments).
+   * The reaction type defaults to `like` when omitted.
+   *
+   * @param params - Parameters including the comment URL and optional reaction type
+   * @returns Promise resolving to the reaction action
+   *
+   * @see {@link https://linkedapi.io/docs/reacting-and-commenting/ Reacting and Commenting Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-react-to-comment/ st.reactToComment Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.reactToComment.execute({
+   *   commentUrl: "https://www.linkedin.com/feed/update/urn:li:activity:123/?dashCommentUrn=urn:li:fsd_comment:(456,urn:li:activity:123)",
+   *   type: "like"
+   * });
+   *
+   * await linkedapi.reactToComment.result(workflow.workflowId);
+   * console.log("Comment reaction added successfully");
+   * ```
+   */
+  public reactToComment: ReactToComment;
+
+  /**
+   * Reply to a LinkedIn comment.
+   *
+   * This method posts a text reply to a specific comment, identified by its comment URL. It returns
+   * the created reply's `commentUrn` and `commentUrl` so it can be tracked or acted on afterwards.
+   *
+   * @param params - Parameters including the comment URL and reply text
+   * @returns Promise resolving to the created reply's URN and URL
+   *
+   * @see {@link https://linkedapi.io/docs/reacting-and-commenting/ Reacting and Commenting Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-reply-to-comment/ st.replyToComment Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.replyToComment.execute({
+   *   commentUrl: "https://www.linkedin.com/feed/update/urn:li:activity:123/?dashCommentUrn=urn:li:fsd_comment:(456,urn:li:activity:123)",
+   *   text: "Totally agree — thanks for adding this!"
+   * });
+   *
+   * const { data } = await linkedapi.replyToComment.result(workflow.workflowId);
+   * console.log("Reply posted:", data?.commentUrn, data?.commentUrl);
+   * ```
+   */
+  public replyToComment: ReplyToComment;
 
   /**
    * Create a LinkedIn post on your personal profile or a company page.

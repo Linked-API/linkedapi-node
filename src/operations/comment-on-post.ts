@@ -1,10 +1,13 @@
 import { Operation, TOperationName } from '../core';
-import { VoidWorkflowMapper } from '../mappers';
-import { TCommentOnPostParams } from '../types';
+import { SimpleWorkflowMapper } from '../mappers';
+import { TCommentOnPostParams, TCommentOnPostResult } from '../types';
 
-export class CommentOnPost extends Operation<TCommentOnPostParams, void> {
+export class CommentOnPost extends Operation<TCommentOnPostParams, TCommentOnPostResult> {
   public override readonly operationName: TOperationName = 'commentOnPost';
-  protected override readonly mapper = new VoidWorkflowMapper<TCommentOnPostParams>(
-    'st.commentOnPost',
-  );
+  protected override readonly mapper = new SimpleWorkflowMapper<
+    TCommentOnPostParams,
+    TCommentOnPostResult
+  >({
+    actionType: 'st.commentOnPost',
+  });
 }

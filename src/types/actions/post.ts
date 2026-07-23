@@ -102,6 +102,25 @@ export interface TCommentOnPostParams extends TBaseActionParams {
   companyUrl?: string;
 }
 
+export interface TCommentResult {
+  commentUrn: string | null;
+  commentUrl: string | null;
+}
+
+export type TCommentOnPostResult = TCommentResult;
+
+export interface TReactToCommentParams extends TBaseActionParams {
+  commentUrl: string;
+  type?: TReactionType;
+}
+
+export interface TReplyToCommentParams extends TBaseActionParams {
+  commentUrl: string;
+  text: string;
+}
+
+export type TReplyToCommentResult = TCommentResult;
+
 export const POST_COMMENTER_TYPE = {
   person: 'person',
   company: 'company',
@@ -109,6 +128,8 @@ export const POST_COMMENTER_TYPE = {
 export type TPostCommenterType = (typeof POST_COMMENTER_TYPE)[keyof typeof POST_COMMENTER_TYPE];
 
 export interface TPostComment {
+  commentUrn: string | null;
+  commentUrl: string | null;
   commenterUrl: string;
   commenterName: string;
   commenterHeadline: string;
