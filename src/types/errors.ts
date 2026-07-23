@@ -72,6 +72,7 @@ export const LINKED_API_ERROR = {
   identificationTokenRequired: 'identificationTokenRequired',
   invalidIdentificationToken: 'invalidIdentificationToken',
   subscriptionRequired: 'subscriptionRequired',
+  trialLimitReached: 'trialLimitReached',
   invalidRequestPayload: 'invalidRequestPayload',
   invalidWorkflow: 'invalidWorkflow',
   plusPlanRequired: 'plusPlanRequired',

@@ -1,7 +1,10 @@
-import LinkedApi, { LinkedApiError } from '@linkedapi/node';
+import LinkedApi, {
+  INVITATION_TYPE,
+  LinkedApiError,
+  TRetrieveInvitationsResult,
+} from '@linkedapi/node';
 
 async function connectionsExample(): Promise<void> {
-
   const linkedapi = new LinkedApi({
     linkedApiToken: process.env.LINKED_API_TOKEN!,
     identificationToken: process.env.IDENTIFICATION_TOKEN!,
@@ -17,12 +20,11 @@ async function connectionsExample(): Promise<void> {
     await sendConnectionRequest(linkedapi, targetPersonUrl);
     await retrievePendingRequests(linkedapi);
     await withdrawConnectionRequest(linkedapi, targetPersonUrl);
-    await retrieveConnectionRequests(linkedapi);
-    await acceptConnectionRequest(linkedapi, targetPersonUrl2);
-    await ignoreConnectionRequest(linkedapi, targetPersonUrl2);
+    await retrieveInvitations(linkedapi);
+    await acceptInvitation(linkedapi, targetPersonUrl2);
+    await ignoreInvitation(linkedapi, targetPersonUrl2);
     await retrieveConnections(linkedapi);
     await removeConnection(linkedapi, targetPersonUrl2);
-
   } catch (error) {
     if (error instanceof LinkedApiError) {
       console.error('🚨 Linked API Error:', error.message);
@@ -59,7 +61,7 @@ async function sendConnectionRequest(linkedapi: LinkedApi, personUrl: string): P
 
   const requestParams = {
     personUrl: personUrl,
-    note: 'Hi! I\'d love to connect and discuss potential collaboration opportunities. Looking forward to connecting with you!',
+    note: "Hi! I'd love to connect and discuss potential collaboration opportunities. Looking forward to connecting with you!",
     email: 'example@gmail.com',
   };
 
@@ -199,53 +201,77 @@ async function removeConnection(linkedapi: LinkedApi, personUrl: string): Promis
   }
 }
 
-async function retrieveConnectionRequests(linkedapi: LinkedApi): Promise<void> {
-  console.log('\n📥 Retrieving incoming connection requests...');
+async function retrieveInvitations(linkedapi: LinkedApi): Promise<void> {
+  console.log('\n📥 Retrieving incoming invitations...');
 
-  const workflow = await linkedapi.retrieveConnectionRequests.execute();
-  console.log('📥 Retrieve connection requests workflow started:', workflow.workflowId);
+  const workflow = await linkedapi.retrieveInvitations.execute();
+  console.log('📥 Retrieve invitations workflow started:', workflow.workflowId);
 
-  const requestsResult = await linkedapi.retrieveConnectionRequests.result(workflow.workflowId);
-  if (requestsResult.data) {
-    const requests = requestsResult.data;
-    console.log('✅ Incoming requests retrieval completed');
-    console.log(`📊 Found ${requests.length} incoming requests`);
-    requests.forEach((request, index) => {
-      console.log(`  ${index + 1}. ${request.name}`);
-      console.log(`     Profile: ${request.publicUrl}`);
-      console.log(`     Headline: ${request.headline}`);
-    });
+  const invitationsResult = await linkedapi.retrieveInvitations.result(workflow.workflowId);
+  if (invitationsResult.data) {
+    const invitations = invitationsResult.data;
+    console.log('✅ Incoming invitations retrieval completed');
+    console.log(`📊 Found ${invitations.length} incoming invitations`);
+    for (const [index, invitation] of invitations.entries()) {
+      console.log(`  ${index + 1}. ${invitation.name}`);
+      logInvitationTarget(invitation);
+    }
   }
-  if (requestsResult.errors.length > 0) {
-    console.error('🚨 Errors:', JSON.stringify(requestsResult.errors, null, 2));
+  if (invitationsResult.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(invitationsResult.errors, null, 2));
   }
 }
 
-async function acceptConnectionRequest(linkedapi: LinkedApi, personUrl: string): Promise<void> {
-  console.log('\n🤝 Accepting incoming connection request...');
+async function acceptInvitation(linkedapi: LinkedApi, personUrl: string): Promise<void> {
+  console.log('\n🤝 Accepting incoming invitation...');
 
-  const workflow = await linkedapi.acceptConnectionRequest.execute({ personUrl });
-  console.log('🤝 Accept connection request workflow started:', workflow.workflowId);
+  const workflow = await linkedapi.acceptInvitation.execute({
+    invitationType: INVITATION_TYPE.connect,
+    personUrl,
+  });
+  console.log('🤝 Accept invitation workflow started:', workflow.workflowId);
 
-  const acceptResult = await linkedapi.acceptConnectionRequest.result(workflow.workflowId);
+  const acceptResult = await linkedapi.acceptInvitation.result(workflow.workflowId);
   if (acceptResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(acceptResult.errors, null, 2));
   } else {
-    console.log('✅ Connection request accepted successfully');
+    console.log('✅ Invitation accepted successfully');
   }
 }
 
-async function ignoreConnectionRequest(linkedapi: LinkedApi, personUrl: string): Promise<void> {
-  console.log('\n🙈 Ignoring incoming connection request...');
+async function ignoreInvitation(linkedapi: LinkedApi, personUrl: string): Promise<void> {
+  console.log('\n🙈 Ignoring incoming invitation...');
 
-  const workflow = await linkedapi.ignoreConnectionRequest.execute({ personUrl });
-  console.log('🙈 Ignore connection request workflow started:', workflow.workflowId);
+  const workflow = await linkedapi.ignoreInvitation.execute({
+    invitationType: INVITATION_TYPE.connect,
+    personUrl,
+  });
+  console.log('🙈 Ignore invitation workflow started:', workflow.workflowId);
 
-  const ignoreResult = await linkedapi.ignoreConnectionRequest.result(workflow.workflowId);
+  const ignoreResult = await linkedapi.ignoreInvitation.result(workflow.workflowId);
   if (ignoreResult.errors.length > 0) {
     console.error('🚨 Errors:', JSON.stringify(ignoreResult.errors, null, 2));
   } else {
-    console.log('✅ Connection request ignored successfully');
+    console.log('✅ Invitation ignored successfully');
+  }
+}
+
+function logInvitationTarget(invitation: TRetrieveInvitationsResult): void {
+  console.log(`     Type: ${invitation.invitationType}`);
+  switch (invitation.invitationType) {
+    case INVITATION_TYPE.connect:
+      console.log(`     Profile: ${invitation.publicUrl}`);
+      console.log(`     Headline: ${invitation.headline}`);
+      console.log(`     Note: ${invitation.note}`);
+      break;
+    case INVITATION_TYPE.companyFollow:
+      console.log(`     Company: ${invitation.companyName}`);
+      console.log(`     Company URL: ${invitation.companyUrl}`);
+      break;
+    case INVITATION_TYPE.newsletterSubscribe:
+      console.log(`     Newsletter: ${invitation.newsletterName}`);
+      console.log(`     Newsletter URL: ${invitation.newsletterUrl}`);
+      break;
   }
 }
 
