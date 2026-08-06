@@ -79,6 +79,8 @@ export const LINKED_API_ERROR = {
   linkedinAccountSignedOut: 'linkedinAccountSignedOut',
   languageNotSupported: 'languageNotSupported',
   workflowTimeout: 'workflowTimeout',
+  outsideWorkingHours: 'outsideWorkingHours',
+  workingHoursWaitExpired: 'workingHoursWaitExpired',
   httpError: 'httpError',
   tooManyRequests: 'tooManyRequests',
   accountNotFound: 'accountNotFound',

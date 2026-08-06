@@ -3,6 +3,7 @@ export * from './errors';
 export * from './params';
 export * from './responses';
 export * from './workflow-in-progress-response.type';
+export * from './workflow-pending-reason.type';
 export * from './workflow-started-response.type';
 export * from './workflows';
 export * from './webhooks';

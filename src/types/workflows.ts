@@ -1,5 +1,7 @@
 import { TLinkedApiActionError } from '../types/errors';
 
+import { TWorkflowPendingReason } from './workflow-pending-reason.type';
+
 export interface TSingleActionWorkflowDefinition {
   actionType: string;
   [key: string]: unknown;
@@ -42,6 +44,7 @@ export interface TWorkflowStatusResponse {
   workflowId: string;
   workflowStatus: TWorkflowStatus;
   message?: string;
+  pendingReason?: TWorkflowPendingReason | null;
 }
 
 export interface TWorkflowResponse<

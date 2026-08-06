@@ -107,6 +107,7 @@ export abstract class Operation<TParams, TResult> {
         workflowId,
         workflowStatus: workflowResult.workflowStatus,
         message: workflowResult.message,
+        pendingReason: workflowResult.pendingReason ?? null,
       };
     }
 
