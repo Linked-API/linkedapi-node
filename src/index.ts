@@ -261,8 +261,14 @@ class LinkedApi {
    * Each conversation must be synced once before you can poll it for messages. This is a time-consuming
    * process that retrieves the conversation history and prepares it for future updates.
    *
-   * @param params - Parameters including the person's URL
-   * @returns Promise resolving to the sync action
+   * Syncing lasts for a limited period: `days` (1-90, 30 by default) counted from the moment the action
+   * starts running. The action returns the resulting `syncUntil` deadline, which {@link pollConversations}
+   * also reports. Once it passes, the conversation stops being updated — polling keeps returning the
+   * messages collected so far. Call this action again on the same person to start a new period; the
+   * accumulated history is preserved.
+   *
+   * @param params - Parameters including the person's URL and, optionally, how many days to sync for
+   * @returns Promise resolving to the sync action with the `syncUntil` deadline
    *
    * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-sync-conversation/ st.syncConversation Action Documentation}
@@ -270,11 +276,12 @@ class LinkedApi {
    * @example
    * ```typescript
    * const workflow = await linkedapi.syncConversation.execute({
-   *   personUrl: "https://www.linkedin.com/in/john-doe"
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   *   days: 14
    * });
    *
-   * await linkedapi.syncConversation.result(workflow.workflowId);
-   * console.log("Conversation synced and ready for polling");
+   * const { syncUntil } = await linkedapi.syncConversation.result(workflow.workflowId);
+   * console.log(`Conversation synced, updates continue until ${syncUntil}`);
    * ```
    */
   public syncConversation: SyncConversation;
@@ -382,8 +389,14 @@ class LinkedApi {
    * Each conversation must be synced once before you can poll it for messages. This retrieves the conversation
    * history from Sales Navigator and prepares it for future updates.
    *
-   * @param params - Parameters including the person's URL
-   * @returns Promise resolving to the sync action
+   * Syncing lasts for a limited period: `days` (1-90, 30 by default) counted from the moment the action
+   * starts running. The action returns the resulting `syncUntil` deadline, which {@link pollConversations}
+   * also reports. Once it passes, the conversation stops being updated — polling keeps returning the
+   * messages collected so far. Call this action again on the same person to start a new period; the
+   * accumulated history is preserved.
+   *
+   * @param params - Parameters including the person's URL and, optionally, how many days to sync for
+   * @returns Promise resolving to the sync action with the `syncUntil` deadline
    *
    * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
    * @see {@link https://linkedapi.io/docs/action-nv-sync-conversation/ nv.syncConversation Action Documentation}
@@ -391,11 +404,12 @@ class LinkedApi {
    * @example
    * ```typescript
    * const workflow = await linkedapi.nvSyncConversation.execute({
-   *   personUrl: "https://www.linkedin.com/in/john-doe"
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   *   days: 14
    * });
    *
-   * await linkedapi.nvSyncConversation.result(workflow.workflowId);
-   * console.log("Sales Navigator conversation synced and ready for polling");
+   * const { syncUntil } = await linkedapi.nvSyncConversation.result(workflow.workflowId);
+   * console.log(`Sales Navigator conversation synced, updates continue until ${syncUntil}`);
    * ```
    */
   public nvSyncConversation: NvSyncConversation;

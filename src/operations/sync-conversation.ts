@@ -1,10 +1,13 @@
 import { Operation, TOperationName } from '../core';
-import { VoidWorkflowMapper } from '../mappers';
-import { TSyncConversationParams } from '../types';
+import { SimpleWorkflowMapper } from '../mappers';
+import { TSyncConversationParams, TSyncConversationResult } from '../types';
 
-export class SyncConversation extends Operation<TSyncConversationParams, void> {
+export class SyncConversation extends Operation<TSyncConversationParams, TSyncConversationResult> {
   public override readonly operationName: TOperationName = 'syncConversation';
-  protected override readonly mapper = new VoidWorkflowMapper<TSyncConversationParams>(
-    'st.syncConversation',
-  );
+  protected override readonly mapper = new SimpleWorkflowMapper<
+    TSyncConversationParams,
+    TSyncConversationResult
+  >({
+    actionType: 'st.syncConversation',
+  });
 }

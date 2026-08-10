@@ -13,6 +13,11 @@ export interface TSendMessageManageConversation {
 
 export interface TSyncConversationParams extends TBaseActionParams {
   personUrl: string;
+  days?: number;
+}
+
+export interface TSyncConversationResult {
+  syncUntil: string;
 }
 
 export interface TSyncInboxParams extends TBaseActionParams {}
@@ -26,6 +31,11 @@ export interface TNvSendMessageParams extends TBaseActionParams {
 
 export interface TNvSyncConversationParams extends TBaseActionParams {
   personUrl: string;
+  days?: number;
+}
+
+export interface TNvSyncConversationResult {
+  syncUntil: string;
 }
 
 export interface TNvSyncInboxParams extends TBaseActionParams {}
@@ -59,6 +69,7 @@ export interface TConversationPollResult {
   since?: string;
   type: TConversationType;
   messages: TMessage[];
+  syncUntil: string;
 }
 
 export interface TInboxPollRequest {
