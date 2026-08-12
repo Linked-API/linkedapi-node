@@ -35,6 +35,7 @@ export type TFetchPersonParams<T extends TBaseFetchPersonParams = TBaseFetchPers
 
 export interface TPerson {
   name: string;
+  urn: string | null;
   publicUrl: string;
   hashedUrl: string;
   headline: string;

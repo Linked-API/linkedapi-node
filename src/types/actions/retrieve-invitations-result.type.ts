@@ -2,6 +2,7 @@ import { INVITATION_TYPE } from './invitation-type.type';
 
 interface TInvitationBase {
   name: string;
+  urn: string | null;
   publicUrl: string;
 }
 

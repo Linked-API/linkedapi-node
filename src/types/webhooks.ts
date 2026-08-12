@@ -92,6 +92,7 @@ export interface TInboxMessageWebhookEvent extends TWebhookEventBase {
     accountId: string;
     type: TConversationType;
     threadId: string;
+    personUrn: string | null;
     personUrl: string;
     messageId: string;
     sender: TMessageSender;
@@ -107,6 +108,7 @@ export interface TNetworkWebhookEvent extends TWebhookEventBase {
     | 'network.connectionRequestReceived';
   data: {
     accountId: string;
+    personUrn: string | null;
     personUrl: string;
     detectedAt: string;
   };

@@ -10,6 +10,7 @@ export interface TNetworkPollRequest {
 export interface TNetworkEvent {
   id: string;
   type: TNetworkEventType;
+  personUrn: string | null;
   personUrl: string;
   detectedAt: string;
 }

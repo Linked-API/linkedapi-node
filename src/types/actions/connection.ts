@@ -38,6 +38,7 @@ export interface TWithdrawConnectionRequestParams extends TBaseActionParams {
 
 export interface TRetrievePendingRequestsResult {
   name: string;
+  urn: string | null;
   publicUrl: string;
   headline: string;
   sentTime: string;
@@ -59,10 +60,12 @@ export interface TRetrieveConnectionsParams extends TLimitParams {
 
 export interface TRetrieveConnectionsResult {
   name: string;
+  urn: string | null;
   publicUrl: string;
   headline: string;
   location?: string;
   connectedAt?: string;
+  avatarUrl?: string | null;
 }
 
 // Remove Connection
@@ -76,6 +79,7 @@ export interface TNvOpenPersonPageParams extends TBaseActionParams {
 
 export interface TNvOpenPersonPageResult {
   name: string;
+  urn: string | null;
   publicUrl: string;
   hashedUrl: string;
   headline: string;
@@ -83,5 +87,7 @@ export interface TNvOpenPersonPageResult {
   countryCode: string;
   position: string;
   companyName: string;
+  companyUrn: string | null;
   companyHashedUrl: string;
+  avatarUrl: string | null;
 }

@@ -25,6 +25,7 @@ export type TSearchCompanySize = (typeof SEARCH_COMPANY_SIZE)[keyof typeof SEARC
 
 export interface TSearchCompanyResult {
   name: string;
+  urn: string | null;
   publicUrl: string;
   industry: string;
   location: string;
@@ -78,6 +79,7 @@ export type TMaxAnnualRevenue = (typeof MAX_ANNUAL_REVENUE)[keyof typeof MAX_ANN
 
 export interface TNvSearchCompanyResult {
   name: string;
+  urn: string | null;
   hashedUrl: string;
   industry: string;
   employeesCount: number;

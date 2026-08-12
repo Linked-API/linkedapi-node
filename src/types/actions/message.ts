@@ -65,6 +65,7 @@ export interface TMessage {
 }
 
 export interface TConversationPollResult {
+  personUrn: string | null;
   personUrl: string;
   since?: string;
   type: TConversationType;
@@ -82,6 +83,7 @@ export interface TInboxMessage {
   id: string;
   type: TConversationType;
   threadId: string;
+  personUrn: string | null;
   personUrl: string;
   sender: TMessageSender;
   text: string;

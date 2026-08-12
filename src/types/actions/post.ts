@@ -39,6 +39,7 @@ export type TPostActorType = (typeof POST_ACTOR_TYPE)[keyof typeof POST_ACTOR_TY
 export interface TPostPersonAuthor {
   type: typeof POST_ACTOR_TYPE.person;
   name: string | null;
+  urn: string | null;
   profileUrl: string | null;
   headline: string | null;
 }
@@ -46,6 +47,7 @@ export interface TPostPersonAuthor {
 export interface TPostCompanyAuthor {
   type: typeof POST_ACTOR_TYPE.company;
   name: string | null;
+  urn: string | null;
   companyUrl: string | null;
 }
 
@@ -54,6 +56,7 @@ export type TPostAuthor = TPostPersonAuthor | TPostCompanyAuthor;
 export interface TPostPersonReposter {
   type: typeof POST_ACTOR_TYPE.person;
   name: string | null;
+  urn: string | null;
   profileUrl: string | null;
   headline: string | null;
 }
@@ -61,6 +64,7 @@ export interface TPostPersonReposter {
 export interface TPostCompanyReposter {
   type: typeof POST_ACTOR_TYPE.company;
   name: string | null;
+  urn: string | null;
   companyUrl: string | null;
 }
 
@@ -149,6 +153,7 @@ export const POST_ENGAGER_TYPE = {
 export type TPostEngagerType = (typeof POST_ENGAGER_TYPE)[keyof typeof POST_ENGAGER_TYPE];
 
 export interface TPostReaction {
+  engagerUrn: string | null;
   engagerUrl: string;
   engagerName: string;
   engagerHeadline: string;

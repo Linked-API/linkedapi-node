@@ -116,6 +116,7 @@ export interface TSearchJobsParams extends TBaseActionParams {
 
 export interface TSearchJobResult {
   jobId: string | null;
+  urn: string | null;
   jobUrl: string | null;
   title: string;
   companyName: string | null;
@@ -134,9 +135,11 @@ export type TFetchJobParams = TBaseFetchJobParams;
 
 export interface TJob {
   jobId: string;
+  urn: string | null;
   jobUrl: string;
   title: string;
   companyName: string | null;
+  companyUrn: string | null;
   companyUrl: string | null;
   location: string | null;
   postedDate: string | null;

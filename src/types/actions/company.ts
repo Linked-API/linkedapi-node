@@ -5,6 +5,7 @@ import type { TPost } from './post';
 
 export interface TCompany {
   name: string;
+  urn: string | null;
   publicUrl: string;
   description: string;
   location: string;
@@ -47,16 +48,20 @@ export type TFetchCompanyResult = TCompany;
 
 export interface TStCompanyEmployee {
   name: string;
+  urn: string | null;
   publicUrl: string;
   headline: string;
   location: string;
+  avatarUrl: string | null;
 }
 
 export interface TStCompanyDm {
   name: string;
+  urn: string | null;
   publicUrl: string;
   headline: string;
   location: string;
+  avatarUrl: string | null;
   countryCode: string;
 }
 
@@ -73,6 +78,7 @@ export interface TStCompanyEmployeesRetrievalConfig extends TLimitParams {
 
 export interface TNvCompany {
   name: string;
+  urn: string | null;
   publicUrl: string;
   description: string;
   location: string;
@@ -88,16 +94,20 @@ export interface TNvCompany {
 
 export interface TNvCompanyEmployee {
   name: string;
+  urn: string | null;
   hashedUrl: string;
   position: string;
   location: string;
+  avatarUrl: string | null;
 }
 
 export interface TNvCompanyDm {
   name: string;
+  urn: string | null;
   hashedUrl: string;
   position: string;
   location: string;
+  avatarUrl: string | null;
   countryCode: string;
 }
 

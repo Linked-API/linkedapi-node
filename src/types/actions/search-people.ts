@@ -20,6 +20,7 @@ export interface TSearchPeopleParams extends TBaseActionParams {
 
 export interface TSearchPeopleResult {
   name: string;
+  urn: string | null;
   publicUrl: string;
   headline: string;
   location: string;
@@ -45,6 +46,7 @@ export interface TNvSearchPeopleParams extends TBaseActionParams {
 
 export interface TNvSearchPeopleResult {
   name: string;
+  urn: string | null;
   hashedUrl: string;
   position: string;
   location: string;
