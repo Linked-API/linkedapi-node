@@ -25,6 +25,7 @@ export const OPERATION_NAME = {
   withdrawConnectionRequest: 'withdrawConnectionRequest',
   retrievePendingRequests: 'retrievePendingRequests',
   retrieveInvitations: 'retrieveInvitations',
+  retrieveProfileViewers: 'retrieveProfileViewers',
   acceptInvitation: 'acceptInvitation',
   ignoreInvitation: 'ignoreInvitation',
   retrieveConnections: 'retrieveConnections',

@@ -24,6 +24,7 @@ export * from './check-connection-status';
 export * from './withdraw-connection-request';
 export * from './retrieve-pending-requests';
 export * from './retrieve-invitations';
+export * from './retrieve-profile-viewers';
 export * from './accept-invitation';
 export * from './ignore-invitation';
 export * from './retrieve-connections';

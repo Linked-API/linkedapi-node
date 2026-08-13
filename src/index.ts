@@ -30,6 +30,7 @@ import {
   RetrieveInvitations,
   RetrievePendingRequests,
   RetrievePerformance,
+  RetrieveProfileViewers,
   RetrieveSSI,
   SearchCompanies,
   SearchJobs,
@@ -115,6 +116,7 @@ class LinkedApi {
     this.withdrawConnectionRequest = new WithdrawConnectionRequest(this.httpClient);
     this.retrievePendingRequests = new RetrievePendingRequests(this.httpClient);
     this.retrieveInvitations = new RetrieveInvitations(this.httpClient);
+    this.retrieveProfileViewers = new RetrieveProfileViewers(this.httpClient);
     this.acceptInvitation = new AcceptInvitation(this.httpClient);
     this.ignoreInvitation = new IgnoreInvitation(this.httpClient);
     this.retrieveConnections = new RetrieveConnections(this.httpClient);
@@ -155,6 +157,7 @@ class LinkedApi {
       this.withdrawConnectionRequest,
       this.retrievePendingRequests,
       this.retrieveInvitations,
+      this.retrieveProfileViewers,
       this.acceptInvitation,
       this.ignoreInvitation,
       this.retrieveConnections,
@@ -1172,6 +1175,27 @@ class LinkedApi {
    * ```
    */
   public retrieveInvitations: RetrieveInvitations;
+
+  /**
+   * Retrieve the viewers visible on the current account's LinkedIn profile analytics page.
+   *
+   * @param params - Optional maximum number of viewers to retrieve (1-300, default 20)
+   * @returns Promise resolving to identified and anonymous profile viewers
+   *
+   * @see {@link https://linkedapi.io/sdks/retrieve-profile-viewers/ SDK Documentation}
+   * @see {@link https://linkedapi.io/docs/action-st-retrieve-profile-viewers/ st.retrieveProfileViewers Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.retrieveProfileViewers.execute({ limit: 50 });
+   * const result = await linkedapi.retrieveProfileViewers.result(workflow.workflowId);
+   *
+   * for (const viewer of result.data ?? []) {
+   *   console.log(viewer.viewerType, viewer.viewedAgo);
+   * }
+   * ```
+   */
+  public readonly retrieveProfileViewers: RetrieveProfileViewers;
 
   /**
    * Accept an incoming connection, company-follow, or newsletter-subscription invitation.
