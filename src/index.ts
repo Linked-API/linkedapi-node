@@ -986,6 +986,10 @@ class LinkedApi {
    * This method performs a job search on LinkedIn using the standard search interface.
    * You can filter by location, date posted, experience level, employment type, workplace type, and more.
    *
+   * LinkedIn serves either a classic or an AI-powered jobs search, and the two do not offer the
+   * same refinements. Pass `filter` for the classic one or `preferences` for the AI-powered one,
+   * never both.
+   *
    * @param params - Search parameters including keywords, filters, and pagination options
    * @returns Promise resolving to an object containing an array of job search results
    *
@@ -995,8 +999,8 @@ class LinkedApi {
    * ```typescript
    * const workflow = await linkedapi.searchJobs.execute({
    *   term: "product manager",
+   *   location: "San Francisco, California, United States",
    *   filter: {
-   *     location: "San Francisco, California, United States",
    *     experienceLevels: ["midSeniorLevel", "director"],
    *     workplaceTypes: ["remote", "hybrid"]
    *   },

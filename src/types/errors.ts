@@ -18,6 +18,7 @@ import { TOperationName } from '../core';
  * - retrievingNotAllowed (retrieveConnections, fetchCompany, nvFetchCompany)
  * - connectionNotFound (removeConnection)
  * - searchingNotAllowed (searchCompanies, searchPeople, searchJobs, nvSearchCompanies, nvSearchPeople)
+ * - searchInterfaceMismatch (searchJobs)
  * - companyNotFound (fetchCompany, nvFetchCompany)
  * - postNotFound (fetchPost, reactToPost, commentOnPost)
  * - jobNotFound (fetchJob)
@@ -43,6 +44,7 @@ export const LINKED_API_ACTION_ERROR = {
   retrievingNotAllowed: 'retrievingNotAllowed',
   connectionNotFound: 'connectionNotFound',
   searchingNotAllowed: 'searchingNotAllowed',
+  searchInterfaceMismatch: 'searchInterfaceMismatch',
   companyNotFound: 'companyNotFound',
   postNotFound: 'postNotFound',
   jobNotFound: 'jobNotFound',
