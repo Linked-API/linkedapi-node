@@ -84,6 +84,9 @@ export interface TInboxMessage {
   type: TConversationType;
   threadId: string;
   personUrn: string | null;
+  personHashedUrl: string;
+  personPublicUrl: string | null;
+  /** @deprecated Use `personHashedUrl`. Still returned by the API for compatibility. */
   personUrl: string;
   sender: TMessageSender;
   text: string;
