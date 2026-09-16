@@ -35,6 +35,7 @@ import {
   SearchCompanies,
   SearchJobs,
   SearchPeople,
+  SearchPosts,
   SendConnectionRequest,
   SendMessage,
   SyncConversation,
@@ -124,6 +125,7 @@ class LinkedApi {
     this.searchCompanies = new SearchCompanies(this.httpClient);
     this.searchPeople = new SearchPeople(this.httpClient);
     this.searchJobs = new SearchJobs(this.httpClient);
+    this.searchPosts = new SearchPosts(this.httpClient);
     this.fetchCompany = new FetchCompany(this.httpClient);
     this.fetchPerson = new FetchPerson(this.httpClient);
     this.fetchPost = new FetchPost(this.httpClient);
@@ -165,6 +167,7 @@ class LinkedApi {
       this.searchCompanies,
       this.searchPeople,
       this.searchJobs,
+      this.searchPosts,
       this.fetchCompany,
       this.fetchPerson,
       this.fetchPost,
@@ -1014,6 +1017,50 @@ class LinkedApi {
    * ```
    */
   public searchJobs: SearchJobs;
+
+  /**
+   * Search for posts on LinkedIn using standard search.
+   *
+   * This method performs a content search on LinkedIn using the standard search interface.
+   * You can filter by sort order, date posted, content type, who posted, the people and companies
+   * a post comes from or mentions, and the author's company or industry.
+   *
+   * Either `term` or `customSearchUrl` must be provided. When `customSearchUrl` is given, `filter`
+   * is ignored entirely and only the facets already encoded in the URL are applied. `limit` defaults
+   * to 10 and may go up to 100, or up to 20 when child actions are attached.
+   *
+   * The five person and company filters accept either `{ name, urn?, personHashedUrl? }` /
+   * `{ name, urn?, companyHashedUrl? }` objects or a plain string as shorthand for the name alone,
+   * and both forms can be mixed in one array. Supplying an identifier pins the exact entity: the
+   * action fails with `filterIdentityMismatch` rather than filtering by a namesake.
+   *
+   * @param params - Search parameters including the term, filters, and result limit
+   * @returns Promise resolving to an object containing an array of post search results
+   *
+   * @see {@link https://linkedapi.io/docs/action-st-search-posts/ st.searchPosts Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * const workflow = await linkedapi.searchPosts.execute({
+   *   term: "climate tech",
+   *   limit: 20,
+   *   filter: {
+   *     sort: "latest",
+   *     datePosted: "pastWeek",
+   *     contentType: "images",
+   *     postedBy: ["firstConnections", "peopleYouFollow"],
+   *     fromMembers: [{ name: "Bill Gates", urn: "urn:li:member:251749025" }],
+   *     fromCompanies: ["Example Company"]
+   *   }
+   * });
+   *
+   * const postsResult = await linkedapi.searchPosts.result(workflow.workflowId);
+   * if (postsResult.data) {
+   *   console.log("Found posts:", postsResult.data.length);
+   * }
+   * ```
+   */
+  public searchPosts: SearchPosts;
 
   /**
    * Search for people on LinkedIn using Sales Navigator.

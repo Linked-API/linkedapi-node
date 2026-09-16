@@ -17,4 +17,5 @@ export * from './retrieve-invitations-result.type';
 export * from './retrieve-profile-viewers-params.type';
 export * from './search-companies';
 export * from './search-people';
+export * from './search-posts';
 export * from './statistics';

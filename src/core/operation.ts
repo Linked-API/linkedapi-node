@@ -33,6 +33,7 @@ export const OPERATION_NAME = {
   searchCompanies: 'searchCompanies',
   searchPeople: 'searchPeople',
   searchJobs: 'searchJobs',
+  searchPosts: 'searchPosts',
   fetchPerson: 'fetchPerson',
   fetchCompany: 'fetchCompany',
   fetchPost: 'fetchPost',

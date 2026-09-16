@@ -18,6 +18,7 @@ export * from './fetch-post';
 export * from './fetch-job';
 export * from './search-people';
 export * from './search-jobs';
+export * from './search-posts';
 export * from './nv-search-people';
 export * from './send-connection-request';
 export * from './check-connection-status';
