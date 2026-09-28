@@ -6,6 +6,7 @@ import {
   CheckConnectionStatus,
   CommentOnPost,
   CreatePost,
+  CreateRepost,
   CustomWorkflow,
   FetchCompany,
   FetchJob,
@@ -135,6 +136,7 @@ class LinkedApi {
     this.reactToComment = new ReactToComment(this.httpClient);
     this.replyToComment = new ReplyToComment(this.httpClient);
     this.createPost = new CreatePost(this.httpClient);
+    this.createRepost = new CreateRepost(this.httpClient);
     this.retrieveFeed = new RetrieveFeed(this.httpClient);
     this.retrieveSSI = new RetrieveSSI(this.httpClient);
     this.retrievePerformance = new RetrievePerformance(this.httpClient);
@@ -177,6 +179,7 @@ class LinkedApi {
       this.reactToComment,
       this.replyToComment,
       this.createPost,
+      this.createRepost,
       this.retrieveFeed,
       this.retrieveSSI,
       this.retrievePerformance,
@@ -1465,12 +1468,16 @@ class LinkedApi {
   /**
    * Create a LinkedIn post on your personal profile or a company page.
    *
-   * This method creates a new post on LinkedIn. Posts can include text (up to 3,000 characters)
-   * and optional media attachments (images, videos, or documents). For company posts, you must
-   * have admin access to the company page.
+   * This method creates a new post on LinkedIn. Posts can include text (up to 3,000 characters),
+   * mentions of people and companies, and optional media attachments (images, videos, or
+   * documents). For company posts, you must have admin access to the company page.
    *
-   * @param params - Parameters including post text, optional attachments, and optional company URL
-   * @returns Promise resolving to an object containing the created post URL
+   * Each mention binds a `@[key]` placeholder in the text to one entity. `name` is required even
+   * when an identifier is given, because LinkedIn resolves a mention through its own name
+   * suggestions; the identifier only decides which of the offered namesakes is taken.
+   *
+   * @param params - Parameters including post text, optional mentions, attachments, and company URL
+   * @returns Promise resolving to the created post's URL and URN
    *
    * @see {@link https://linkedapi.io/docs/action-st-create-post/ st.createPost Action Documentation}
    *
@@ -1518,6 +1525,50 @@ class LinkedApi {
    * ```
    */
   public createPost: CreatePost;
+
+  /**
+   * Repost a LinkedIn post, either as is or with your own commentary.
+   *
+   * Without `text` the post is reposted as is. With `text` your commentary (up to 3,000 characters,
+   * with optional mentions) is published above it. The post is addressed by `postUrl` or `postUrn`;
+   * provide one of the two.
+   *
+   * The returned identifiers belong to the repost itself, which is a post of your own account, not
+   * to the post that was reshared. Reposting the same post twice from the same account fails with
+   * `alreadyReposted`.
+   *
+   * @param params - Parameters including the post target and optional commentary with mentions
+   * @returns Promise resolving to the repost's own URL and URN
+   *
+   * @see {@link https://linkedapi.io/docs/action-st-create-repost/ st.createRepost Action Documentation}
+   *
+   * @example
+   * ```typescript
+   * // Repost as is
+   * const workflow = await linkedapi.createRepost.execute({
+   *   postUrl: "https://www.linkedin.com/posts/username_activity-id"
+   * });
+   *
+   * const result = await linkedapi.createRepost.result(workflow.workflowId);
+   * console.log("Repost created:", result.data?.postUrl);
+   * ```
+   *
+   * @example
+   * ```typescript
+   * // Repost with commentary, addressing the post by URN
+   * const workflow = await linkedapi.createRepost.execute({
+   *   postUrn: "urn:li:activity:1234567890123456789",
+   *   text: "Worth reading, especially the part on onboarding by @[author]!",
+   *   mentions: [
+   *     { key: "author", name: "Example Person", urn: "urn:li:member:123456789" }
+   *   ]
+   * });
+   *
+   * const result = await linkedapi.createRepost.result(workflow.workflowId);
+   * console.log("Repost created:", result.data?.postUrn);
+   * ```
+   */
+  public createRepost: CreateRepost;
 
   /**
    * Retrieve your LinkedIn Social Selling Index (SSI) score.

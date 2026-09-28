@@ -21,12 +21,15 @@ import { TOperationName } from '../core';
  * - searchInterfaceMismatch (searchJobs)
  * - filterIdentityMismatch (searchPosts)
  * - companyNotFound (fetchCompany, nvFetchCompany)
- * - postNotFound (fetchPost, reactToPost, commentOnPost)
+ * - postNotFound (fetchPost, reactToPost, commentOnPost, createRepost)
  * - jobNotFound (fetchJob)
  * - commentingNotAllowed (commentOnPost)
  * - commentNotFound (openComment, reactToComment, replyToComment)
  * - replyingNotAllowed (replyToComment)
  * - noPostingPermission (createPost, reactToPost, commentOnPost)
+ * - mentionNotResolved (createPost, createRepost)
+ * - repostNotAllowed (createRepost)
+ * - alreadyReposted (createRepost)
  * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson, nvManageConversation)
  * - conversationsNotSynced (pollConversations)
  * - threadNotFound (manageConversation, nvManageConversation)
@@ -54,6 +57,9 @@ export const LINKED_API_ACTION_ERROR = {
   commentNotFound: 'commentNotFound',
   replyingNotAllowed: 'replyingNotAllowed',
   noPostingPermission: 'noPostingPermission',
+  mentionNotResolved: 'mentionNotResolved',
+  repostNotAllowed: 'repostNotAllowed',
+  alreadyReposted: 'alreadyReposted',
   noSalesNavigator: 'noSalesNavigator',
   conversationsNotSynced: 'conversationsNotSynced',
   threadNotFound: 'threadNotFound',

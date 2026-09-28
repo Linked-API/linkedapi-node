@@ -43,6 +43,7 @@ export const OPERATION_NAME = {
   reactToComment: 'reactToComment',
   replyToComment: 'replyToComment',
   createPost: 'createPost',
+  createRepost: 'createRepost',
   retrieveFeed: 'retrieveFeed',
   retrieveSSI: 'retrieveSSI',
   retrievePerformance: 'retrievePerformance',

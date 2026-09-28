@@ -94,14 +94,21 @@ export interface TComment {
   reactionsCount: number;
 }
 
-export interface TReactToPostParams extends TBaseActionParams {
-  postUrl: string;
+/**
+ * A post is addressed by its URL or by its URN. Provide one of the two; when both are given, they
+ * must refer to the same post.
+ */
+export interface TPostTargetParams {
+  postUrl?: string;
+  postUrn?: string;
+}
+
+export interface TReactToPostParams extends TBaseActionParams, TPostTargetParams {
   type: TReactionType;
   companyUrl?: string;
 }
 
-export interface TCommentOnPostParams extends TBaseActionParams {
-  postUrl: string;
+export interface TCommentOnPostParams extends TBaseActionParams, TPostTargetParams {
   text: string;
   companyUrl?: string;
 }
@@ -174,8 +181,7 @@ export interface TPostCommentsRetrievalConfig extends TLimitParams {
 
 export type TPostReactionsRetrievalConfig = TLimitParams;
 
-export interface TBaseFetchPostParams extends TBaseActionParams {
-  postUrl: string;
+export interface TBaseFetchPostParams extends TBaseActionParams, TPostTargetParams {
   retrieveComments?: boolean;
   retrieveReactions?: boolean;
 }
@@ -209,12 +215,41 @@ export interface TCreatePostAttachment {
   name?: string;
 }
 
+/**
+ * One person or company to mention in a post, bound to a `@[key]` placeholder in the text.
+ *
+ * `name` is what gets typed into LinkedIn's composer, which accepts no other input; the optional
+ * identifier only decides which of the offered namesakes is taken. Provide at most one of `urn`,
+ * `personHashedUrl` and `companyHashedUrl`.
+ */
+export interface TPostMention {
+  key: string;
+  name: string;
+  urn?: string;
+  personHashedUrl?: string;
+  companyHashedUrl?: string;
+}
+
+/** Identifiers of a post this account has just published. */
+export interface TPublishedPostResult {
+  postUrl: string | null;
+  postUrn: string | null;
+}
+
 export interface TCreatePostParams extends TBaseActionParams {
   text: string;
+  mentions?: ReadonlyArray<TPostMention>;
   attachments?: ReadonlyArray<TCreatePostAttachment>;
   companyUrl?: string;
 }
 
-export interface TCreatePostResult {
-  postUrl: string;
+export type TCreatePostResult = TPublishedPostResult;
+
+/** Without `text` the post is reposted as is; with `text` the commentary is published above it. */
+export interface TCreateRepostParams extends TBaseActionParams, TPostTargetParams {
+  text?: string;
+  mentions?: ReadonlyArray<TPostMention>;
 }
+
+/** The repost is a post of this account's own, so these identify it rather than the post reshared. */
+export type TCreateRepostResult = TPublishedPostResult;
