@@ -19,3 +19,4 @@ export * from './search-companies';
 export * from './search-people';
 export * from './search-posts';
 export * from './statistics';
+export * from './viewer-state';

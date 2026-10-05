@@ -1,6 +1,7 @@
 import { TBaseActionParams } from '../params';
 
 import { POST_ACTOR_TYPE, TPostType } from './post';
+import type { TContentViewerState, TPersonViewerState } from './viewer-state';
 
 export const POST_SEARCH_SORT = {
   topMatch: 'topMatch',
@@ -90,6 +91,10 @@ export interface TSearchPostPersonActor {
   headline: string | null;
 }
 
+export interface TSearchPostPersonAuthor extends TSearchPostPersonActor {
+  viewerState: TPersonViewerState;
+}
+
 export interface TSearchPostCompanyActor {
   type: typeof POST_ACTOR_TYPE.company;
   name: string | null;
@@ -109,7 +114,7 @@ export interface TSearchPostResult {
   activityUrn: string | null;
   time: string;
   type: TPostType;
-  author: TSearchPostActor | null;
+  author: TSearchPostPersonAuthor | TSearchPostCompanyActor | null;
   /** Non-null only when `type` is `repost`. */
   reposter: TSearchPostActor | null;
   text: string | null;
@@ -125,4 +130,5 @@ export interface TSearchPostResult {
   reactionsCount: number;
   commentsCount: number;
   repostsCount: number;
+  viewerState: TContentViewerState;
 }

@@ -1,6 +1,7 @@
 import type { TBaseActionParams, TLimitSinceParams } from '../params';
 
 import type { TComment, TPost, TReaction } from './post';
+import type { TPersonViewerState } from './viewer-state';
 
 export interface TBaseFetchPersonParams extends TBaseActionParams {
   personUrl: string;
@@ -47,6 +48,7 @@ export interface TPerson {
   followersCount: number | null;
   about: string | null;
   avatarUrl: string | null;
+  viewerState: TPersonViewerState;
   experiences?: ReadonlyArray<TPersonExperience>;
   education?: ReadonlyArray<TPersonEducation>;
   skills?: ReadonlyArray<TPersonSkill>;

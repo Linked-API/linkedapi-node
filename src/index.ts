@@ -1035,7 +1035,7 @@ class LinkedApi {
    * The five person and company filters accept either `{ name, urn?, personHashedUrl? }` /
    * `{ name, urn?, companyHashedUrl? }` objects or a plain string as shorthand for the name alone,
    * and both forms can be mixed in one array. Supplying an identifier pins the exact entity: the
-   * action fails with `filterIdentityMismatch` rather than filtering by a namesake.
+   * action fails with `filterNotApplied` rather than filtering by a namesake.
    *
    * @param params - Search parameters including the term, filters, and result limit
    * @returns Promise resolving to an object containing an array of post search results

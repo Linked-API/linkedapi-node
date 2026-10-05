@@ -1,6 +1,11 @@
 import { TBaseActionParams } from '../params';
 
 import { TYearsOfExperience } from './person';
+import type {
+  TConnectionDegree,
+  TNvConnectionDegreeFilter,
+  TPersonViewerState,
+} from './viewer-state';
 
 export interface TSearchPeopleParams extends TBaseActionParams {
   term?: string;
@@ -14,6 +19,7 @@ export interface TSearchPeopleParams extends TBaseActionParams {
     currentCompanies?: string[];
     previousCompanies?: string[];
     schools?: string[];
+    connectionDegrees?: TConnectionDegree[];
   };
   customSearchUrl?: string;
 }
@@ -25,6 +31,7 @@ export interface TSearchPeopleResult {
   headline: string;
   location: string;
   avatarUrl: string | null;
+  viewerState: TPersonViewerState;
 }
 
 export interface TNvSearchPeopleParams extends TBaseActionParams {
@@ -39,7 +46,8 @@ export interface TNvSearchPeopleParams extends TBaseActionParams {
     currentCompanies?: string[];
     previousCompanies?: string[];
     schools?: string[];
-    yearsOfExperience?: TYearsOfExperience[];
+    yearsOfExperiences?: TYearsOfExperience[];
+    connectionDegrees?: TNvConnectionDegreeFilter[];
   };
   customSearchUrl?: string;
 }
@@ -51,4 +59,5 @@ export interface TNvSearchPeopleResult {
   position: string;
   location: string;
   avatarUrl: string | null;
+  viewerState: TPersonViewerState;
 }

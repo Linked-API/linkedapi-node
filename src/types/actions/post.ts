@@ -1,5 +1,7 @@
 import { TBaseActionParams, TLimitParams } from '../params';
 
+import type { TContentViewerState, TPersonViewerState } from './viewer-state';
+
 export interface TPost {
   url: string;
   time: string;
@@ -20,6 +22,7 @@ export interface TPost {
   reactionsCount: number;
   commentsCount: number;
   repostsCount: number;
+  viewerState: TContentViewerState;
   comments?: ReadonlyArray<TPostComment>;
   reactions?: ReadonlyArray<TPostReaction>;
 }
@@ -42,6 +45,7 @@ export interface TPostPersonAuthor {
   urn: string | null;
   profileUrl: string | null;
   headline: string | null;
+  viewerState: TPersonViewerState;
 }
 
 export interface TPostCompanyAuthor {
@@ -53,6 +57,7 @@ export interface TPostCompanyAuthor {
 
 export type TPostAuthor = TPostPersonAuthor | TPostCompanyAuthor;
 
+/** A reposter carries no `viewerState`: only the author's relation to your account is reported. */
 export interface TPostPersonReposter {
   type: typeof POST_ACTOR_TYPE.person;
   name: string | null;
@@ -138,12 +143,34 @@ export const POST_COMMENTER_TYPE = {
 } as const;
 export type TPostCommenterType = (typeof POST_COMMENTER_TYPE)[keyof typeof POST_COMMENTER_TYPE];
 
+export interface TPostCommentPersonAuthor {
+  type: typeof POST_ACTOR_TYPE.person;
+  name: string | null;
+  profileUrl: string | null;
+  headline: string | null;
+  viewerState: TPersonViewerState;
+}
+
+export interface TPostCommentCompanyAuthor {
+  type: typeof POST_ACTOR_TYPE.company;
+  name: string | null;
+  companyUrl: string | null;
+}
+
+/** The commenter in the same actor shape a post's author has. */
+export type TPostCommentAuthor = TPostCommentPersonAuthor | TPostCommentCompanyAuthor;
+
 export interface TPostComment {
   commentUrn: string | null;
   commentUrl: string | null;
+  author: TPostCommentAuthor;
+  /** @deprecated Use `author` instead. */
   commenterUrl: string;
+  /** @deprecated Use `author.name` instead. */
   commenterName: string;
+  /** @deprecated Use `author.headline` instead. */
   commenterHeadline: string;
+  /** @deprecated Use `author.type` instead. */
   commenterType: TPostCommenterType;
   time: string;
   text: string | null;
@@ -151,6 +178,7 @@ export interface TPostComment {
   isReply: boolean;
   reactionsCount: number;
   repliesCount: number;
+  viewerState: TContentViewerState;
 }
 
 export const POST_ENGAGER_TYPE = {

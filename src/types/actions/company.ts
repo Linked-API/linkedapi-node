@@ -2,6 +2,11 @@ import { TBaseActionParams, TLimitParams, TLimitSinceParams } from '../params';
 
 import { TYearsOfExperience } from './person';
 import type { TPost } from './post';
+import type {
+  TConnectionDegree,
+  TNvConnectionDegreeFilter,
+  TPersonViewerState,
+} from './viewer-state';
 
 export interface TCompany {
   name: string;
@@ -53,6 +58,7 @@ export interface TStCompanyEmployee {
   headline: string;
   location: string;
   avatarUrl: string | null;
+  viewerState: TPersonViewerState;
 }
 
 export interface TStCompanyDm {
@@ -63,6 +69,7 @@ export interface TStCompanyDm {
   location: string;
   avatarUrl: string | null;
   countryCode: string;
+  viewerState: TPersonViewerState;
 }
 
 export interface TStCompanyEmployeesRetrievalConfig extends TLimitParams {
@@ -73,6 +80,7 @@ export interface TStCompanyEmployeesRetrievalConfig extends TLimitParams {
     locations?: string[];
     industries?: string[];
     schools?: string[];
+    connectionDegrees?: TConnectionDegree[];
   };
 }
 
@@ -99,6 +107,7 @@ export interface TNvCompanyEmployee {
   position: string;
   location: string;
   avatarUrl: string | null;
+  viewerState: TPersonViewerState;
 }
 
 export interface TNvCompanyDm {
@@ -109,6 +118,7 @@ export interface TNvCompanyDm {
   location: string;
   avatarUrl: string | null;
   countryCode: string;
+  viewerState: TPersonViewerState;
 }
 
 export interface TNvBaseFetchCompanyParams extends TBaseActionParams {
@@ -141,5 +151,6 @@ export interface TNvCompanyEmployeeRetrievalConfig extends TLimitParams {
     industries?: string[];
     schools?: string[];
     yearsOfExperiences?: TYearsOfExperience[];
+    connectionDegrees?: TNvConnectionDegreeFilter[];
   };
 }

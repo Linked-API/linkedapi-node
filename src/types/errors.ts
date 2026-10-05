@@ -18,14 +18,15 @@ import { TOperationName } from '../core';
  * - retrievingNotAllowed (retrieveConnections, fetchCompany, nvFetchCompany)
  * - connectionNotFound (removeConnection)
  * - searchingNotAllowed (searchCompanies, searchPeople, searchJobs, searchPosts, nvSearchCompanies, nvSearchPeople)
+ * - filterNotApplied (searchPeople, searchCompanies, searchPosts, retrieveConnections, fetchCompany)
  * - searchInterfaceMismatch (searchJobs)
- * - filterIdentityMismatch (searchPosts)
  * - companyNotFound (fetchCompany, nvFetchCompany)
  * - postNotFound (fetchPost, reactToPost, commentOnPost, createRepost)
  * - jobNotFound (fetchJob)
  * - commentingNotAllowed (commentOnPost)
  * - commentNotFound (openComment, reactToComment, replyToComment)
  * - replyingNotAllowed (replyToComment)
+ * - duplicateComment (commentOnPost, replyToComment)
  * - noPostingPermission (createPost, reactToPost, commentOnPost)
  * - mentionNotResolved (createPost, createRepost)
  * - repostNotAllowed (createRepost)
@@ -49,13 +50,14 @@ export const LINKED_API_ACTION_ERROR = {
   connectionNotFound: 'connectionNotFound',
   searchingNotAllowed: 'searchingNotAllowed',
   searchInterfaceMismatch: 'searchInterfaceMismatch',
-  filterIdentityMismatch: 'filterIdentityMismatch',
+  filterNotApplied: 'filterNotApplied',
   companyNotFound: 'companyNotFound',
   postNotFound: 'postNotFound',
   jobNotFound: 'jobNotFound',
   commentingNotAllowed: 'commentingNotAllowed',
   commentNotFound: 'commentNotFound',
   replyingNotAllowed: 'replyingNotAllowed',
+  duplicateComment: 'duplicateComment',
   noPostingPermission: 'noPostingPermission',
   mentionNotResolved: 'mentionNotResolved',
   repostNotAllowed: 'repostNotAllowed',
