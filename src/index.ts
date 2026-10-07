@@ -1731,6 +1731,7 @@ export default LinkedApi;
 
 export { LinkedApi, Operation as PredefinedOperation };
 export { LinkedApiAdmin } from './admin';
+export { getChangelog } from './changelog/get-changelog';
 
 export type {
   TLinkedApiConfig,

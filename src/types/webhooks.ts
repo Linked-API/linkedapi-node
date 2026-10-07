@@ -17,6 +17,13 @@ export type TWebhookEventType =
   | 'network.connectionRequestReceived'
   | 'webhook.test';
 
+export type TWebhookEventSelector =
+  | Exclude<TWebhookEventType, 'webhook.test'>
+  | 'workflow.*'
+  | 'account.*'
+  | 'inbox.*'
+  | 'network.*';
+
 export type TWebhookDeliveryStatus = 'pending' | 'delivering' | 'success' | 'failed';
 
 export type TWorkflowWebhookStatus = 'pending' | 'running' | 'completed' | 'failed';
@@ -28,6 +35,11 @@ export interface TWebhookSubscription {
   url: string;
   payloadMode: TWebhookPayloadMode;
   isActive: boolean;
+  signingEnabled: boolean;
+  headerNames: Array<string>;
+  events: Array<TWebhookEventSelector> | null;
+  /** Returned only by set with signing enabled, setSigning(true), revealSecret or rotateSecret. */
+  secret?: string;
   createdAt: string;
 }
 
@@ -46,11 +58,48 @@ export interface TWebhookDelivery {
 export interface TSetWebhookParams {
   url: string;
   payloadMode?: TWebhookPayloadMode;
+  signingEnabled?: boolean;
+  headers?: Record<string, string>;
+  events?: Array<TWebhookEventSelector> | null;
 }
 
 export interface TSetWebhookPayloadModeParams {
   id: string;
   payloadMode: TWebhookPayloadMode;
+}
+
+export interface TSetWebhookSigningParams {
+  id: string;
+  signingEnabled: boolean;
+}
+
+export interface TSetWebhookHeadersParams {
+  id: string;
+  headers: Record<string, string> | null;
+}
+
+export interface TSetWebhookHeaderParams {
+  id: string;
+  name: string;
+  value: string;
+}
+
+export interface TDeleteWebhookHeaderParams {
+  id: string;
+  name: string;
+}
+
+export interface TRevealWebhookSecretParams {
+  id: string;
+}
+
+export interface TRotateWebhookSecretParams {
+  id: string;
+}
+
+export interface TSetWebhookEventsParams {
+  id: string;
+  events: Array<TWebhookEventSelector> | null;
 }
 
 export interface TDeleteWebhookParams {
