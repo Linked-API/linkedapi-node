@@ -1032,10 +1032,10 @@ class LinkedApi {
    * is ignored entirely and only the facets already encoded in the URL are applied. `limit` defaults
    * to 10 and may go up to 100, or up to 20 when child actions are attached.
    *
-   * The five person and company filters accept either `{ name, urn?, personHashedUrl? }` /
-   * `{ name, urn?, companyHashedUrl? }` objects or a plain string as shorthand for the name alone,
-   * and both forms can be mixed in one array. Supplying an identifier pins the exact entity: the
-   * action fails with `filterNotApplied` rather than filtering by a namesake.
+   * Each entry of the five person and company filters is a name, or `{ name, id }`, and both forms
+   * can be mixed in one array. `id` is any identifier of the person or company (URN or LinkedIn
+   * URL) and pins the filter to exactly them; a name alone may match a namesake. When an entry cannot
+   * be applied, the action fails with `filterNotApplied` rather than filtering by somebody else.
    *
    * @param params - Search parameters including the term, filters, and result limit
    * @returns Promise resolving to an object containing an array of post search results
@@ -1052,7 +1052,7 @@ class LinkedApi {
    *     datePosted: "pastWeek",
    *     contentType: "images",
    *     postedBy: ["firstConnections", "peopleYouFollow"],
-   *     fromMembers: [{ name: "Bill Gates", urn: "urn:li:member:251749025" }],
+   *     fromMembers: [{ name: "Bill Gates", id: "urn:li:member:251749025" }],
    *     fromCompanies: ["Example Company"]
    *   }
    * });

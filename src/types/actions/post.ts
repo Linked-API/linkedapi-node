@@ -187,11 +187,20 @@ export const POST_ENGAGER_TYPE = {
 } as const;
 export type TPostEngagerType = (typeof POST_ENGAGER_TYPE)[keyof typeof POST_ENGAGER_TYPE];
 
+/** Whoever reacted, in the same actor shape a post's author has. */
+export type TPostReactionActor = TPostAuthor;
+
 export interface TPostReaction {
+  actor: TPostReactionActor;
+  /** @deprecated Use `actor.urn` instead. */
   engagerUrn: string | null;
+  /** @deprecated Use `actor.profileUrl` or `actor.companyUrl` instead. */
   engagerUrl: string;
+  /** @deprecated Use `actor.name` instead. */
   engagerName: string;
+  /** @deprecated Use `actor.headline` instead. */
   engagerHeadline: string;
+  /** @deprecated Use `actor.type` instead. */
   engagerType: TPostEngagerType;
   type: TReactionType;
 }

@@ -18,7 +18,7 @@ import { TOperationName } from '../core';
  * - retrievingNotAllowed (retrieveConnections, fetchCompany, nvFetchCompany)
  * - connectionNotFound (removeConnection)
  * - searchingNotAllowed (searchCompanies, searchPeople, searchJobs, searchPosts, nvSearchCompanies, nvSearchPeople)
- * - filterNotApplied (searchPeople, searchCompanies, searchPosts, retrieveConnections, fetchCompany)
+ * - filterNotApplied (searchPeople, searchCompanies, searchPosts, retrieveConnections, fetchCompany, nvSearchPeople, nvSearchCompanies, nvFetchCompany)
  * - searchInterfaceMismatch (searchJobs)
  * - companyNotFound (fetchCompany, nvFetchCompany)
  * - postNotFound (fetchPost, reactToPost, commentOnPost, createRepost)

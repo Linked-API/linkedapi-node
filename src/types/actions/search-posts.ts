@@ -36,20 +36,28 @@ export type TPostSearchPostedBy =
   (typeof POST_SEARCH_POSTED_BY)[keyof typeof POST_SEARCH_POSTED_BY];
 
 /**
- * One person to narrow a post search by. `name` is what gets typed into LinkedIn's filter panel,
- * which accepts no other input; the optional identifier only decides which of the offered namesakes
- * is taken.
+ * One person to narrow a post search by. With `name` alone the filter may match a namesake; `id`
+ * pins it to exactly that person, and the action fails with `filterNotApplied` rather than filtering
+ * by somebody else.
  */
 export interface TPostSearchPersonFilter {
   name: string;
+  /** Any identifier of the person: URN, or public or hashed LinkedIn URL, Sales Navigator included. */
+  id?: string;
+  /** @deprecated Use `id` instead. */
   urn?: string;
+  /** @deprecated Use `id` instead. */
   personHashedUrl?: string;
 }
 
 /** One company to narrow a post search by. Same contract as {@link TPostSearchPersonFilter}. */
 export interface TPostSearchCompanyFilter {
   name: string;
+  /** Any identifier of the company: URN, public or hashed LinkedIn URL, or numeric ID. */
+  id?: string;
+  /** @deprecated Use `id` instead. */
   urn?: string;
+  /** @deprecated Use `id` instead. */
   companyHashedUrl?: string;
 }
 
