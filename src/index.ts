@@ -52,6 +52,8 @@ import {
   TApiUsageParams,
   TConversationPollRequest,
   TConversationPollResult,
+  TInboxPersonPollRequest,
+  TInboxPersonPollResult,
   TInboxPollRequest,
   TInboxPollResult,
   TLinkedApiActionErrorType,
@@ -264,22 +266,21 @@ class LinkedApi {
   public sendMessage: SendMessage;
 
   /**
-   * Sync a conversation with a LinkedIn user for standard LinkedIn messaging.
+   * Load the message history with a person for standard LinkedIn messaging.
    *
-   * This method synchronizes a conversation with a person, preparing it for future message polling.
-   * Each conversation must be synced once before you can poll it for messages. This is a time-consuming
-   * process that retrieves the conversation history and prepares it for future updates.
+   * This method reads the whole conversation with a person, whatever its age, so you can read it together
+   * with the messages the inbox captures through {@link pollInbox} with `personUrl`. Run it once per
+   * person – not to check for new messages: those arrive through the inbox enabled by {@link syncInbox}.
    *
-   * Syncing lasts for a limited period: `days` (1-90, 30 by default) counted from the moment the action
-   * starts running. The action returns the resulting `syncUntil` deadline, which {@link pollConversations}
-   * also reports. Once it passes, the conversation stops being updated — polling keeps returning the
-   * messages collected so far. Call this action again on the same person to start a new period; the
-   * accumulated history is preserved.
+   * `days` (1-90, 30 by default) is the syncing period, not the depth of history: it sets how many days
+   * new messages keep being added to the loaded history, until the returned `syncUntil`. Running the action
+   * again keeps the accumulated history and never shortens the period. Running it again within 24 hours of a
+   * completed reading responds quickly and may finish the check during the next periodic syncs.
    *
    * @param params - Parameters including the person's URL and, optionally, how many days to sync for
    * @returns Promise resolving to the sync action with the `syncUntil` deadline
    *
-   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
+   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Loading Conversation History Documentation}
    * @see {@link https://linkedapi.io/docs/action-st-sync-conversation/ st.syncConversation Action Documentation}
    *
    * @example
@@ -392,22 +393,20 @@ class LinkedApi {
   public nvSendMessage: NvSendMessage;
 
   /**
-   * Sync a conversation with a LinkedIn user for Sales Navigator messaging.
+   * Load the Sales Navigator message history with a person.
    *
-   * This method synchronizes a Sales Navigator conversation with a person, preparing it for future message polling.
-   * Each conversation must be synced once before you can poll it for messages. This retrieves the conversation
-   * history from Sales Navigator and prepares it for future updates.
+   * This method finds the person's Sales Navigator threads and reads each of them, so you can read the history
+   * together with the messages the inbox captures through {@link pollInbox} with `personUrl`. Run it once per
+   * person – not to check for new messages: those arrive through the inbox enabled by {@link nvSyncInbox}.
    *
-   * Syncing lasts for a limited period: `days` (1-90, 30 by default) counted from the moment the action
-   * starts running. The action returns the resulting `syncUntil` deadline, which {@link pollConversations}
-   * also reports. Once it passes, the conversation stops being updated — polling keeps returning the
-   * messages collected so far. Call this action again on the same person to start a new period; the
-   * accumulated history is preserved.
+   * `days` (1-90, 30 by default) is the syncing period, not the depth of history: it sets how many days
+   * new messages keep being added to the loaded history, until the returned `syncUntil`. Running the action
+   * again keeps the accumulated history and never shortens the period.
    *
    * @param params - Parameters including the person's URL and, optionally, how many days to sync for
    * @returns Promise resolving to the sync action with the `syncUntil` deadline
    *
-   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
+   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Loading Conversation History Documentation}
    * @see {@link https://linkedapi.io/docs/action-nv-sync-conversation/ nv.syncConversation Action Documentation}
    *
    * @example
@@ -476,6 +475,10 @@ class LinkedApi {
 
   /**
    * Poll multiple conversations to retrieve message history and new messages.
+   *
+   * @deprecated Legacy, kept working for existing integrations. Use {@link pollInbox} with `personUrl`: it
+   * returns the same history together with the messages the inbox captured, and does not fail for people
+   * whose history was never loaded.
    *
    * This method retrieves messages from one or more previously synced conversations using direct HTTP requests.
    * Unlike syncing, polling is fast and can be done continuously to get real-time message updates.
@@ -556,17 +559,22 @@ class LinkedApi {
   }
 
   /**
-   * Poll the monitored inbox to retrieve message history and new messages.
+   * Poll the monitored inbox to retrieve new messages, or the whole conversation with one person.
    *
-   * This method reads messages from the inbox previously enabled for monitoring via {@link syncInbox}
-   * and/or {@link nvSyncInbox}, using a direct HTTP request. Unlike {@link pollConversations}, it is not
-   * scoped to specific person URLs: it returns messages across the whole monitored inbox, newest-first.
-   * You can optionally filter by `since` timestamp, messaging `type`, and `threadId`.
+   * This is the default way to read messages. Without `personUrl`, it reads messages from the inbox
+   * previously enabled for monitoring via {@link syncInbox} and/or {@link nvSyncInbox}, across every
+   * conversation, newest-first. You can optionally filter by `since` timestamp, messaging `type`, and `threadId`.
    *
-   * @param request - Optional filters: `since` timestamp, `type` ("st" | "nv"), and `threadId`
-   * @returns Promise resolving to a response containing the inbox messages
+   * With `personUrl`, it returns the whole known conversation with that person instead: the messages the
+   * inbox captured together with the history loaded by {@link syncConversation} / {@link nvSyncConversation},
+   * each message once, plus `threads` with `historyFrom` and `historyComplete`. In this shape `threadId` may be
+   * `null` and each message carries `inboxMessageId`, its `id` in the result without `personUrl`. A hashed
+   * person URL always matches; a public URL matches only once Linked API knows that person's public URL.
    *
-   * @see {@link https://linkedapi.io/docs/working-with-conversations/ Working with Conversations Documentation}
+   * @param request - Optional filters: `since` timestamp, `type` ("st" | "nv"), `threadId`, and `personUrl`
+   * @returns Promise resolving to a response containing the inbox messages, or the person's messages and threads
+   *
+   * @see {@link https://linkedapi.io/docs/monitoring-inbox/ Monitoring Inbox Documentation}
    *
    * @example
    * ```typescript
@@ -582,12 +590,30 @@ class LinkedApi {
    * } else {
    *   console.error("Polling failed:", pollResponse.errors);
    * }
+   *
+   * // The whole known conversation with one person
+   * const { data } = await linkedapi.pollInbox({
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   * });
+   * data?.threads.forEach((thread) => {
+   *   console.log(`${thread.threadId ?? "(unknown)"}: complete=${thread.historyComplete}`);
+   * });
    * ```
    */
+  public pollInbox(
+    request: TInboxPersonPollRequest,
+  ): Promise<TMappedResponse<TInboxPersonPollResult>>;
+  public pollInbox(request?: TInboxPollRequest): Promise<TMappedResponse<TInboxPollResult>>;
+  public pollInbox(
+    request: TInboxPollRequest & { personUrl?: string },
+  ): Promise<TMappedResponse<TInboxPollResult | TInboxPersonPollResult>>;
   public async pollInbox(
-    request: TInboxPollRequest = {},
-  ): Promise<TMappedResponse<TInboxPollResult>> {
-    const response = await this.httpClient.post<TInboxPollResult>('/inbox/poll', request);
+    request: TInboxPollRequest & { personUrl?: string } = {},
+  ): Promise<TMappedResponse<TInboxPollResult | TInboxPersonPollResult>> {
+    const response = await this.httpClient.post<TInboxPollResult | TInboxPersonPollResult>(
+      '/inbox/poll',
+      request,
+    );
     if (response.success && response.result) {
       return {
         data: response.result,

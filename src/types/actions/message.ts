@@ -97,6 +97,28 @@ export interface TInboxPollResult {
   messages: TInboxMessage[];
 }
 
+export interface TInboxPersonPollRequest extends TInboxPollRequest {
+  personUrl: string;
+}
+
+export interface TInboxPersonMessage extends Omit<TInboxMessage, 'threadId'> {
+  inboxMessageId: string | null;
+  threadId: string | null;
+}
+
+export interface TInboxPersonThread {
+  threadId: string | null;
+  type: TConversationType;
+  personUrn: string | null;
+  historyFrom: string | null;
+  historyComplete: boolean;
+}
+
+export interface TInboxPersonPollResult {
+  messages: TInboxPersonMessage[];
+  threads: TInboxPersonThread[];
+}
+
 export const CONVERSATION_TYPE = {
   st: 'st',
   nv: 'nv',

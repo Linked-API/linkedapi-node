@@ -12,18 +12,22 @@ async function messagingExample(): Promise<void> {
     const targetPersonUrl = 'https://www.linkedin.com/in/example-person';
     const targetPersonUrl2 = 'https://www.linkedin.com/in/another-person';
 
-    await sendMessage(linkedapi, targetPersonUrl);
-    await salesNavigatorSendMessage(linkedapi, targetPersonUrl2);
-
-    await syncConversation(linkedapi, targetPersonUrl);
-    await salesNavigatorSyncConversation(linkedapi, targetPersonUrl2);
-
-    await pollConversations(linkedapi, targetPersonUrl, targetPersonUrl2);
-
+    // Enable inbox monitoring before sending: it captures only messages that arrive after it is on.
     await syncInbox(linkedapi);
     await salesNavigatorSyncInbox(linkedapi);
 
+    await sendMessage(linkedapi, targetPersonUrl);
+    await salesNavigatorSendMessage(linkedapi, targetPersonUrl2);
+
     await pollInbox(linkedapi);
+    await pollPersonConversation(linkedapi, targetPersonUrl);
+
+    // Load earlier history once per person, only when you need messages from before the inbox was enabled.
+    await syncConversation(linkedapi, targetPersonUrl);
+    await salesNavigatorSyncConversation(linkedapi, targetPersonUrl2);
+
+    // Legacy: prefer pollInbox with personUrl.
+    await pollConversations(linkedapi, targetPersonUrl, targetPersonUrl2);
 
   } catch (error) {
     if (error instanceof LinkedApiError) {
@@ -219,6 +223,28 @@ async function pollInbox(linkedapi: LinkedApi): Promise<void> {
       threadId: message.threadId,
       text: 'Thanks for your message!',
     });
+  });
+}
+
+async function pollPersonConversation(linkedapi: LinkedApi, personUrl: string): Promise<void> {
+  console.log('\n🧵 Polling the whole conversation with one person...');
+
+  const pollResponse = await linkedapi.pollInbox({ personUrl });
+
+  if (pollResponse.errors.length > 0) {
+    console.error('🚨 Errors:', JSON.stringify(pollResponse.errors, null, 2));
+    return;
+  }
+
+  const messages = pollResponse.data?.messages ?? [];
+  const threads = pollResponse.data?.threads ?? [];
+  threads.forEach((thread) => {
+    console.log(`  🧵 ${thread.type} thread ${thread.threadId ?? '(unknown)'} | history from ${thread.historyFrom} | complete: ${thread.historyComplete}`);
+  });
+  messages.slice(0, 5).forEach((message) => {
+    const senderIcon = message.sender === 'us' ? '👤' : '👋';
+    console.log(`  ${senderIcon} ${message.sender.toUpperCase()} (${message.time}): "${message.text}"`);
+    console.log(`    🆔 ${message.id} | inbox id: ${message.inboxMessageId ?? 'not in inbox'}`);
   });
 }
 
