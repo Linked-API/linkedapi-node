@@ -8,6 +8,8 @@ import {
   CreatePost,
   CreateRepost,
   CustomWorkflow,
+  EndorsePersonSkill,
+  EndorsePersonSkills,
   FetchCompany,
   FetchJob,
   FetchPerson,
@@ -125,6 +127,8 @@ class LinkedApi {
     this.ignoreInvitation = new IgnoreInvitation(this.httpClient);
     this.retrieveConnections = new RetrieveConnections(this.httpClient);
     this.removeConnection = new RemoveConnection(this.httpClient);
+    this.endorsePersonSkill = new EndorsePersonSkill(this.httpClient);
+    this.endorsePersonSkills = new EndorsePersonSkills(this.httpClient);
     this.searchCompanies = new SearchCompanies(this.httpClient);
     this.searchPeople = new SearchPeople(this.httpClient);
     this.searchJobs = new SearchJobs(this.httpClient);
@@ -168,6 +172,8 @@ class LinkedApi {
       this.ignoreInvitation,
       this.retrieveConnections,
       this.removeConnection,
+      this.endorsePersonSkill,
+      this.endorsePersonSkills,
       this.searchCompanies,
       this.searchPeople,
       this.searchJobs,
@@ -1389,6 +1395,19 @@ class LinkedApi {
    * ```
    */
   public removeConnection: RemoveConnection;
+
+  /**
+   * Endorse a skill by its exact name on a 1st-degree connection's profile.
+   * Letter case and extra spaces are ignored. An existing endorsement is preserved.
+   */
+  public endorsePersonSkill: EndorsePersonSkill;
+
+  /**
+   * Endorse skills matching any RE2 pattern, or every skill when patterns are omitted.
+   * Results contain only selected skills in profile order, with per-skill errors on each item.
+   * Failures opening the profile or reading skills appear in the top-level errors with no data.
+   */
+  public endorsePersonSkills: EndorsePersonSkills;
 
   /**
    * React to a LinkedIn post with an emoji reaction.
