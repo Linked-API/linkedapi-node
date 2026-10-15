@@ -30,6 +30,8 @@ export * from './accept-invitation';
 export * from './ignore-invitation';
 export * from './retrieve-connections';
 export * from './remove-connection';
+export * from './endorse-person-skill';
+export * from './endorse-person-skills';
 export * from './react-to-post';
 export * from './comment-on-post';
 export * from './react-to-comment';

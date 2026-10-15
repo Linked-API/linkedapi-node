@@ -30,6 +30,8 @@ export const OPERATION_NAME = {
   ignoreInvitation: 'ignoreInvitation',
   retrieveConnections: 'retrieveConnections',
   removeConnection: 'removeConnection',
+  endorsePersonSkill: 'endorsePersonSkill',
+  endorsePersonSkills: 'endorsePersonSkills',
   searchCompanies: 'searchCompanies',
   searchPeople: 'searchPeople',
   searchJobs: 'searchJobs',

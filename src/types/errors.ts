@@ -5,7 +5,7 @@ import { TOperationName } from '../core';
  * @see {@link https://linkedapi.io/docs/actions-overview/#result-options}
  * This error signals that the workflow action failed to complete, but the workflow completed as expected.
  * Common types:
- * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson)
+ * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, endorsePersonSkill, endorsePersonSkills, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson)
  * - selfProfileNotAllowed (fetchPerson, nvFetchPerson)
  * - messagingNotAllowed (sendMessage, nvSendMessage)
  * - alreadyPending (sendConnectionRequest)
@@ -16,7 +16,10 @@ import { TOperationName } from '../core';
  * - requestNotAllowed (sendConnectionRequest)
  * - notPending (withdrawConnectionRequest))
  * - retrievingNotAllowed (retrieveConnections, fetchCompany, nvFetchCompany)
- * - connectionNotFound (removeConnection)
+ * - connectionNotFound (removeConnection, endorsePersonSkill, endorsePersonSkills)
+ * - skillNotFound (endorsePersonSkill)
+ * - endorsementUnavailable (endorsePersonSkill, endorsePersonSkills)
+ * - limitExceeded (operations subject to action limits, including endorsePersonSkill and endorsePersonSkills)
  * - searchingNotAllowed (searchCompanies, searchPeople, searchJobs, searchPosts, nvSearchCompanies, nvSearchPeople)
  * - filterNotApplied (searchPeople, searchCompanies, searchPosts, retrieveConnections, fetchCompany, nvSearchPeople, nvSearchCompanies, nvFetchCompany)
  * - searchInterfaceMismatch (searchJobs)
@@ -48,6 +51,9 @@ export const LINKED_API_ACTION_ERROR = {
   notPending: 'notPending',
   retrievingNotAllowed: 'retrievingNotAllowed',
   connectionNotFound: 'connectionNotFound',
+  skillNotFound: 'skillNotFound',
+  endorsementUnavailable: 'endorsementUnavailable',
+  limitExceeded: 'limitExceeded',
   searchingNotAllowed: 'searchingNotAllowed',
   searchInterfaceMismatch: 'searchInterfaceMismatch',
   filterNotApplied: 'filterNotApplied',
