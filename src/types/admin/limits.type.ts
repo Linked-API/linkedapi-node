@@ -5,6 +5,7 @@ export type TLimitCategory =
   | 'stMessages'
   | 'stSearchQueries'
   | 'stReactions'
+  | 'stEndorsements'
   | 'stComments'
   | 'stPosts'
   | 'nvPersonProfileViews'
