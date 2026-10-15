@@ -18,11 +18,7 @@ export type TWebhookEventType =
   | 'webhook.test';
 
 export type TWebhookEventSelector =
-  | Exclude<TWebhookEventType, 'webhook.test'>
-  | 'workflow.*'
-  | 'account.*'
-  | 'inbox.*'
-  | 'network.*';
+  Exclude<TWebhookEventType, 'webhook.test'> | 'workflow.*' | 'account.*' | 'inbox.*' | 'network.*';
 
 export type TWebhookDeliveryStatus = 'pending' | 'delivering' | 'success' | 'failed';
 
@@ -155,9 +151,7 @@ export interface TInboxMessageWebhookEvent extends TWebhookEventBase {
 
 export interface TNetworkWebhookEvent extends TWebhookEventBase {
   type:
-    | 'network.connectionAccepted'
-    | 'network.connectionAdded'
-    | 'network.connectionRequestReceived';
+    'network.connectionAccepted' | 'network.connectionAdded' | 'network.connectionRequestReceived';
   data: {
     accountId: string;
     personUrn: string | null;

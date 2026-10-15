@@ -23,8 +23,7 @@ export async function getChangelog(params: TGetChangelogParams = {}): Promise<TC
   const response = await fetch(requestUrl.toString(), { method: 'GET' });
   if (!response.ok) {
     const errorData = (await response.json().catch((): undefined => undefined)) as
-      | { error?: unknown }
-      | undefined;
+      { error?: unknown } | undefined;
     throw new Error(
       typeof errorData?.error === 'string'
         ? errorData.error
