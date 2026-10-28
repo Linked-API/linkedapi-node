@@ -7,14 +7,17 @@ import { TOperationName } from '../core';
  * Common types:
  * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, endorsePersonSkill, endorsePersonSkills, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson)
  * - selfProfileNotAllowed (fetchPerson, nvFetchPerson)
+ * - personLikelyChangedPublicUrl (fetchPerson, sendMessage)
  * - messagingNotAllowed (sendMessage, nvSendMessage)
  * - alreadyPending (sendConnectionRequest)
  * - alreadyConnected (sendConnectionRequest)
  * - emailRequired (sendConnectionRequest)
  * - noteTooLong (sendConnectionRequest)
  * - noteLimitExceeded (sendConnectionRequest)
+ * - invitationAlreadyReceived (sendConnectionRequest)
  * - requestNotAllowed (sendConnectionRequest)
  * - notPending (withdrawConnectionRequest))
+ * - noPendingRequest (acceptInvitation, ignoreInvitation)
  * - retrievingNotAllowed (retrieveConnections, fetchCompany, nvFetchCompany)
  * - connectionNotFound (removeConnection, endorsePersonSkill, endorsePersonSkills)
  * - skillNotFound (endorsePersonSkill)
@@ -23,6 +26,7 @@ import { TOperationName } from '../core';
  * - searchingNotAllowed (searchCompanies, searchPeople, searchJobs, searchPosts, nvSearchCompanies, nvSearchPeople)
  * - filterNotApplied (searchPeople, searchCompanies, searchPosts, retrieveConnections, fetchCompany, nvSearchPeople, nvSearchCompanies, nvFetchCompany)
  * - searchInterfaceMismatch (searchJobs)
+ * - searchTemporarilyUnavailable (nvSearchCompanies, nvSearchPeople, nvFetchCompany)
  * - companyNotFound (fetchCompany, nvFetchCompany)
  * - postNotFound (fetchPost, reactToPost, commentOnPost, createRepost)
  * - jobNotFound (fetchJob)
@@ -31,24 +35,32 @@ import { TOperationName } from '../core';
  * - replyingNotAllowed (replyToComment)
  * - duplicateComment (commentOnPost, replyToComment)
  * - noPostingPermission (createPost, reactToPost, commentOnPost)
+ * - textTooLong (createPost)
+ * - unsupportedAttachmentType, missingDocumentName, urlNotAccessible, fileTooLarge, unsupportedMimeType, tooManyAttachments, mixingNotAllowed (createPost)
  * - mentionNotResolved (createPost, createRepost)
  * - repostNotAllowed (createRepost)
  * - alreadyReposted (createRepost)
  * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson, nvManageConversation)
+ * - salesNavigatorOnboardingRequired (nvSearchCompanies, nvSearchPeople)
  * - conversationsNotSynced (pollConversations)
  * - threadNotFound (manageConversation, nvManageConversation)
+ * - ssiNotAvailable (retrieveSSI)
+ * - unexpectedError (any operation)
  */
 export const LINKED_API_ACTION_ERROR = {
   personNotFound: 'personNotFound',
   selfProfileNotAllowed: 'selfProfileNotAllowed',
+  personLikelyChangedPublicUrl: 'personLikelyChangedPublicUrl',
   messagingNotAllowed: 'messagingNotAllowed',
   alreadyPending: 'alreadyPending',
   alreadyConnected: 'alreadyConnected',
   emailRequired: 'emailRequired',
   noteTooLong: 'noteTooLong',
   noteLimitExceeded: 'noteLimitExceeded',
+  invitationAlreadyReceived: 'invitationAlreadyReceived',
   requestNotAllowed: 'requestNotAllowed',
   notPending: 'notPending',
+  noPendingRequest: 'noPendingRequest',
   retrievingNotAllowed: 'retrievingNotAllowed',
   connectionNotFound: 'connectionNotFound',
   skillNotFound: 'skillNotFound',
@@ -56,6 +68,7 @@ export const LINKED_API_ACTION_ERROR = {
   limitExceeded: 'limitExceeded',
   searchingNotAllowed: 'searchingNotAllowed',
   searchInterfaceMismatch: 'searchInterfaceMismatch',
+  searchTemporarilyUnavailable: 'searchTemporarilyUnavailable',
   filterNotApplied: 'filterNotApplied',
   companyNotFound: 'companyNotFound',
   postNotFound: 'postNotFound',
@@ -65,12 +78,23 @@ export const LINKED_API_ACTION_ERROR = {
   replyingNotAllowed: 'replyingNotAllowed',
   duplicateComment: 'duplicateComment',
   noPostingPermission: 'noPostingPermission',
+  textTooLong: 'textTooLong',
+  unsupportedAttachmentType: 'unsupportedAttachmentType',
+  missingDocumentName: 'missingDocumentName',
+  urlNotAccessible: 'urlNotAccessible',
+  fileTooLarge: 'fileTooLarge',
+  unsupportedMimeType: 'unsupportedMimeType',
+  tooManyAttachments: 'tooManyAttachments',
+  mixingNotAllowed: 'mixingNotAllowed',
   mentionNotResolved: 'mentionNotResolved',
   repostNotAllowed: 'repostNotAllowed',
   alreadyReposted: 'alreadyReposted',
   noSalesNavigator: 'noSalesNavigator',
+  salesNavigatorOnboardingRequired: 'salesNavigatorOnboardingRequired',
   conversationsNotSynced: 'conversationsNotSynced',
   threadNotFound: 'threadNotFound',
+  ssiNotAvailable: 'ssiNotAvailable',
+  unexpectedError: 'unexpectedError',
 } as const;
 export type TLinkedApiActionErrorType =
   (typeof LINKED_API_ACTION_ERROR)[keyof typeof LINKED_API_ACTION_ERROR];
@@ -99,6 +123,8 @@ export const LINKED_API_ERROR = {
   workflowTimeout: 'workflowTimeout',
   outsideWorkingHours: 'outsideWorkingHours',
   workingHoursWaitExpired: 'workingHoursWaitExpired',
+  cancelledByUser: 'cancelledByUser',
+  unexpectedError: 'unexpectedError',
   httpError: 'httpError',
   tooManyRequests: 'tooManyRequests',
   accountNotFound: 'accountNotFound',
