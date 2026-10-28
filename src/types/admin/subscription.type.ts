@@ -1,5 +1,5 @@
 export interface TSubscriptionStatus {
-  status: 'active' | 'trialing' | 'past_due' | 'canceled' | undefined;
+  status: 'active' | 'trialing' | 'past_due' | 'unpaid' | 'canceled' | undefined;
   eligibleForTrial: boolean;
   cancelAtPeriodEnd: boolean;
 }
