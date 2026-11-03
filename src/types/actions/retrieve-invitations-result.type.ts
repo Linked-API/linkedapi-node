@@ -25,4 +25,6 @@ interface TNewsletterSubscribeInvitation extends TInvitationBase {
 }
 
 export type TRetrieveInvitationsResult =
-  TConnectInvitation | TCompanyFollowInvitation | TNewsletterSubscribeInvitation;
+  | TConnectInvitation
+  | TCompanyFollowInvitation
+  | TNewsletterSubscribeInvitation;

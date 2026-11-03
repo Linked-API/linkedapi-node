@@ -22,4 +22,6 @@ interface TNewsletterSubscribeInvitationTarget {
 }
 
 export type TInvitationTarget =
-  TConnectInvitationTarget | TCompanyFollowInvitationTarget | TNewsletterSubscribeInvitationTarget;
+  | TConnectInvitationTarget
+  | TCompanyFollowInvitationTarget
+  | TNewsletterSubscribeInvitationTarget;

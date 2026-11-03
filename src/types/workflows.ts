@@ -8,7 +8,8 @@ export interface TSingleActionWorkflowDefinition {
 }
 
 export type TWorkflowDefinition =
-  TSingleActionWorkflowDefinition | TSingleActionWorkflowDefinition[];
+  | TSingleActionWorkflowDefinition
+  | TSingleActionWorkflowDefinition[];
 
 export type TWorkflowPendingStatus = 'pending';
 
@@ -19,7 +20,8 @@ export type TWorkflowInProgressStatus = TWorkflowPendingStatus | TWorkflowRunnin
 export type TWorkflowStatus = TWorkflowInProgressStatus | 'completed' | 'failed';
 
 export type TWorkflowCompletion<TResult extends TWorkflowData = TWorkflowData> =
-  TWorkflowCompletionSingleAction<TResult> | TWorkflowCompletionSingleAction<TResult>[];
+  | TWorkflowCompletionSingleAction<TResult>
+  | TWorkflowCompletionSingleAction<TResult>[];
 
 export interface TWorkflowCompletionSingleAction<TResult extends TWorkflowData = TWorkflowData> {
   data?: TResult;
@@ -71,4 +73,5 @@ export type TActionResponse<TResult extends TWorkflowData = TWorkflowData> =
   TSingleActionResponse<TResult>;
 
 export type TThen<TResult extends TWorkflowData = TWorkflowData> =
-  TActionResponse<TResult> | TActionResponse<TResult>[];
+  | TActionResponse<TResult>
+  | TActionResponse<TResult>[];

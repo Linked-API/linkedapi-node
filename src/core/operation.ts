@@ -55,6 +55,7 @@ export const OPERATION_NAME = {
   nvManageConversation: 'nvManageConversation',
   nvSearchCompanies: 'nvSearchCompanies',
   nvSearchPeople: 'nvSearchPeople',
+  nvRetrieveAlerts: 'nvRetrieveAlerts',
   nvFetchCompany: 'nvFetchCompany',
   nvFetchPerson: 'nvFetchPerson',
 } as const;

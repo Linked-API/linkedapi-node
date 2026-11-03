@@ -23,3 +23,7 @@ export * from './search-people';
 export * from './search-posts';
 export * from './statistics';
 export * from './viewer-state';
+export * from './nv-alert.type';
+export * from './nv-alert-subject.type';
+export * from './nv-retrieve-alerts-filter.type';
+export * from './nv-retrieve-alerts-params.type';

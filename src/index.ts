@@ -19,6 +19,7 @@ import {
   NvFetchCompany,
   NvFetchPerson,
   NvManageConversation,
+  NvRetrieveAlerts,
   NvSearchCompanies,
   NvSearchPeople,
   NvSendMessage,
@@ -154,6 +155,7 @@ class LinkedApi {
     this.nvSearchPeople = new NvSearchPeople(this.httpClient);
     this.nvFetchCompany = new NvFetchCompany(this.httpClient);
     this.nvFetchPerson = new NvFetchPerson(this.httpClient);
+    this.nvRetrieveAlerts = new NvRetrieveAlerts(this.httpClient);
 
     this.operations = [
       this.customWorkflow,
@@ -199,6 +201,7 @@ class LinkedApi {
       this.nvSearchPeople,
       this.nvFetchCompany,
       this.nvFetchPerson,
+      this.nvRetrieveAlerts,
     ];
   }
 
@@ -1127,6 +1130,8 @@ class LinkedApi {
    * ```
    */
   public nvSearchPeople: NvSearchPeople;
+
+  public nvRetrieveAlerts: NvRetrieveAlerts;
 
   /**
    * Send a connection request to a LinkedIn user.

@@ -41,3 +41,4 @@ export * from './create-repost';
 export * from './retrieve-feed';
 export * from './retrieve-ssi';
 export * from './retrieve-performance';
+export * from './nv-retrieve-alerts';
