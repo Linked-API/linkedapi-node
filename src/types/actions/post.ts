@@ -78,7 +78,7 @@ export type TPostReposter = TPostPersonReposter | TPostCompanyReposter;
 export interface TReaction {
   postUrl: string;
   time: string;
-  reactionType: TReactionType;
+  type: TReactionType;
 }
 
 export const REACTION_TYPE = {
