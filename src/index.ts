@@ -941,7 +941,7 @@ class LinkedApi {
    *   term: "software development",
    *   filter: {
    *     locations: ["San Francisco", "New York"],
-   *     industries: ["Technology", "Software"],
+   *     industries: ["Software Development", "IT Services and IT Consulting"],
    *     sizes: ["51-200", "201-500"]
    *   },
    *   limit: 25
@@ -1008,7 +1008,7 @@ class LinkedApi {
    *   filter: {
    *     locations: ["San Francisco Bay Area"],
    *     currentCompanies: ["Google", "Facebook", "Apple"],
-   *     industries: ["Technology"]
+   *     industries: ["Software Development"]
    *   },
    *   limit: 50
    * });
@@ -1348,7 +1348,7 @@ class LinkedApi {
    * const workflow = await linkedapi.retrieveConnections.execute({
    *   filter: {
    *     firstName: "John",
-   *     industries: ["Technology", "Software"],
+   *     industries: ["Software Development", "IT Services and IT Consulting"],
    *     locations: ["San Francisco Bay Area"],
    *     currentCompanies: ["Google", "Microsoft"]
    *   },
