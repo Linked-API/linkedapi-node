@@ -16,15 +16,30 @@ import {
   FetchPost,
   IgnoreInvitation,
   ManageConversation,
+  NvCreateList,
+  NvCreateSavedSearch,
+  NvDeleteList,
+  NvDeleteSavedSearch,
   NvFetchCompany,
   NvFetchPerson,
   NvManageConversation,
+  NvRemoveAccountFromList,
+  NvRemoveLeadFromList,
+  NvRenameList,
   NvRetrieveAlerts,
+  NvRetrieveListAccounts,
+  NvRetrieveListLeads,
+  NvRetrieveLists,
+  NvRetrieveSavedSearches,
+  NvSaveAccount,
+  NvSaveLead,
   NvSearchCompanies,
   NvSearchPeople,
   NvSendMessage,
   NvSyncConversation,
   NvSyncInbox,
+  NvUnsaveAccount,
+  NvUnsaveLead,
   ReactToComment,
   ReactToPost,
   RemoveConnection,
@@ -156,6 +171,21 @@ class LinkedApi {
     this.nvFetchCompany = new NvFetchCompany(this.httpClient);
     this.nvFetchPerson = new NvFetchPerson(this.httpClient);
     this.nvRetrieveAlerts = new NvRetrieveAlerts(this.httpClient);
+    this.nvRetrieveLists = new NvRetrieveLists(this.httpClient);
+    this.nvDeleteList = new NvDeleteList(this.httpClient);
+    this.nvCreateList = new NvCreateList(this.httpClient);
+    this.nvDeleteSavedSearch = new NvDeleteSavedSearch(this.httpClient);
+    this.nvCreateSavedSearch = new NvCreateSavedSearch(this.httpClient);
+    this.nvRetrieveSavedSearches = new NvRetrieveSavedSearches(this.httpClient);
+    this.nvRenameList = new NvRenameList(this.httpClient);
+    this.nvRemoveAccountFromList = new NvRemoveAccountFromList(this.httpClient);
+    this.nvRemoveLeadFromList = new NvRemoveLeadFromList(this.httpClient);
+    this.nvRetrieveListAccounts = new NvRetrieveListAccounts(this.httpClient);
+    this.nvRetrieveListLeads = new NvRetrieveListLeads(this.httpClient);
+    this.nvUnsaveAccount = new NvUnsaveAccount(this.httpClient);
+    this.nvSaveAccount = new NvSaveAccount(this.httpClient);
+    this.nvUnsaveLead = new NvUnsaveLead(this.httpClient);
+    this.nvSaveLead = new NvSaveLead(this.httpClient);
 
     this.operations = [
       this.customWorkflow,
@@ -202,6 +232,21 @@ class LinkedApi {
       this.nvFetchCompany,
       this.nvFetchPerson,
       this.nvRetrieveAlerts,
+      this.nvRetrieveLists,
+      this.nvDeleteList,
+      this.nvCreateList,
+      this.nvDeleteSavedSearch,
+      this.nvCreateSavedSearch,
+      this.nvRetrieveSavedSearches,
+      this.nvRenameList,
+      this.nvRemoveAccountFromList,
+      this.nvRemoveLeadFromList,
+      this.nvRetrieveListAccounts,
+      this.nvRetrieveListLeads,
+      this.nvUnsaveAccount,
+      this.nvSaveAccount,
+      this.nvUnsaveLead,
+      this.nvSaveLead,
     ];
   }
 
@@ -762,7 +807,7 @@ class LinkedApi {
    * This method opens a person's profile page in Sales Navigator and retrieves their information.
    * Sales Navigator provides enhanced data and is useful for sales prospecting activities.
    *
-   * @param params - Parameters including the person's hashed URL and data options
+   * @param params - Parameters including the person's public or hashed LinkedIn URL and data options
    * @returns Promise resolving to an object containing Sales Navigator person data
    *
    * @see {@link https://linkedapi.io/docs/visiting-person-page/ Visiting Person Page Documentation}
@@ -833,7 +878,7 @@ class LinkedApi {
    * This method opens a company's profile page in Sales Navigator and retrieves their information.
    * Sales Navigator provides enhanced company data and is useful for B2B sales prospecting.
    *
-   * @param params - Parameters including the company's hashed URL and data options
+   * @param params - Parameters including the company's public or hashed LinkedIn URL and data options
    * @returns Promise resolving to an object containing Sales Navigator company data
    *
    * @see {@link https://linkedapi.io/docs/action-nv-open-company-page/ nv.openCompanyPage Action Documentation}
@@ -1132,6 +1177,21 @@ class LinkedApi {
   public nvSearchPeople: NvSearchPeople;
 
   public nvRetrieveAlerts: NvRetrieveAlerts;
+  public nvRetrieveLists: NvRetrieveLists;
+  public nvDeleteList: NvDeleteList;
+  public nvCreateList: NvCreateList;
+  public nvDeleteSavedSearch: NvDeleteSavedSearch;
+  public nvCreateSavedSearch: NvCreateSavedSearch;
+  public nvRetrieveSavedSearches: NvRetrieveSavedSearches;
+  public nvRenameList: NvRenameList;
+  public nvRemoveAccountFromList: NvRemoveAccountFromList;
+  public nvRemoveLeadFromList: NvRemoveLeadFromList;
+  public nvRetrieveListAccounts: NvRetrieveListAccounts;
+  public nvRetrieveListLeads: NvRetrieveListLeads;
+  public nvUnsaveAccount: NvUnsaveAccount;
+  public nvSaveAccount: NvSaveAccount;
+  public nvUnsaveLead: NvUnsaveLead;
+  public nvSaveLead: NvSaveLead;
 
   /**
    * Send a connection request to a LinkedIn user.

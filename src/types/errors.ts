@@ -5,7 +5,7 @@ import { TOperationName } from '../core';
  * @see {@link https://linkedapi.io/docs/actions-overview/#result-options}
  * This error signals that the workflow action failed to complete, but the workflow completed as expected.
  * Common types:
- * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, endorsePersonSkill, endorsePersonSkills, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson)
+ * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, endorsePersonSkill, endorsePersonSkills, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson, nvSaveLead, nvUnsaveLead, nvRemoveLeadFromList)
  * - selfProfileNotAllowed (fetchPerson, nvFetchPerson)
  * - personLikelyChangedPublicUrl (fetchPerson, sendMessage)
  * - messagingNotAllowed (sendMessage, nvSendMessage)
@@ -27,7 +27,13 @@ import { TOperationName } from '../core';
  * - filterNotApplied (searchPeople, searchCompanies, searchPosts, retrieveConnections, fetchCompany, nvSearchPeople, nvSearchCompanies, nvFetchCompany)
  * - searchInterfaceMismatch (searchJobs)
  * - searchTemporarilyUnavailable (nvSearchCompanies, nvSearchPeople, nvFetchCompany)
- * - companyNotFound (fetchCompany, nvFetchCompany)
+ * - companyNotFound (fetchCompany, nvFetchCompany, nvSaveAccount, nvUnsaveAccount, nvRemoveAccountFromList)
+ * - listNotFound (nvSaveLead, nvSaveAccount, nvDeleteList, nvRetrieveListLeads, nvRetrieveListAccounts, nvRemoveLeadFromList, nvRemoveAccountFromList, nvRenameList, nvRetrieveAlerts)
+ * - listAlreadyExists (nvCreateList, nvRenameList)
+ * - listNotDeletable (nvDeleteList)
+ * - listNotRenamable (nvRenameList)
+ * - savedSearchNotFound (nvDeleteSavedSearch)
+ * - interfaceLanguageNotSupported (nvSaveLead, nvSaveAccount, nvUnsaveLead, nvUnsaveAccount, nvCreateList, nvDeleteList, nvRemoveLeadFromList, nvRemoveAccountFromList, nvRenameList, nvCreateSavedSearch, nvDeleteSavedSearch)
  * - postNotFound (fetchPost, reactToPost, commentOnPost, createRepost)
  * - jobNotFound (fetchJob)
  * - commentingNotAllowed (commentOnPost)
@@ -40,7 +46,7 @@ import { TOperationName } from '../core';
  * - mentionNotResolved (createPost, createRepost)
  * - repostNotAllowed (createRepost)
  * - alreadyReposted (createRepost)
- * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson, nvManageConversation)
+ * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson, nvManageConversation, nvSaveLead, nvSaveAccount, nvUnsaveLead, nvUnsaveAccount, nvRetrieveLists, nvCreateList, nvDeleteList, nvRetrieveListLeads, nvRetrieveListAccounts, nvRemoveLeadFromList, nvRemoveAccountFromList, nvRenameList, nvRetrieveSavedSearches, nvCreateSavedSearch, nvDeleteSavedSearch)
  * - salesNavigatorOnboardingRequired (nvSearchCompanies, nvSearchPeople)
  * - conversationsNotSynced (pollConversations)
  * - threadNotFound (manageConversation, nvManageConversation)
@@ -71,6 +77,12 @@ export const LINKED_API_ACTION_ERROR = {
   searchTemporarilyUnavailable: 'searchTemporarilyUnavailable',
   filterNotApplied: 'filterNotApplied',
   companyNotFound: 'companyNotFound',
+  listNotFound: 'listNotFound',
+  listAlreadyExists: 'listAlreadyExists',
+  listNotDeletable: 'listNotDeletable',
+  listNotRenamable: 'listNotRenamable',
+  savedSearchNotFound: 'savedSearchNotFound',
+  interfaceLanguageNotSupported: 'interfaceLanguageNotSupported',
   postNotFound: 'postNotFound',
   jobNotFound: 'jobNotFound',
   commentingNotAllowed: 'commentingNotAllowed',
