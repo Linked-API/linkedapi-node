@@ -33,7 +33,7 @@ import { TOperationName } from '../core';
  * - listNotDeletable (nvDeleteList)
  * - listNotRenamable (nvRenameList)
  * - savedSearchNotFound (nvDeleteSavedSearch)
- * - interfaceLanguageNotSupported (nvSaveLead, nvSaveAccount, nvUnsaveLead, nvUnsaveAccount, nvCreateList, nvDeleteList, nvRemoveLeadFromList, nvRemoveAccountFromList, nvRenameList, nvCreateSavedSearch, nvDeleteSavedSearch)
+ * - savedSearchAlreadyExists, savedSearchLimitReached, savedSearchRenameUnconfirmed, savedSearchQueryMismatch (nvCreateSavedSearch)
  * - postNotFound (fetchPost, reactToPost, commentOnPost, createRepost)
  * - jobNotFound (fetchJob)
  * - commentingNotAllowed (commentOnPost)
@@ -82,7 +82,10 @@ export const LINKED_API_ACTION_ERROR = {
   listNotDeletable: 'listNotDeletable',
   listNotRenamable: 'listNotRenamable',
   savedSearchNotFound: 'savedSearchNotFound',
-  interfaceLanguageNotSupported: 'interfaceLanguageNotSupported',
+  savedSearchAlreadyExists: 'savedSearchAlreadyExists',
+  savedSearchLimitReached: 'savedSearchLimitReached',
+  savedSearchRenameUnconfirmed: 'savedSearchRenameUnconfirmed',
+  savedSearchQueryMismatch: 'savedSearchQueryMismatch',
   postNotFound: 'postNotFound',
   jobNotFound: 'jobNotFound',
   commentingNotAllowed: 'commentingNotAllowed',

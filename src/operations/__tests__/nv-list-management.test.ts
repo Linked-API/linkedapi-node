@@ -116,12 +116,7 @@ describe('Sales Navigator list management contract', (): void => {
     });
   });
 
-  it.each([
-    'listAlreadyExists',
-    'interfaceLanguageNotSupported',
-    'noSalesNavigator',
-    'unexpectedError',
-  ] as const)(
+  it.each(['listAlreadyExists', 'noSalesNavigator', 'unexpectedError'] as const)(
     'preserves create error %s without created-list data',
     async (type): Promise<void> => {
       const error = {
@@ -145,27 +140,24 @@ describe('Sales Navigator list management contract', (): void => {
     },
   );
 
-  it.each([
-    'listNotFound',
-    'listNotDeletable',
-    'interfaceLanguageNotSupported',
-    'noSalesNavigator',
-    'unexpectedError',
-  ] as const)('preserves delete error %s', async (type): Promise<void> => {
-    const error = {
-      type,
-      message: 'Fixture error',
-    };
-    queueWorkflow({
-      actionType: 'nv.deleteList',
-      success: false,
-      error,
-    });
-    const started = await linkedApi.nvDeleteList.execute({ listId: LIST_ID });
-    expect(await linkedApi.nvDeleteList.result(started.workflowId)).toEqual({
-      data: undefined,
-      errors: [error],
-    });
-    expect(LINKED_API_ACTION_ERROR[type]).toBe(type);
-  });
+  it.each(['listNotFound', 'listNotDeletable', 'noSalesNavigator', 'unexpectedError'] as const)(
+    'preserves delete error %s',
+    async (type): Promise<void> => {
+      const error = {
+        type,
+        message: 'Fixture error',
+      };
+      queueWorkflow({
+        actionType: 'nv.deleteList',
+        success: false,
+        error,
+      });
+      const started = await linkedApi.nvDeleteList.execute({ listId: LIST_ID });
+      expect(await linkedApi.nvDeleteList.result(started.workflowId)).toEqual({
+        data: undefined,
+        errors: [error],
+      });
+      expect(LINKED_API_ACTION_ERROR[type]).toBe(type);
+    },
+  );
 });
