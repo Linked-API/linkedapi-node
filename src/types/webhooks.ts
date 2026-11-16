@@ -1,4 +1,5 @@
-import type { TConversationType, TMessageSender } from './actions/message';
+import type { TInboxType } from './actions/inbox-type.type';
+import type { TMessageSender } from './actions/message';
 
 export type TWebhookPayloadMode = 'thin' | 'fat';
 
@@ -139,13 +140,14 @@ export interface TInboxMessageWebhookEvent extends TWebhookEventBase {
   type: 'inbox.messageReceived' | 'inbox.messageSent';
   data: {
     accountId: string;
-    type: TConversationType;
+    type: TInboxType;
     threadId: string;
     personUrn: string | null;
-    personHashedUrl: string;
+    personHashedUrl: string | null;
     personPublicUrl: string | null;
+    personRecruiterUrl: string | null;
     /** @deprecated Use `personHashedUrl`. Still returned by the API for compatibility. */
-    personUrl: string;
+    personUrl: string | null;
     messageId: string;
     sender: TMessageSender;
     text: string;

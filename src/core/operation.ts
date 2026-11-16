@@ -73,6 +73,16 @@ export const OPERATION_NAME = {
   nvSaveLead: 'nvSaveLead',
   nvFetchCompany: 'nvFetchCompany',
   nvFetchPerson: 'nvFetchPerson',
+  rcSearchPeople: 'rcSearchPeople',
+  rcFetchPerson: 'rcFetchPerson',
+  rcRetrieveProjects: 'rcRetrieveProjects',
+  rcRetrieveProjectCandidates: 'rcRetrieveProjectCandidates',
+  rcSaveToProject: 'rcSaveToProject',
+  rcCreateProject: 'rcCreateProject',
+  rcRenameProject: 'rcRenameProject',
+  rcArchiveProject: 'rcArchiveProject',
+  rcSendMessage: 'rcSendMessage',
+  rcSyncInbox: 'rcSyncInbox',
 } as const;
 export type TOperationName = (typeof OPERATION_NAME)[keyof typeof OPERATION_NAME];
 

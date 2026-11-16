@@ -5,10 +5,10 @@ import { TOperationName } from '../core';
  * @see {@link https://linkedapi.io/docs/actions-overview/#result-options}
  * This error signals that the workflow action failed to complete, but the workflow completed as expected.
  * Common types:
- * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, endorsePersonSkill, endorsePersonSkills, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson, nvSaveLead, nvUnsaveLead, nvRemoveLeadFromList)
+ * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, endorsePersonSkill, endorsePersonSkills, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson, nvSaveLead, nvUnsaveLead, nvRemoveLeadFromList, rcFetchPerson, rcSendMessage)
  * - selfProfileNotAllowed (fetchPerson, nvFetchPerson)
  * - personLikelyChangedPublicUrl (fetchPerson, sendMessage)
- * - messagingNotAllowed (sendMessage, nvSendMessage)
+ * - messagingNotAllowed (sendMessage, nvSendMessage, rcSendMessage)
  * - alreadyPending (sendConnectionRequest)
  * - alreadyConnected (sendConnectionRequest)
  * - emailRequired (sendConnectionRequest)
@@ -22,9 +22,9 @@ import { TOperationName } from '../core';
  * - connectionNotFound (removeConnection, endorsePersonSkill, endorsePersonSkills)
  * - skillNotFound (endorsePersonSkill)
  * - endorsementUnavailable (endorsePersonSkill, endorsePersonSkills)
- * - limitExceeded (operations subject to action limits, including endorsePersonSkill and endorsePersonSkills)
+ * - limitExceeded (operations subject to action limits, including endorsePersonSkill, endorsePersonSkills, rcSearchPeople, rcFetchPerson, rcSaveToProject and rcSendMessage)
  * - searchingNotAllowed (searchCompanies, searchPeople, searchJobs, searchPosts, nvSearchCompanies, nvSearchPeople)
- * - filterNotApplied (searchPeople, searchCompanies, searchPosts, retrieveConnections, fetchCompany, nvSearchPeople, nvSearchCompanies, nvFetchCompany)
+ * - filterNotApplied (searchPeople, searchCompanies, searchPosts, retrieveConnections, fetchCompany, nvSearchPeople, nvSearchCompanies, nvFetchCompany, rcSearchPeople)
  * - searchInterfaceMismatch (searchJobs)
  * - searchTemporarilyUnavailable (nvSearchCompanies, nvSearchPeople, nvFetchCompany)
  * - companyNotFound (fetchCompany, nvFetchCompany, nvSaveAccount, nvUnsaveAccount, nvRemoveAccountFromList)
@@ -48,6 +48,9 @@ import { TOperationName } from '../core';
  * - alreadyReposted (createRepost)
  * - noSalesNavigator (nvSendMessage, nvSyncConversation, nvSyncInbox, nvSearchCompanies, nvSearchPeople, nvFetchCompany, nvFetchPerson, nvManageConversation, nvSaveLead, nvSaveAccount, nvUnsaveLead, nvUnsaveAccount, nvRetrieveLists, nvCreateList, nvDeleteList, nvRetrieveListLeads, nvRetrieveListAccounts, nvRemoveLeadFromList, nvRemoveAccountFromList, nvRenameList, nvRetrieveSavedSearches, nvCreateSavedSearch, nvDeleteSavedSearch)
  * - salesNavigatorOnboardingRequired (nvSearchCompanies, nvSearchPeople)
+ * - recruiterSignInRequired, recruiterTwoStepVerificationRequired, recruiterMultipleSessionsDetected (rcSearchPeople, rcFetchPerson, rcRetrieveProjects, rcRetrieveProjectCandidates, rcSaveToProject, rcCreateProject, rcRenameProject, rcArchiveProject, rcSendMessage, rcSyncInbox)
+ * - inMailCreditRequired, inMailNotAvailable (rcSendMessage)
+ * - projectNotFound (rcRetrieveProjectCandidates, rcSaveToProject, rcRenameProject, rcArchiveProject)
  * - conversationsNotSynced (pollConversations)
  * - threadNotFound (manageConversation, nvManageConversation)
  * - ssiNotAvailable (retrieveSSI)
@@ -106,6 +109,12 @@ export const LINKED_API_ACTION_ERROR = {
   alreadyReposted: 'alreadyReposted',
   noSalesNavigator: 'noSalesNavigator',
   salesNavigatorOnboardingRequired: 'salesNavigatorOnboardingRequired',
+  recruiterSignInRequired: 'recruiterSignInRequired',
+  recruiterTwoStepVerificationRequired: 'recruiterTwoStepVerificationRequired',
+  recruiterMultipleSessionsDetected: 'recruiterMultipleSessionsDetected',
+  inMailCreditRequired: 'inMailCreditRequired',
+  inMailNotAvailable: 'inMailNotAvailable',
+  projectNotFound: 'projectNotFound',
   conversationsNotSynced: 'conversationsNotSynced',
   threadNotFound: 'threadNotFound',
   ssiNotAvailable: 'ssiNotAvailable',
@@ -121,6 +130,7 @@ export interface TLinkedApiActionError {
 
 /**
  * This error is thrown when a request fails.
+ * plusPlanRequired applies to every nv.* and rc.* action, including custom workflows.
  * @see {@link https://linkedapi.io/docs/making-requests/#common-errors}
  */
 export const LINKED_API_ERROR = {

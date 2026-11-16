@@ -1,5 +1,7 @@
 import { TBaseActionParams } from '../params';
 
+import type { TInboxType } from './inbox-type.type';
+
 export interface TSendMessageParams extends TBaseActionParams {
   personUrl?: string;
   text: string;
@@ -75,19 +77,20 @@ export interface TConversationPollResult {
 
 export interface TInboxPollRequest {
   since?: string;
-  type?: TConversationType;
+  type?: TInboxType;
   threadId?: string;
 }
 
 export interface TInboxMessage {
   id: string;
-  type: TConversationType;
+  type: TInboxType;
   threadId: string;
   personUrn: string | null;
-  personHashedUrl: string;
+  personHashedUrl: string | null;
   personPublicUrl: string | null;
+  personRecruiterUrl: string | null;
   /** @deprecated Use `personHashedUrl`. Still returned by the API for compatibility. */
-  personUrl: string;
+  personUrl: string | null;
   sender: TMessageSender;
   text: string;
   time: string;
@@ -98,6 +101,7 @@ export interface TInboxPollResult {
 }
 
 export interface TInboxPersonPollRequest extends TInboxPollRequest {
+  /** Public, hashed or Recruiter profile URL (https://www.linkedin.com/talent/profile/…). */
   personUrl: string;
 }
 
@@ -108,7 +112,7 @@ export interface TInboxPersonMessage extends Omit<TInboxMessage, 'threadId'> {
 
 export interface TInboxPersonThread {
   threadId: string | null;
-  type: TConversationType;
+  type: TInboxType;
   personUrn: string | null;
   historyFrom: string | null;
   historyComplete: boolean;

@@ -10,7 +10,10 @@ export type TLimitCategory =
   | 'stPosts'
   | 'nvPersonProfileViews'
   | 'nvCompanyPageViews'
-  | 'nvMessages';
+  | 'nvMessages'
+  | 'rcPersonProfileViews'
+  | 'rcSearchQueries'
+  | 'rcMessages';
 
 export type TLimitPeriod = 'daily' | 'weekly' | 'monthly';
 

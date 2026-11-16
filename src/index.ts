@@ -40,6 +40,16 @@ import {
   NvSyncInbox,
   NvUnsaveAccount,
   NvUnsaveLead,
+  RcArchiveProject,
+  RcCreateProject,
+  RcFetchPerson,
+  RcRenameProject,
+  RcRetrieveProjectCandidates,
+  RcRetrieveProjects,
+  RcSaveToProject,
+  RcSearchPeople,
+  RcSendMessage,
+  RcSyncInbox,
   ReactToComment,
   ReactToPost,
   RemoveConnection,
@@ -186,6 +196,16 @@ class LinkedApi {
     this.nvSaveAccount = new NvSaveAccount(this.httpClient);
     this.nvUnsaveLead = new NvUnsaveLead(this.httpClient);
     this.nvSaveLead = new NvSaveLead(this.httpClient);
+    this.rcSearchPeople = new RcSearchPeople(this.httpClient);
+    this.rcFetchPerson = new RcFetchPerson(this.httpClient);
+    this.rcRetrieveProjects = new RcRetrieveProjects(this.httpClient);
+    this.rcRetrieveProjectCandidates = new RcRetrieveProjectCandidates(this.httpClient);
+    this.rcSaveToProject = new RcSaveToProject(this.httpClient);
+    this.rcCreateProject = new RcCreateProject(this.httpClient);
+    this.rcRenameProject = new RcRenameProject(this.httpClient);
+    this.rcArchiveProject = new RcArchiveProject(this.httpClient);
+    this.rcSendMessage = new RcSendMessage(this.httpClient);
+    this.rcSyncInbox = new RcSyncInbox(this.httpClient);
 
     this.operations = [
       this.customWorkflow,
@@ -247,6 +267,16 @@ class LinkedApi {
       this.nvSaveAccount,
       this.nvUnsaveLead,
       this.nvSaveLead,
+      this.rcSearchPeople,
+      this.rcFetchPerson,
+      this.rcRetrieveProjects,
+      this.rcRetrieveProjectCandidates,
+      this.rcSaveToProject,
+      this.rcCreateProject,
+      this.rcRenameProject,
+      this.rcArchiveProject,
+      this.rcSendMessage,
+      this.rcSyncInbox,
     ];
   }
 
@@ -616,16 +646,17 @@ class LinkedApi {
    * Poll the monitored inbox to retrieve new messages, or the whole conversation with one person.
    *
    * This is the default way to read messages. Without `personUrl`, it reads messages from the inbox
-   * previously enabled for monitoring via {@link syncInbox} and/or {@link nvSyncInbox}, across every
+   * previously enabled via {@link syncInbox}, {@link nvSyncInbox} or {@link rcSyncInbox}, across every
    * conversation, newest-first. You can optionally filter by `since` timestamp, messaging `type`, and `threadId`.
    *
    * With `personUrl`, it returns the whole known conversation with that person instead: the messages the
    * inbox captured together with the history loaded by {@link syncConversation} / {@link nvSyncConversation},
    * each message once, plus `threads` with `historyFrom` and `historyComplete`. In this shape `threadId` may be
    * `null` and each message carries `inboxMessageId`, its `id` in the result without `personUrl`. A hashed
-   * person URL always matches; a public URL matches only once Linked API knows that person's public URL.
+   * person URL always matches; a Recruiter profile URL (https://www.linkedin.com/talent/profile/…)
+   * matches Recruiter messages. A public URL matches once Linked API knows that person's public URL.
    *
-   * @param request - Optional filters: `since` timestamp, `type` ("st" | "nv"), `threadId`, and `personUrl`
+   * @param request - Optional filters: `since` timestamp, `type` ("st" | "nv" | "rc"), `threadId`, and `personUrl`
    * @returns Promise resolving to a response containing the inbox messages, or the person's messages and threads
    *
    * @see {@link https://linkedapi.io/docs/monitoring-inbox/ Monitoring Inbox Documentation}
@@ -1175,6 +1206,96 @@ class LinkedApi {
    * ```
    */
   public nvSearchPeople: NvSearchPeople;
+
+  /**
+   * Search Recruiter Lite candidates by keywords, Advanced Search filters or a custom search URL.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-search-people/ rc.searchPeople Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcSearchPeople: RcSearchPeople;
+
+  /**
+   * Read a Recruiter Lite profile. Basic information defaults to true; recruitingActivity is optional.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-open-person-page/ rc.openPersonPage Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcFetchPerson: RcFetchPerson;
+
+  /**
+   * Retrieve active projects from the Recruiter Lite seat.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-retrieve-projects/ rc.retrieveProjects Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcRetrieveProjects: RcRetrieveProjects;
+
+  /**
+   * Retrieve candidates from all project stages or one selected stage.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-retrieve-project-candidates/ rc.retrieveProjectCandidates Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcRetrieveProjectCandidates: RcRetrieveProjectCandidates;
+
+  /**
+   * Save a candidate to a Recruiter Lite project and report whether they were already saved.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-save-to-project/ rc.saveToProject Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcSaveToProject: RcSaveToProject;
+
+  /**
+   * Create a private Recruiter Lite project with a name. Check projects before retrying a failed creation.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-create-project/ rc.createProject Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcCreateProject: RcCreateProject;
+
+  /**
+   * Rename a Recruiter Lite project and optionally update its description.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-rename-project/ rc.renameProject Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcRenameProject: RcRenameProject;
+
+  /**
+   * Archive a Recruiter Lite project and report whether it was already archived.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-archive-project/ rc.archiveProject Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcArchiveProject: RcArchiveProject;
+
+  /**
+   * Send a new InMail by personUrl and subject, or reply by threadId. Paid credits require allowPaidCredit: true. Check the conversation before retrying a failed send.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-send-message/ rc.sendMessage Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcSendMessage: RcSendMessage;
+
+  /**
+   * Enable Recruiter Lite inbox monitoring. Read captured messages with pollInbox. Sending alone does not enable monitoring.
+   *
+   * Requires the Plus plan and an active Recruiter Lite seat.
+   * @see {@link https://linkedapi.io/docs/action-rc-sync-inbox/ rc.syncInbox Action Documentation}
+   * @see {@link https://linkedapi.io/docs/recruiter-lite-overview/ Recruiter Lite Requirements}
+   */
+  public rcSyncInbox: RcSyncInbox;
 
   public nvRetrieveAlerts: NvRetrieveAlerts;
   public nvRetrieveLists: NvRetrieveLists;
