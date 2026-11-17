@@ -131,6 +131,7 @@ export interface TLinkedApiActionError {
 /**
  * This error is thrown when a request fails.
  * plusPlanRequired applies to every nv.* and rc.* action, including custom workflows.
+ * signalLimitReached, signalNotFound and signalStopped come from the signal methods (createSignal, getSignal, pauseSignal, resumeSignal, deleteSignal).
  * @see {@link https://linkedapi.io/docs/making-requests/#common-errors}
  */
 export const LINKED_API_ERROR = {
@@ -157,6 +158,9 @@ export const LINKED_API_ERROR = {
   sessionNotFound: 'sessionNotFound',
   noAvailableSeats: 'noAvailableSeats',
   dailyConnectionAttemptsExceeded: 'dailyConnectionAttemptsExceeded',
+  signalLimitReached: 'signalLimitReached',
+  signalNotFound: 'signalNotFound',
+  signalStopped: 'signalStopped',
 } as const;
 export type TLinkedApiErrorType = (typeof LINKED_API_ERROR)[keyof typeof LINKED_API_ERROR];
 export class LinkedApiError extends Error {

@@ -21,6 +21,7 @@ export * from './retrieve-profile-viewers-params.type';
 export * from './search-companies';
 export * from './search-people';
 export * from './search-posts';
+export * from './signal';
 export * from './statistics';
 export * from './viewer-state';
 export * from './nv-alert.type';

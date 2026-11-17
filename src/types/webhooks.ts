@@ -1,5 +1,6 @@
 import type { TInboxType } from './actions/inbox-type.type';
 import type { TMessageSender } from './actions/message';
+import type { TSignalEvent, TSignalEventType } from './actions/signal';
 
 export type TWebhookPayloadMode = 'thin' | 'fat';
 
@@ -16,6 +17,7 @@ export type TWebhookEventType =
   | 'network.connectionAccepted'
   | 'network.connectionAdded'
   | 'network.connectionRequestReceived'
+  | `signal.${TSignalEventType}`
   | 'webhook.test';
 
 export type TWebhookEventSelector =
@@ -23,7 +25,8 @@ export type TWebhookEventSelector =
   | 'workflow.*'
   | 'account.*'
   | 'inbox.*'
-  | 'network.*';
+  | 'network.*'
+  | 'signal.*';
 
 export type TWebhookDeliveryStatus = 'pending' | 'delivering' | 'success' | 'failed';
 
@@ -168,6 +171,14 @@ export interface TNetworkWebhookEvent extends TWebhookEventBase {
   };
 }
 
+/** A signal event, `data` exactly as {@link LinkedApi.pollSignals} returns it plus `accountId`. */
+export type TSignalWebhookEvent = {
+  [TType in TSignalEventType]: TWebhookEventBase & {
+    type: `signal.${TType}`;
+    data: TSignalEvent & { type: TType; accountId: string };
+  };
+}[TSignalEventType];
+
 export interface TWebhookTestEvent extends TWebhookEventBase {
   type: 'webhook.test';
   data: {
@@ -180,4 +191,5 @@ export type TWebhookEvent =
   | TAccountWebhookEvent
   | TInboxMessageWebhookEvent
   | TNetworkWebhookEvent
+  | TSignalWebhookEvent
   | TWebhookTestEvent;

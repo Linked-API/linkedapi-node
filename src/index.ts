@@ -80,6 +80,10 @@ import {
   TApiUsageParams,
   TConversationPollRequest,
   TConversationPollResult,
+  TCreateSignalParams,
+  TDeleteSignalResult,
+  TGetSignalsParams,
+  TGetSignalsResult,
   TInboxPersonPollRequest,
   TInboxPersonPollResult,
   TInboxPollRequest,
@@ -88,6 +92,10 @@ import {
   TLinkedApiErrorType,
   TNetworkPollRequest,
   TNetworkPollResult,
+  TSignal,
+  TSignalIdParams,
+  TSignalPollRequest,
+  TSignalPollResult,
 } from './types';
 import type { TLinkedApiConfig } from './types/config';
 import type { TLinkedApiResponse } from './types/responses';
@@ -761,6 +769,153 @@ class LinkedApi {
         },
       ],
     };
+  }
+
+  /**
+   * Create a signal: one thing for the account to watch on LinkedIn.
+   *
+   * The `type` decides the target: `personPosts` takes `personUrl`, `companyPosts` takes `companyUrl`,
+   * `postSearch` takes `term` (a phrase or up to three) and an optional `filter`, `postEngagement`
+   * takes `postUrl` or `myPosts: true`, and `network` and `profileViewers` take none. Creating a signal
+   * that already exists on the account returns that signal instead of a second one.
+   *
+   * @param params - The signal `type`, its target fields and an optional `label`
+   * @returns Promise resolving to the signal
+   * @throws LinkedApiError `invalidRequestPayload` or `signalLimitReached`
+   *
+   * @see {@link https://linkedapi.io/docs/managing-signals/ Managing Signals Documentation}
+   *
+   * @example
+   * ```typescript
+   * const { data: signal } = await linkedapi.createSignal({
+   *   type: "personPosts",
+   *   personUrl: "https://www.linkedin.com/in/john-doe",
+   *   label: "lead-1042",
+   * });
+   * console.log(signal?.id, signal?.status);
+   * ```
+   */
+  public async createSignal(params: TCreateSignalParams): Promise<TMappedResponse<TSignal>> {
+    return this.mapSignalResponse(await this.httpClient.post<TSignal>('/signals', params));
+  }
+
+  /**
+   * List the account's signals, optionally only those of one `type` or `status`.
+   *
+   * @param params - Optional `type` and `status` filters
+   * @returns Promise resolving to the signals
+   *
+   * @see {@link https://linkedapi.io/docs/managing-signals/ Managing Signals Documentation}
+   *
+   * @example
+   * ```typescript
+   * const { data } = await linkedapi.getSignals({ status: "active" });
+   * data?.signals.forEach((signal) => console.log(signal.id, signal.type, signal.nextCheckAt));
+   * ```
+   */
+  public async getSignals(
+    params: TGetSignalsParams = {},
+  ): Promise<TMappedResponse<TGetSignalsResult>> {
+    const query = new URLSearchParams(
+      Object.entries(params).filter((entry): entry is [string, string] => entry[1] !== undefined),
+    ).toString();
+
+    return this.mapSignalResponse(
+      await this.httpClient.get<TGetSignalsResult>(query ? `/signals?${query}` : '/signals'),
+    );
+  }
+
+  /**
+   * Retrieve one signal.
+   *
+   * @param params - The `signalId`
+   * @returns Promise resolving to the signal
+   * @throws LinkedApiError `signalNotFound`
+   *
+   * @see {@link https://linkedapi.io/docs/managing-signals/ Managing Signals Documentation}
+   */
+  public async getSignal({ signalId }: TSignalIdParams): Promise<TMappedResponse<TSignal>> {
+    return this.mapSignalResponse(await this.httpClient.get<TSignal>(buildSignalPath(signalId)));
+  }
+
+  /**
+   * Pause a signal. A paused signal is not checked; its events stay available. Pausing a paused
+   * signal succeeds and changes nothing.
+   *
+   * @param params - The `signalId`
+   * @returns Promise resolving to the signal
+   * @throws LinkedApiError `signalNotFound` or `signalStopped`
+   *
+   * @see {@link https://linkedapi.io/docs/managing-signals/ Managing Signals Documentation}
+   */
+  public async pauseSignal({ signalId }: TSignalIdParams): Promise<TMappedResponse<TSignal>> {
+    return this.mapSignalResponse(
+      await this.httpClient.post<TSignal>(`${buildSignalPath(signalId)}/pause`),
+    );
+  }
+
+  /**
+   * Resume a paused signal. Its first check reports what appeared while it was paused, as far as
+   * LinkedIn still shows it. Resuming an active signal succeeds and changes nothing.
+   *
+   * @param params - The `signalId`
+   * @returns Promise resolving to the signal
+   * @throws LinkedApiError `signalNotFound`, `signalStopped` or `signalLimitReached`
+   *
+   * @see {@link https://linkedapi.io/docs/managing-signals/ Managing Signals Documentation}
+   */
+  public async resumeSignal({ signalId }: TSignalIdParams): Promise<TMappedResponse<TSignal>> {
+    return this.mapSignalResponse(
+      await this.httpClient.post<TSignal>(`${buildSignalPath(signalId)}/resume`),
+    );
+  }
+
+  /**
+   * Delete a signal. Its checks stop at once; the events it already produced stay available
+   * through {@link pollSignals}.
+   *
+   * @param params - The `signalId`
+   * @returns Promise resolving to `{ deleted: true }`
+   * @throws LinkedApiError `signalNotFound`
+   *
+   * @see {@link https://linkedapi.io/docs/managing-signals/ Managing Signals Documentation}
+   */
+  public async deleteSignal({
+    signalId,
+  }: TSignalIdParams): Promise<TMappedResponse<TDeleteSignalResult>> {
+    return this.mapSignalResponse(
+      await this.httpClient.delete<TDeleteSignalResult>(buildSignalPath(signalId)),
+    );
+  }
+
+  /**
+   * Poll the events your signals detected, newest first, across every signal of the account unless
+   * filtered by `signalId`, `signalType` or `eventType`.
+   *
+   * Pass `since`: without it every retained event is returned. On each next request, pass the
+   * `detectedAt` of the newest event you have and process each event once by its `id`.
+   *
+   * @param request - Optional `since`, `signalId`, `signalType` and `eventType`
+   * @returns Promise resolving to the events
+   *
+   * @see {@link https://linkedapi.io/docs/signal-events/ Receiving Events Documentation}
+   *
+   * @example
+   * ```typescript
+   * const { data } = await linkedapi.pollSignals({ since: "2026-10-12T00:00:00Z" });
+   * for (const event of data?.events ?? []) {
+   *   if (event.type === "postPublished") {
+   *     console.log(event.label, event.post.url);
+   *   }
+   * }
+   * ```
+   */
+  public async pollSignals(
+    request: TSignalPollRequest = {},
+  ): Promise<TMappedResponse<TSignalPollResult>> {
+    return this.mapSignalResponse(
+      await this.httpClient.post<TSignalPollResult>('/signals/poll', request),
+    );
   }
 
   /**
@@ -1956,6 +2111,24 @@ class LinkedApi {
       response.error?.message ?? '',
     );
   }
+
+  private mapSignalResponse<T>(response: TLinkedApiResponse<T>): TMappedResponse<T> {
+    if (response.success && response.result) {
+      return {
+        data: response.result,
+        errors: [],
+      };
+    }
+    throw new LinkedApiError(
+      response.error?.type as TLinkedApiErrorType,
+      response.error?.message ?? '',
+    );
+  }
+}
+
+// Signal ids are opaque (`sigsub-…`), so they are encoded rather than validated.
+function buildSignalPath(signalId: string): string {
+  return `/signals/${encodeURIComponent(signalId)}`;
 }
 
 export default LinkedApi;
