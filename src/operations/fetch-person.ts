@@ -36,6 +36,10 @@ const FETCH_PERSON_ACTIONS: TActionConfig[] = [
     actionType: 'st.retrievePersonLanguages',
   },
   {
+    paramName: 'retrieveContactInfo',
+    actionType: 'st.retrievePersonContactInfo',
+  },
+  {
     paramName: 'retrievePosts',
     actionType: 'st.retrievePersonPosts',
     configSource: 'postsRetrievalConfig',
@@ -68,6 +72,10 @@ const RESPONSE_MAPPINGS = [
   {
     actionType: 'st.retrievePersonLanguages',
     targetProperty: 'languages',
+  },
+  {
+    actionType: 'st.retrievePersonContactInfo',
+    targetProperty: 'contactInfo',
   },
   {
     actionType: 'st.retrievePersonPosts',

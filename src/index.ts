@@ -933,6 +933,7 @@ class LinkedApi {
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-person-education/ st.retrievePersonEducation Child Action}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-person-skills/ st.retrievePersonSkills Child Action}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-person-languages/ st.retrievePersonLanguages Child Action}
+   * @see {@link https://linkedapi.io/docs/action-st-retrieve-person-contact-info/ st.retrievePersonContactInfo Child Action}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-person-posts/ st.retrievePersonPosts Child Action}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-person-comments/ st.retrievePersonComments Child Action}
    * @see {@link https://linkedapi.io/docs/action-st-retrieve-person-reactions/ st.retrievePersonReactions Child Action}
@@ -946,6 +947,7 @@ class LinkedApi {
    *   retrieveEducation: true,
    *   retrieveSkills: true,
    *   retrieveLanguages: true,
+   *   retrieveContactInfo: true,
    *   retrievePosts: true,
    *   retrieveComments: true,
    *   retrieveReactions: true,
@@ -968,6 +970,7 @@ class LinkedApi {
    *   console.log("Person name:", personResult.data.name);
    *   console.log("Headline:", personResult.data.headline);
    *   console.log("Experience:", personResult.data.experiences); // TypeScript knows this exists
+   *   console.log("Email:", personResult.data.contactInfo?.email); // null when LinkedIn does not show it
    *   console.log("Posts:", personResult.data.posts); // TypeScript knows this exists
    * }
    * ```

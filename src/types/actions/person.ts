@@ -9,6 +9,7 @@ export interface TBaseFetchPersonParams extends TBaseActionParams {
   retrieveEducation?: boolean;
   retrieveSkills?: boolean;
   retrieveLanguages?: boolean;
+  retrieveContactInfo?: boolean;
   retrievePosts?: boolean;
   retrieveComments?: boolean;
   retrieveReactions?: boolean;
@@ -19,6 +20,7 @@ export interface TBaseFetchPersonParamsWide extends TBaseFetchPersonParams {
   retrieveEducation: true;
   retrieveSkills: true;
   retrieveLanguages: true;
+  retrieveContactInfo: true;
   retrievePosts: true;
   retrieveComments: true;
   retrieveReactions: true;
@@ -53,6 +55,7 @@ export interface TPerson {
   education?: ReadonlyArray<TPersonEducation>;
   skills?: ReadonlyArray<TPersonSkill>;
   languages?: ReadonlyArray<TPersonLanguage>;
+  contactInfo?: TPersonContactInfo;
   posts?: ReadonlyArray<TPost>;
   comments?: ReadonlyArray<TComment>;
   reactions?: ReadonlyArray<TReaction>;
@@ -105,6 +108,19 @@ export interface TPersonSkill {
 export interface TPersonLanguage {
   name: string;
   proficiency: TLanguageProficiency;
+}
+
+export interface TPersonContactInfo {
+  email: string | null;
+  phones: ReadonlyArray<string>;
+  websites: ReadonlyArray<string>;
+  birthday: TPersonBirthday | null;
+  connectedAt: string | null;
+}
+
+export interface TPersonBirthday {
+  month: number;
+  day: number;
 }
 
 export const LANGUAGE_PROFICIENCY = {
