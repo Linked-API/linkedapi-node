@@ -776,7 +776,8 @@ class LinkedApi {
    *
    * The `type` decides the target: `personPosts` takes `personUrl`, `companyPosts` takes `companyUrl`,
    * `postSearch` takes `term` (a phrase or up to three) and an optional `filter`, `postEngagement`
-   * takes `postUrl` or `myPosts: true`, and `network` and `profileViewers` take none. Creating a signal
+   * takes `postUrl` or `myPosts: true`, `listAlerts` takes `listId` (one of the account's own Sales
+   * Navigator lists), and `network` and `profileViewers` take none. Creating a signal
    * that already exists on the account returns that signal instead of a second one.
    *
    * @param params - The signal `type`, its target fields and an optional `label`

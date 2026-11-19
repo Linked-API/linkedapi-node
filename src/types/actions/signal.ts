@@ -1,3 +1,4 @@
+import type { TNvAlert } from './nv-alert.type';
 import type { TPostComment, TPostReactionActor, TReactionType } from './post';
 import type { TProfileViewer } from './profile-viewer.type';
 import type { TPostSearchFilter, TSearchPostResult } from './search-posts';
@@ -9,6 +10,7 @@ export const SIGNAL_TYPE = {
   postEngagement: 'postEngagement',
   network: 'network',
   profileViewers: 'profileViewers',
+  listAlerts: 'listAlerts',
 } as const;
 export type TSignalType = (typeof SIGNAL_TYPE)[keyof typeof SIGNAL_TYPE];
 
@@ -22,6 +24,8 @@ export type TSignalStatus = (typeof SIGNAL_STATUS)[keyof typeof SIGNAL_STATUS];
 export const SIGNAL_STOPPED_REASON = {
   targetNotFound: 'targetNotFound',
   watchPeriodEnded: 'watchPeriodEnded',
+  noSalesNavigator: 'noSalesNavigator',
+  listTooLarge: 'listTooLarge',
 } as const;
 export type TSignalStoppedReason =
   (typeof SIGNAL_STOPPED_REASON)[keyof typeof SIGNAL_STOPPED_REASON];
@@ -35,6 +39,7 @@ export const SIGNAL_EVENT_TYPE = {
   connectionAccepted: 'connectionAccepted',
   connectionAdded: 'connectionAdded',
   connectionRequestReceived: 'connectionRequestReceived',
+  alertPublished: 'alertPublished',
 } as const;
 export type TSignalEventType = (typeof SIGNAL_EVENT_TYPE)[keyof typeof SIGNAL_EVENT_TYPE];
 
@@ -85,13 +90,20 @@ export interface TCreateAccountSignalParams extends TCreateSignalBaseParams {
   type: typeof SIGNAL_TYPE.network | typeof SIGNAL_TYPE.profileViewers;
 }
 
+export interface TCreateListAlertsSignalParams extends TCreateSignalBaseParams {
+  type: typeof SIGNAL_TYPE.listAlerts;
+  /** The id of one of the account's own Sales Navigator lists, as `nvRetrieveLists` returns it: a string of digits. */
+  listId: string;
+}
+
 export type TCreateSignalParams =
   | TCreatePersonPostsSignalParams
   | TCreateCompanyPostsSignalParams
   | TCreatePostSearchSignalParams
   | TCreatePostEngagementSignalParams
   | TCreateMyPostsEngagementSignalParams
-  | TCreateAccountSignalParams;
+  | TCreateAccountSignalParams
+  | TCreateListAlertsSignalParams;
 
 export interface TSignal {
   id: string;
@@ -112,6 +124,7 @@ export interface TSignal {
   myPosts?: true;
   term?: string | Array<string>;
   filter?: TSignalPostSearchFilter;
+  listId?: string;
 }
 
 export interface TGetSignalsParams {
@@ -182,12 +195,23 @@ export interface TSignalConnectionEvent extends TSignalEventBase {
   personUrl: string;
 }
 
+export interface TSignalAlertEvent extends TSignalEventBase {
+  type: typeof SIGNAL_EVENT_TYPE.alertPublished;
+  /** The Sales Navigator alert exactly as `nvRetrieveAlerts` returns it. */
+  alert: TNvAlert;
+  /** `urn:li:member:<id>` or `urn:li:organization:<id>`, as `nvRetrieveListLeads` and `nvRetrieveListAccounts` return it. */
+  subjectUrn: string | null;
+  /** The subject's `hashedUrl`, as `nvRetrieveListLeads` and `nvRetrieveListAccounts` return it. */
+  subjectHashedUrl: string | null;
+}
+
 export type TSignalEvent =
   | TSignalPostEvent
   | TSignalCommentEvent
   | TSignalReactionEvent
   | TSignalProfileViewEvent
-  | TSignalConnectionEvent;
+  | TSignalConnectionEvent
+  | TSignalAlertEvent;
 
 export interface TSignalPollResult {
   /** Newest first. */

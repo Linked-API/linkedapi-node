@@ -26,6 +26,18 @@ const SIGNAL: TSignal = {
   term: ['climate tech', 'carbon capture'],
   filter: { contentType: 'videos' },
 };
+const LIST_ALERTS_SIGNAL: TSignal = {
+  id: 'sigsub-2',
+  type: SIGNAL_TYPE.listAlerts,
+  label: null,
+  status: 'active',
+  stoppedReason: null,
+  createdAt: '2026-11-19T08:28:59Z',
+  baselineAt: null,
+  lastCheckedAt: null,
+  nextCheckAt: null,
+  listId: '7224792536903495680',
+};
 const CONNECTION_EVENT: TSignalEvent = {
   id: 'sigev-1',
   signalId: SIGNAL_ID,
@@ -102,6 +114,21 @@ const CASES: ReadonlyArray<TSignalCallCase> = [
       label: 'lead-1042',
     },
     result: SIGNAL,
+  },
+  {
+    name: 'createSignal for list alerts',
+    call: (api) =>
+      api.createSignal({
+        type: SIGNAL_TYPE.listAlerts,
+        listId: '7224792536903495680',
+      }),
+    url: 'https://api.test/signals',
+    method: 'POST',
+    body: {
+      type: 'listAlerts',
+      listId: '7224792536903495680',
+    },
+    result: LIST_ALERTS_SIGNAL,
   },
   {
     name: 'getSignals with filters',
