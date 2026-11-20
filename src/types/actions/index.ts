@@ -35,6 +35,7 @@ export * from './nv-unsave-account-params.type';
 export * from './nv-retrieve-lists-params.type';
 export * from './nv-create-list-params.type';
 export * from './nv-delete-list-params.type';
+export * from './nv-delete-list-unsave.type';
 export * from './nv-created-list.type';
 export * from './nv-list-type.type';
 export * from './nv-list.type';

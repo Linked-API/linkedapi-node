@@ -6,6 +6,7 @@ import { TOperationName } from '../core';
  * This error signals that the workflow action failed to complete, but the workflow completed as expected.
  * Common types:
  * - personNotFound (sendMessage, syncConversation, checkConnectionStatus, sendConnectionRequest, withdrawConnectionRequest, removeConnection, endorsePersonSkill, endorsePersonSkills, fetchPerson, nvSendMessage, nvSyncConversation, nvFetchPerson, nvSaveLead, nvUnsaveLead, nvRemoveLeadFromList, rcFetchPerson, rcSendMessage)
+ * - leadLocked (nvFetchPerson, nvSendMessage, nvSaveLead, nvUnsaveLead, nvRemoveLeadFromList)
  * - selfProfileNotAllowed (fetchPerson, nvFetchPerson)
  * - personLikelyChangedPublicUrl (fetchPerson, sendMessage)
  * - messagingNotAllowed (sendMessage, nvSendMessage, rcSendMessage)
@@ -58,6 +59,7 @@ import { TOperationName } from '../core';
  */
 export const LINKED_API_ACTION_ERROR = {
   personNotFound: 'personNotFound',
+  leadLocked: 'leadLocked',
   selfProfileNotAllowed: 'selfProfileNotAllowed',
   personLikelyChangedPublicUrl: 'personLikelyChangedPublicUrl',
   messagingNotAllowed: 'messagingNotAllowed',

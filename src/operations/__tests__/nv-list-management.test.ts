@@ -1,6 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 
-import LinkedApi, { LINKED_API_ACTION_ERROR, TNvCreatedList } from '../../index';
+import LinkedApi, {
+  LINKED_API_ACTION_ERROR,
+  NV_DELETE_LIST_UNSAVE,
+  TNvCreatedList,
+} from '../../index';
 
 const LIST_ID = '7420000000000000001' as const;
 const WORKFLOW_ID = 'list-management' as const;
@@ -114,6 +118,33 @@ describe('Sales Navigator list management contract', (): void => {
       actionType: 'nv.deleteList',
       listId: LIST_ID,
     });
+  });
+
+  it.each(Object.values(NV_DELETE_LIST_UNSAVE))(
+    'sends unsave %s on delete exactly as given',
+    async (unsave): Promise<void> => {
+      queueWorkflow({
+        actionType: 'nv.deleteList',
+        success: true,
+      });
+      const started = await linkedApi.nvDeleteList.execute({
+        listId: LIST_ID,
+        unsave,
+      });
+      expect(await linkedApi.nvDeleteList.result(started.workflowId)).toEqual({
+        data: undefined,
+        errors: [],
+      });
+      expect(postedWorkflow()).toEqual({
+        actionType: 'nv.deleteList',
+        listId: LIST_ID,
+        unsave,
+      });
+    },
+  );
+
+  it('exposes only the none and members unsave values', (): void => {
+    expect(Object.values(NV_DELETE_LIST_UNSAVE)).toEqual(['none', 'members']);
   });
 
   it.each(['listAlreadyExists', 'noSalesNavigator', 'unexpectedError'] as const)(

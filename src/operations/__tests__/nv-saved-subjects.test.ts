@@ -104,6 +104,7 @@ success: true });
   it.each([
     'listNotFound',
     'personNotFound',
+    'leadLocked',
     'companyNotFound',
     'noSalesNavigator',
     'unexpectedError',
